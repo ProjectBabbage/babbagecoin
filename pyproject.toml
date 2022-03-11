@@ -7,6 +7,7 @@ authors = ["Quentin Garchery <garchery.quentin@gmail.com>"]
 [tool.poetry.dependencies]
 python = "^3.9"
 Flask = "^2.0.3"
+requests = "^2.27.1"
 
 [tool.poetry.dev-dependencies]
 black = "^22.1.0"
