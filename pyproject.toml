@@ -7,9 +7,9 @@ authors = ["Quentin Garchery <garchery.quentin@gmail.com>"]
 [tool.poetry.dependencies]
 python = "^3.9"
 Flask = "^2.0.3"
-black = "^22.1.0"
 
 [tool.poetry.dev-dependencies]
+black = "^22.1.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
