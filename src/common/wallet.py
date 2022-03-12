@@ -19,7 +19,7 @@ class Wallet:
                 public_exponent=65537, key_size=512
             )
             with open(".keys", "wb") as target_file:
-                target_file.write(self.decode_private())
+                target_file.write(self.decode_private_key())
 
     def decode_public_key(self):
         return self.private_key.public_key().public_bytes(
