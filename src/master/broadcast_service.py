@@ -12,6 +12,7 @@ known_hosts = [
 ]
 
 url = os.environ.get("MYLOCALIP")
+url = f"http://{url}:5000"
 
 
 def broadcast_block(block: Block):
@@ -19,7 +20,7 @@ def broadcast_block(block: Block):
         bc = BlockSchema()
         json_block_dict = {"url": url, "block": bc.dump(block)}
         requests.post(
-            f"{url}/blocks/updateblock",
+            f"http://{host}:5000/blocks/updateblock",
             json_block_dict,
             headers={"Content-Type": "application/json"},
         )
