@@ -32,5 +32,5 @@ class BlockSchema(Schema):
     nounce = fields.Int(required=False)
 
     @post_load
-    def _make_model(self, data: Dict[str, Any]) -> Block:
+    def _make_model(self, data: Dict[str, Any], **kwargs) -> Block:
         return Block(**data)
