@@ -70,17 +70,21 @@ def receive_mined_block_from_miner():
 def receive_block_from_network():
     block_schema = BlockSchema()
     leaf = block_schema.load(request.json["block"])
+
     url = request.json["url"]
     block = leaf
-    while hash_block(block) not in hash_dict:
-        json_hash = {"hash": block.prev_hash}
-        resp = requests.post(
-            f"{url}/blocks/hash",
-            json.dumps(json_hash),
-            headers={"Content-Type": "application/json"},
-        )
-        prev_block = block_schema.load(resp.json())
-        prev_block.next_blocks.append(block)
-        block = prev_block
-    update_blockchain(block, leaf)
+
+    if hash_block(leaf) not in hash_dict:
+        while block.prev_hash not in hash_dict:
+            json_hash = {"hash": block.prev_hash}
+            resp = requests.post(
+                f"{url}/blocks/hash",
+                json.dumps(json_hash),
+                headers={"Content-Type": "application/json"},
+            )
+            prev_block = block_schema.load(resp.json())
+            prev_block.next_blocks.append(block)
+            block = prev_block
+        update_blockchain(block, leaf)
+
     return "ok"
