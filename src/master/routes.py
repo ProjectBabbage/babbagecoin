@@ -48,7 +48,7 @@ def send_current_block_to_miner():
 @app.post("/blocks/hash")
 def send_block_with_hash():
     block_schema = BlockSchema()
-    json_block = block_schema.dumps(hash_dict[request.json])
+    json_block = block_schema.dumps(hash_dict[request.json["hash"]])
     return json_block
 
 
