@@ -4,9 +4,12 @@ from flask import Flask, request
 from src.common.hash_service import hash_block
 from src.common.hash_service import hash_dict
 from src.common.models import Block
-from src.common.schemas import BlockSchema
+from src.common.schemas import BlockSchema, SignedTransactionSchema
 from src.common.wallet import Wallet
 from src.master.broadcast_service import broadcast_block
+from src.master.transaction_service import update_block_signed_transactions
+from src.master.transaction_service import remove_signed_transactions_from_valid_block
+from src.master.transaction_service import add_signed_transactions_from_old_block
 
 genesis: Block = Block(height=1)
 hash_dict[""] = Block(height=0)
@@ -26,6 +29,20 @@ def update_blockchain(block: Block, leaf: Block):
         if leaf.height > current.height:
             current = leaf
 
+        # update mempool
+        # add transactions of old branch to the mempool
+        b = current
+        while b.prev_hash != block.prev_hash:
+            add_signed_transactions_from_old_block(mem_pool, b)
+            b = hash_dict[b.prev_hash]
+        # remove transaction from the new current branch
+        b = leaf
+        while b.height != block.height:
+            remove_signed_transactions_from_valid_block(mem_pool, b)
+            b = hash_dict[b.prev_hash]
+            if b.height == block.height:
+                remove_signed_transactions_from_valid_block(mem_pool, b)
+
 
 def update_hash_dict_all(block):
     hash_dict[hash_block(block)] = block
@@ -39,9 +56,11 @@ def run():
 
 @app.get("/blocks/current")
 def send_current_block_to_miner():
-    update_pool(current)
+    # add txs to Block.signed_transactions
+    update_block_signed_transactions(current, mem_pool)
     block_schema = BlockSchema()
     json_block = block_schema.dumps(current)
+
     return json_block
 
 
@@ -62,11 +81,12 @@ def receive_mined_block_from_miner():
     global current
     block_schema = BlockSchema()
     block = block_schema.load(request.json)
+    remove_signed_transactions_from_valid_block(mem_pool, block)
     update_blockchain(block, block)  # synchrone et long
     new_block = Block(height=block.height + 1, prev_hash=hash_block(block))
     current.next_blocks.append(new_block)
     current = new_block
-    #broadcast_block(block)
+    # broadcast_block(block)
     return "ok"
 
 
@@ -91,16 +111,10 @@ def receive_block_from_network():
         update_blockchain(block, leaf)
     return "ok"
 
-from src.common.schemas import SignedTransactionSchema
 
 @app.post("/transactions/add")
 def add_transaction():
     signed_transaction_schema = SignedTransactionSchema()
     signed_transaction = signed_transaction_schema.load(request.json)
     mem_pool.add(signed_transaction)
-
-@app.post("/transactions/remove")
-def remove_transaction():
-    signed_transaction_schema = SignedTransactionSchema()
-    signed_transaction = signed_transaction_schema.load(request.json)
-    mem_pool.remove(signed_transaction)
+    return "ok"

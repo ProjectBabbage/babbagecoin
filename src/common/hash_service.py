@@ -1,5 +1,4 @@
 import hashlib
-
 from src.common.models import Block
 
 

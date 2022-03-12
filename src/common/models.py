@@ -1,4 +1,5 @@
 import json
+import hashlib
 
 from dataclasses import dataclass, field
 from typing import List, Optional
@@ -17,6 +18,13 @@ class Transaction:
 class SignedTransaction:
     transaction: Transaction
     signature: str
+
+    def __hash__(self):
+        signedTxString = str(self.transaction) + str(self.signature)
+        hasher = hashlib.sha256()
+        hasher.update(signedTxString.encode("utf-8"))
+        hasher.digest()
+        return int(hasher.hexdigest(), 16)
 
 
 @dataclass

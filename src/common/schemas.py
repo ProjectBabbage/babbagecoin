@@ -13,7 +13,7 @@ class TransactionSchema(Schema):
     fees = fields.Float()
 
     @post_load
-    def _make_model(self, data: Dict[str, Any]) -> Transaction:
+    def _make_model(self, data: Dict[str, Any], **kwargs) -> Transaction:
         return Transaction(**data)
 
 
@@ -22,7 +22,7 @@ class SignedTransactionSchema(Schema):
     signature = fields.String()
 
     @post_load
-    def _make_model(self, data: Dict[str, Any]) -> SignedTransaction:
+    def _make_model(self, data: Dict[str, Any], **kwargs) -> SignedTransaction:
         return SignedTransaction(**data)
 
 
@@ -35,4 +35,3 @@ class BlockSchema(Schema):
     @post_load
     def _make_model(self, data: Dict[str, Any], **kwargs) -> Block:
         return Block(**data)
-
