@@ -1,4 +1,6 @@
+import os
 from cryptography.exceptions import InvalidSignature
+from cryptography.hazmat.primitives.serialization import load_pem_private_key
 from cryptography.hazmat.backends.openssl.rsa import RSAPublicKey
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import rsa, padding
@@ -8,29 +10,29 @@ from src.common.schemas import TransactionSchema
 
 class Wallet:
     def __init__(self):
-        self.public_key, self.private_key = self.generate_keys()
-
-    def generate_keys(self):
-        private_key = rsa.generate_private_key(public_exponent=65537, key_size=512)
-        public_key = private_key.public_key()
-        return public_key, private_key
-
-    def decode_public(self):
-        return (
-            self.private_key.public_key()
-            .public_bytes(
-                encoding=serialization.Encoding.PEM,
-                format=serialization.PublicFormat.SubjectPublicKeyInfo,
+        if os.path.isfile(".keys"):
+            # we read the alrdy generated keys
+            with open(".keys", "rb") as fkeys:
+                self.private_key = load_pem_private_key(fkeys.read(), password=None)
+        else:
+            self.private_key = rsa.generate_private_key(
+                public_exponent=65537, key_size=512
             )
-            .decode("utf-8")
+            with open(".keys", "wb") as target_file:
+                target_file.write(self.decode_private())
+
+    def decode_public_key(self):
+        return self.private_key.public_key().public_bytes(
+            encoding=serialization.Encoding.PEM,
+            format=serialization.PublicFormat.SubjectPublicKeyInfo,
         )
 
-    def decode_private(self):
+    def decode_private_key(self):
         return self.private_key.private_bytes(
             encoding=serialization.Encoding.PEM,
             format=serialization.PrivateFormat.PKCS8,
             encryption_algorithm=serialization.NoEncryption(),
-        ).decode("utf-8")
+        )
 
     def sign(self, transaction: Transaction) -> SignedTransaction:
         tx_schema = TransactionSchema()
@@ -43,7 +45,6 @@ class Wallet:
             ),
             hashes.SHA256(),
         )
-
         return SignedTransaction(transaction, signature)
 
     def verify_signature(
@@ -66,7 +67,7 @@ class Wallet:
 
 if __name__ == "__main__":
     w = Wallet()
-    print(w.decode_public())
-    print(w.decode_private())
+    # print(w.decode_public())
+    # print(w.decode_private())
     tx = Transaction("sldk", "sender", "slkdl", 0.1)
     print(w.sign(tx))
