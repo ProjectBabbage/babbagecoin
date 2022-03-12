@@ -3,6 +3,9 @@ from src.common.models import Block
 
 
 def hash_block(block: Block) -> str:
+    if block.height == 0:
+        return ""
+
     hasher = hashlib.sha256()
     hasher.update(block.prev_hash.encode("utf-8"))
     for transaction in block.signed_transactions:

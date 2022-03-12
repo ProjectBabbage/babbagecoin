@@ -12,7 +12,7 @@ from src.master.transaction_service import remove_signed_transactions_from_valid
 from src.master.transaction_service import add_signed_transactions_from_old_block
 
 genesis: Block = Block(height=0)
-hash_dict[""] = genesis
+hash_dict[hash_block(genesis)] = genesis
 current: Block = genesis
 wallet = Wallet()
 mem_pool = set()
@@ -50,7 +50,6 @@ def update_blockchain(block: Block, leaf: Block):
 def build_next_block_from_current() -> Block:
     global current
     new_block = Block(height=current.height + 1, prev_hash=hash_block(current))
-    current.next_blocks.append(new_block)
     return new_block
 
 
