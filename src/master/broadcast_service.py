@@ -6,10 +6,10 @@ from src.common.models import Block
 from src.common.schemas import BlockSchema
 
 known_hosts = [
-    "192.168.0.15",
-    "192.168.0.13",
-    "192.168.0.20",
-    "192.168.0.21",
+    os.environ.get('IP_NODE_MARTIAL'),
+    os.environ.get('IP_NODE_QUENTIN'),
+    os.environ.get('IP_NODE_YOHANN'),
+    os.environ.get('IP_NODE_JULIEN'),
 ]
 
 myUrl = f"http://{os.environ.get('MYLOCALIP')}:5000"
