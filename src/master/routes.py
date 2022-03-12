@@ -1,5 +1,6 @@
 from flask import Flask, request
 
+import json
 import requests
 from src.common.models import Block
 from src.common.schemas import BlockSchema
@@ -73,11 +74,12 @@ def receive_block_from_network():
     block = leaf
     while hash_block(block) not in hash_dict:
         json_hash = {"hash": block.prev_hash}
-        prev_block = requests.post(
+        resp = requests.post(
             f"{url}blocks/hash",
-            json_hash,
+            json.dumps(json_hash),
             headers={"Content-Type": "application/json"},
         )
+        prev_block = block_schema.load(resp.json())
         prev_block.next_blocks.append(block)
         block = prev_block
     update_blockchain(block, leaf)
