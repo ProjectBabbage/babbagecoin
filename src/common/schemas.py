@@ -35,3 +35,4 @@ class BlockSchema(Schema):
     @post_load
     def _make_model(self, data: Dict[str, Any], **kwargs) -> Block:
         return Block(**data)
+

@@ -13,6 +13,7 @@ from src.master.broadcast_service import broadcast_block
 genesis: Block = Block(height=0)
 current: Block = genesis
 wallet = Wallet()
+mem_pool = set()
 
 app = Flask(__name__)
 
@@ -39,6 +40,7 @@ def run():
 
 @app.get("/blocks/current")
 def send_current_block_to_miner():
+    update_pool(current)
     block_schema = BlockSchema()
     json_block = block_schema.dumps(current)
     print(json_block)
@@ -62,7 +64,7 @@ def receive_mined_block_from_miner():
     new_block = Block(height=block.height + 1, prev_hash=hash_block(block))
     current.next_blocks.append(new_block)
     current = new_block
-    broadcast_block(block)
+    #broadcast_block(block)
     return "ok"
 
 
@@ -88,3 +90,17 @@ def receive_block_from_network():
         update_blockchain(block, leaf)
 
     return "ok"
+
+from src.common.schemas import SignedTransactionSchema
+
+@app.post("/transactions/add")
+def add_transaction():
+    signed_transaction_schema = SignedTransactionSchema()
+    signed_transaction = signed_transaction_schema.load(request.json)
+    mem_pool.add(signed_transaction)
+
+@app.post("/transactions/remove")
+def remove_transaction():
+    signed_transaction_schema = SignedTransactionSchema()
+    signed_transaction = signed_transaction_schema.load(request.json)
+    mem_pool.remove(signed_transaction)
