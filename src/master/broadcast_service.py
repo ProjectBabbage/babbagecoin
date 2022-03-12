@@ -7,12 +7,13 @@ from src.common.schemas import BlockSchema
 
 known_hosts = [
     "192.168.0.15",
-    "192.168.0.19",
+    "192.168.0.13",
     "192.168.0.20",
     "192.168.0.21",
 ]
 
 myUrl = f"http://{os.environ.get('MYLOCALIP')}:5000"
+
 
 def broadcast_block(block: Block):
     for host in known_hosts:
