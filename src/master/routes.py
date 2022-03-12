@@ -33,7 +33,7 @@ def update_hash_dict_all(block):
 
 
 def run():
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0')
 
 
 @app.get("/blocks/current")
