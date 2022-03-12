@@ -75,7 +75,7 @@ def receive_block_from_network():
     while hash_block(block) not in hash_dict:
         json_hash = {"hash": block.prev_hash}
         resp = requests.post(
-            f"{url}blocks/hash",
+            f"{url}/blocks/hash",
             json.dumps(json_hash),
             headers={"Content-Type": "application/json"},
         )
