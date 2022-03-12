@@ -2,7 +2,7 @@ import hashlib
 import json
 
 from dataclasses import dataclass, field
-from typing import List
+from typing import List, Optional
 
 
 @dataclass
@@ -22,7 +22,7 @@ class SignedTransaction:
 
 @dataclass
 class Block:
-    prev_hash: str = None
+    prev_hash: Optional[str] = None
     signed_transactions: List[SignedTransaction] = field(default_factory=list)
     nounce: int = 0
     next_blocks: List["Block"] = field(default_factory=list)

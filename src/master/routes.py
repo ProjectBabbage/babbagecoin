@@ -1,18 +1,43 @@
 from flask import Flask, request
+from ..common.models import Block
+from ..common.schemas import BlockSchema
+
+genesis: Block = Block()
+current: Block = genesis
+
 
 app = Flask(__name__)
+
+
+def update_current(block: Block):
+    global current
+    current.next_blocks.append(block)
+    current = block
+    pass
 
 
 def run():
     app.run(debug=True)
 
 
-@app.get("/get/<argument>")
-def print_something(argument):
-    return f"{argument}"
+@app.get("/blocks/current")
+def send_current_block_to_miner():
+    block_schema = BlockSchema()
+    json_block = block_schema.dumps(current)
+    return json_block
 
 
-@app.post('/post/')
-def post():
-    print(request.json['clef'])
-    return ""
+@app.post('/blocks/minedblock')
+def receive_mined_block_from_miner():
+    block_schema = BlockSchema()
+    block = block_schema.load(request.json)
+    update_current(block)
+    return "ok"
+
+
+@app.post('/blocks/updateblock')
+def receive_block_from_network():
+    block_schema = BlockSchema()
+    block = block_schema.load(request.json)
+    update_current(block)
+    return "ok"
