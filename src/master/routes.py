@@ -78,6 +78,7 @@ def receive_block_from_network():
 
     if hash_block(leaf) not in hash_dict:
         while block.prev_hash not in hash_dict:
+            print(f"Fetching block: {block.prev_hash}")
             resp = requests.get(
                 f"{url}/blocks/{block.prev_hash}",
                 headers={"Content-Type": "application/json"},
