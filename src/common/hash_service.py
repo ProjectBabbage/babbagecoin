@@ -11,3 +11,6 @@ def hash_block(block: Block) -> str:
     hasher.update(f"{block.nounce}".encode("utf-8"))
     hasher.digest()
     return hasher.hexdigest()
+
+
+hash_dict = {}

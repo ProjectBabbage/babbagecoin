@@ -10,6 +10,7 @@ Flask = "^2.0.3"
 requests = "^2.27.1"
 marshmallow = "^3.14.1"
 cryptography = "^36.0.1"
+python-dotenv = "^0.19.2"
 
 [tool.poetry.dev-dependencies]
 black = "^22.1.0"
