@@ -1,10 +1,11 @@
 from flask import Flask, request
 from ..common.models import Block
 from ..common.schemas import BlockSchema
+from ..common.wallet import Wallet
 
 genesis: Block = Block()
 current: Block = genesis
-
+wallet = Wallet()
 
 app = Flask(__name__)
 
@@ -13,7 +14,6 @@ def update_current(block: Block):
     global current
     current.next_blocks.append(block)
     current = block
-    pass
 
 
 def run():
