@@ -11,8 +11,8 @@ from src.master.transaction_service import update_block_signed_transactions
 from src.master.transaction_service import remove_signed_transactions_from_valid_block
 from src.master.transaction_service import add_signed_transactions_from_old_block
 
-genesis: Block = Block(height=1)
-hash_dict[""] = Block(height=0)
+genesis: Block = Block(height=0)
+hash_dict[""] = genesis
 current: Block = genesis
 wallet = Wallet()
 mem_pool = set()
@@ -28,6 +28,9 @@ def update_blockchain(block: Block, leaf: Block):
         update_hash_dict_all(block)
         if leaf.height > current.height:
             current = leaf
+            block_schema = BlockSchema()
+            current_block = block_schema.dumps(current)
+            print(f"Changing current: {current_block}")
 
         # update mempool
         # add transactions of old branch to the mempool
@@ -44,6 +47,13 @@ def update_blockchain(block: Block, leaf: Block):
                 remove_signed_transactions_from_valid_block(mem_pool, b)
 
 
+def build_next_block_from_current() -> Block:
+    global current
+    new_block = Block(height=current.height + 1, prev_hash=hash_block(current))
+    current.next_blocks.append(new_block)
+    return new_block
+
+
 def update_hash_dict_all(block):
     hash_dict[hash_block(block)] = block
     for b in block.next_blocks:
@@ -56,11 +66,10 @@ def run():
 
 @app.get("/blocks/current")
 def send_current_block_to_miner():
-    # add txs to Block.signed_transactions
     update_block_signed_transactions(current, mem_pool)
+    next_block = build_next_block_from_current()
     block_schema = BlockSchema()
-    json_block = block_schema.dumps(current)
-
+    json_block = block_schema.dumps(next_block)
     return json_block
 
 
@@ -78,15 +87,11 @@ def send_hash_dict():
 
 @app.post("/blocks/minedblock")
 def receive_mined_block_from_miner():
-    global current
     block_schema = BlockSchema()
     block = block_schema.load(request.json)
     remove_signed_transactions_from_valid_block(mem_pool, block)
     update_blockchain(block, block)  # synchrone et long
-    new_block = Block(height=block.height + 1, prev_hash=hash_block(block))
-    current.next_blocks.append(new_block)
-    current = new_block
-    # broadcast_block(block)
+    broadcast_block(block)
     return "ok"
 
 
