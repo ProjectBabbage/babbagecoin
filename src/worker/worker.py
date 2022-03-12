@@ -6,10 +6,10 @@ from src.common.hash_service import hash_block
 from src.common.models import Block
 from src.common.schemas import BlockSchema
 
-url = 'http://127.0.0.1:5000/'
-hash_count_before_update = 10000
-difficulty = 20000
-bound = 2 ** 256 / difficulty
+url = "http://127.0.0.1:5000/"
+hash_count_before_update = 1000000
+difficulty = 2000000
+bound = 2**256 / difficulty
 
 
 class BlockStore:
@@ -31,7 +31,7 @@ class BlockStore:
 
 
 def get_next_block() -> Block:
-    res = requests.get(f'{url}blocks/current')
+    res = requests.get(f"{url}blocks/current")
     block_schema = BlockSchema()
     print(res.json())
     return block_schema.load(res.json())
@@ -44,9 +44,9 @@ def post_mined_block(block: Block):
 
     print(json_block)
     res = requests.post(
-        f'{url}blocks/minedblock',
+        f"{url}blocks/minedblock",
         json_block,
-        headers={'Content-Type': 'application/json'}
+        headers={"Content-Type": "application/json"},
     )
 
 
@@ -60,8 +60,7 @@ def run():
         if int(block_hash, 16) <= bound:
             print("Block mined successfully")
             post_mined_block(block_store.current_block)
-            break
-            # block_store.update_block()
+            block_store.update_block()
             i = 0
         else:
             block_store.current_block.nounce += 1
