@@ -29,8 +29,7 @@ class SignedTransactionSchema(Schema):
 class BlockSchema(Schema):
     prev_hash = fields.String(required=False)
     signed_transactions = fields.List(fields.Nested(SignedTransactionSchema))
-    nounce = fields.Int()
-    next_blocks = fields.List(fields.Nested("BlockSchema"))
+    nounce = fields.Int(required=False)
 
     @post_load
     def _make_model(self, data: Dict[str, Any]) -> Block:

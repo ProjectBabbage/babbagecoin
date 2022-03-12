@@ -1,4 +1,3 @@
-import hashlib
 import json
 
 from dataclasses import dataclass, field
@@ -29,11 +28,3 @@ class Block:
 
     def __str__(self):
         return json.dumps(self.__dict__)
-
-    def hash(self) -> str:
-        m = hashlib.sha256()
-        s = str(self)
-        b = s.encode("utf-8")
-        m.update(b)
-        m.digest()
-        return m.hexdigest()
