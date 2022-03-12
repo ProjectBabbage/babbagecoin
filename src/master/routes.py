@@ -65,8 +65,8 @@ def run():
 
 @app.get("/blocks/current")
 def send_current_block_to_miner():
-    update_block_signed_transactions(current, mem_pool)
     next_block = build_next_block_from_current()
+    update_block_signed_transactions(next_block, mem_pool)
     block_schema = BlockSchema()
     json_block = block_schema.dumps(next_block)
     return json_block
