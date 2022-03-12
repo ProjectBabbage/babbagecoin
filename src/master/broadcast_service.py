@@ -14,6 +14,7 @@ known_hosts = [
 
 myUrl = f"http://{os.environ.get('MYLOCALIP')}:5000"
 
+
 def broadcast_block(block: Block):
     for host in known_hosts:
         if host != myUrl[7:-5]:

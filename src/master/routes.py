@@ -8,7 +8,8 @@ from src.common.schemas import BlockSchema
 from src.common.wallet import Wallet
 from src.master.broadcast_service import broadcast_block
 
-genesis: Block = Block(height=0)
+genesis: Block = Block(height=1)
+hash_dict[""] = Block(height=0)
 current: Block = genesis
 wallet = Wallet()
 
@@ -47,6 +48,11 @@ def send_block_with_hash(block_hash: str):
     block_schema = BlockSchema()
     json_block = block_schema.dumps(hash_dict[block_hash])
     return json_block
+
+
+@app.get("/blocks/hashdict")
+def send_hash_dict():
+    return f"{hash_dict}"
 
 
 @app.post("/blocks/minedblock")
