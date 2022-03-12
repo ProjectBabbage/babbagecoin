@@ -22,7 +22,7 @@ class SignedTransaction:
 
 @dataclass
 class Block:
-    prev_hash: str
+    prev_hash: str = None
     signed_transactions: List[SignedTransaction] = field(default_factory=list)
     nounce: int = 0
     next_blocks: List["Block"] = field(default_factory=list)

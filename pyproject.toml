@@ -8,6 +8,7 @@ authors = ["Quentin Garchery <garchery.quentin@gmail.com>"]
 python = "^3.9"
 Flask = "^2.0.3"
 requests = "^2.27.1"
+marshmallow = "^3.14.1"
 
 [tool.poetry.dev-dependencies]
 black = "^22.1.0"
