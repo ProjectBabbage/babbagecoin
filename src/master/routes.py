@@ -33,7 +33,7 @@ def update_hash_dict_all(block):
 
 
 def run():
-    app.run(debug=True, host='0.0.0.0')
+    app.run(debug=True, host="0.0.0.0")
 
 
 @app.get("/blocks/current")
@@ -58,7 +58,7 @@ def receive_mined_block_from_miner():
     print(request.json)
     block = block_schema.load(request.json)
     update_blockchain(block, block)  # synchrone et long
-    new_block = Block(prev_hash=hash_block(block))
+    new_block = Block(height=block.height + 1, prev_hash=hash_block(block))
     current.next_blocks.append(new_block)
     current = new_block
     broadcast_block(block)
