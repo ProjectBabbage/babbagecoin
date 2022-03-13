@@ -72,7 +72,7 @@ def receive_block_from_network():
                 headers={"Content-Type": "application/json"},
             )
             prev_block = block_schema.load(resp.json())
-            prev_block.next_blocks.append({"hash": block.hash, "block": block})
+            prev_block.next_blocks.append({"hash": block.hash(), "block": block})
             block = prev_block
         update_blockchain(block, leaf)
     return "ok"
