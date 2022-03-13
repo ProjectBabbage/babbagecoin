@@ -9,7 +9,7 @@ from src.common.schemas import BlockSchema
 url = "http://127.0.0.1:5000/"
 hash_count_before_update = 1000000
 difficulty = 2000000
-bound = 2**256 / difficulty
+bound = 2**256 // difficulty
 
 
 class BlockStore:

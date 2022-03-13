@@ -11,7 +11,6 @@ def hash_block(block: Block) -> str:
     for transaction in block.signed_transactions:
         hasher.update(transaction.signature.encode("utf-8"))
     hasher.update(f"{block.nounce}".encode("utf-8"))
-    hasher.digest()
     return hasher.hexdigest()
 
 
