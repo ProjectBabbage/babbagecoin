@@ -42,7 +42,7 @@ def send_block_with_hash(block_hash: str):
 
 @app.get("/blocks/hashdict")
 def send_hash_dict():
-    return f"{hash_dict}"
+    return hash_dict
 
 
 @app.post("/blocks/minedblock")
@@ -71,7 +71,7 @@ def receive_block_from_network():
                 headers={"Content-Type": "application/json"},
             )
             prev_block = block_schema.load(resp.json())
-            prev_block.next_blocks.append(block)
+            prev_block.next_blocks.append({"hash": block.hash, "block": block})
             block = prev_block
         update_blockchain(block, leaf)
     return "ok"
