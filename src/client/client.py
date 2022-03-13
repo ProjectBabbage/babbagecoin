@@ -27,7 +27,11 @@ class Client:
     def send_transaction(self, receiver: str, amount: float, fees: float):
         print(f"Sending {amount} to {receiver} with fees {fees}")
         tx = Transaction(
-            str(uuid.uuid4()), self.wallet.decode_public_key(), receiver, amount, fees
+            uuid=str(uuid.uuid4()),
+            sender=self.wallet.decode_public_key(),
+            receiver=receiver,
+            amount=amount,
+            fees=fees
         )
         signedTxSchema = SignedTransactionSchema()
         signedTx = SignedTransaction(tx, self.wallet.sign(tx))

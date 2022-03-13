@@ -1,5 +1,11 @@
-from src.common.models import Block
+import uuid
 
+from src.common.models import Block, SignedTransaction, Transaction
+from src.common.wallet import Wallet
+
+BABBAGE_REWARD = "BABBAGE_REWARD"
+
+mem_pool = set()
 
 def update_block_signed_transactions(block: Block, mem_pool: set):
     block.signed_transactions.extend(list(mem_pool))
@@ -14,3 +20,15 @@ def remove_signed_transactions_from_valid_block(mem_pool: set, block: Block):
 def add_signed_transactions_from_old_block(mem_pool: set, block: Block):
     for signed_tx in block.signed_transactions:
         mem_pool.add(signed_tx)
+
+
+def forge_reward_transaction() -> SignedTransaction:
+    wallet = Wallet()
+    transaction = Transaction(
+        uuid=str(uuid.uuid4()),
+        sender=BABBAGE_REWARD,
+        receiver=wallet.get_public_address(),
+        amount=125,
+    )
+
+    return wallet.sign(transaction)

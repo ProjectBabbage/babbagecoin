@@ -1,14 +1,21 @@
+import base64
+import hashlib
 import os
+
 from cryptography.exceptions import InvalidSignature
-from cryptography.hazmat.primitives.serialization import load_pem_private_key
 from cryptography.hazmat.backends.openssl.rsa import RSAPublicKey
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import rsa, padding
+from cryptography.hazmat.primitives.asymmetric.rsa import RSAPrivateKey
+from cryptography.hazmat.primitives.serialization import load_pem_private_key
+
 from src.common.models import Transaction, SignedTransaction
 from src.common.schemas import TransactionSchema
 
 
 class Wallet:
+    private_key: RSAPrivateKey
+
     def __init__(self):
         if os.path.isfile(".keys"):
             # we read the alrdy generated keys
@@ -21,7 +28,7 @@ class Wallet:
             with open(".keys", "wb") as target_file:
                 target_file.write(self.decode_private_key())
 
-    def decode_public_key(self):
+    def decode_public_key(self) -> bytes:
         return self.private_key.public_key().public_bytes(
             encoding=serialization.Encoding.PEM,
             format=serialization.PublicFormat.SubjectPublicKeyInfo,
@@ -45,10 +52,13 @@ class Wallet:
             ),
             hashes.SHA256(),
         )
-        return SignedTransaction(transaction, signature)
+        return SignedTransaction(
+            transaction=transaction,
+            signature=base64.urlsafe_b64encode(signature).decode()
+        )
 
     def verify_signature(
-        self, signature: str, signed_transaction: str, pub_key: RSAPublicKey
+            self, signature: str, signed_transaction: str, pub_key: RSAPublicKey
     ) -> bool:
         try:
             pub_key.verify(
@@ -63,6 +73,11 @@ class Wallet:
             return True
         except InvalidSignature:
             return False
+
+    def get_public_address(self) -> str:
+        hasher = hashlib.sha256()
+        hasher.update(self.decode_public_key())
+        return hasher.hexdigest()
 
 
 if __name__ == "__main__":

@@ -21,6 +21,3 @@ def hash_transaction(transaction: Transaction):
     hasher.update(transaction.amount)
     hasher.update(transaction.fees)
     return hasher.hexdigest()
-
-
-hash_dict = {}
