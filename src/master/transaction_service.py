@@ -5,6 +5,7 @@ from src.common.wallet import Wallet
 
 BABBAGE_REWARD = PubKey("BABBAGE_REWARD")
 
+reward_transaction = None
 mem_pool = set()
 
 
@@ -33,3 +34,13 @@ def forge_reward_transaction() -> SignedTransaction:
     )
 
     return wallet.sign(transaction)
+
+reward_transaction = forge_reward_transaction()
+
+def update_reward_transaction():
+    global reward_transaction
+    reward_transaction = forge_reward_transaction()
+
+def get_reward_transaction():
+    global reward_transaction
+    return reward_transaction

@@ -13,7 +13,7 @@ from src.master.transaction_service import (
     remove_signed_transactions_from_valid_block,
     mem_pool,
 )
-from src.master.transaction_service import update_block_signed_transactions
+from src.master.transaction_service import update_block_signed_transactions, update_reward_transaction
 
 wallet = Wallet()
 
@@ -52,6 +52,7 @@ def receive_mined_block_from_miner():
     remove_signed_transactions_from_valid_block(mem_pool, block)
     update_blockchain(block, block)  # synchrone et long
     broadcast_block(block)
+    update_reward_transaction()
     return "ok"
 
 

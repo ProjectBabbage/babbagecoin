@@ -4,6 +4,7 @@ from src.master.transaction_service import (
     add_signed_transactions_from_old_block,
     remove_signed_transactions_from_valid_block,
     forge_reward_transaction,
+    get_reward_transaction,
     mem_pool,
 )
 
@@ -42,7 +43,7 @@ def update_blockchain(block: Block, leaf: Block):
 
 def build_next_block_from_current() -> Block:
     global current
-    rewardTransaction = forge_reward_transaction()
+    rewardTransaction = get_reward_transaction()
     new_block = Block(
         height=current.height + 1,
         prev_hash=current.hash(),
