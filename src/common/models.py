@@ -46,8 +46,6 @@ class Transaction:
         return hasher.hexdigest()
 
     def __str__(self):
-        print("---")
-        print(self.uuid)
         uuid = self.uuid[:4]
         sender = str(self.sender)[:8]
         receiver = str(self.receiver)[:8]
