@@ -6,7 +6,7 @@ from src.common.models import Transaction, SignedTransaction, Block
 
 
 class TransactionSchema(Schema):
-    uuid = fields.UUID()
+    uuid = fields.String()
     sender = fields.String()
     receiver = fields.String()
     amount = fields.Float()

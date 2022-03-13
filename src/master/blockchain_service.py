@@ -1,16 +1,16 @@
-from src.common.hash_service import hash_block
 from src.common.models import Block
 from src.common.schemas import BlockSchema
 from src.master.transaction_service import (
     add_signed_transactions_from_old_block,
     remove_signed_transactions_from_valid_block,
     forge_reward_transaction,
+    get_reward_transaction,
     mem_pool,
 )
 
 hash_dict = {}
 genesis: Block = Block(height=0)
-hash_dict[hash_block(genesis)] = genesis
+hash_dict[genesis.hash()] = genesis
 current: Block = genesis
 
 
@@ -18,7 +18,7 @@ def update_blockchain(block: Block, leaf: Block):
     global current
     if block.prev_hash in hash_dict:
         prev_block = hash_dict[block.prev_hash]
-        prev_block.next_blocks.append(block)
+        prev_block.next_blocks.append({"hash": block.hash(), "block": block})
         update_hash_dict_all(block)
         if leaf.height > current.height:
             current = leaf
@@ -43,10 +43,10 @@ def update_blockchain(block: Block, leaf: Block):
 
 def build_next_block_from_current() -> Block:
     global current
-    rewardTransaction = forge_reward_transaction()
+    rewardTransaction = get_reward_transaction()
     new_block = Block(
         height=current.height + 1,
-        prev_hash=hash_block(current),
+        prev_hash=current.hash(),
         signed_transactions=[
             rewardTransaction,
         ],
@@ -56,6 +56,7 @@ def build_next_block_from_current() -> Block:
 
 
 def update_hash_dict_all(block):
-    hash_dict[hash_block(block)] = block
+    hash_dict[block.hash()] = block
     for b in block.next_blocks:
-        update_hash_dict_all(b)
+        update_hash_dict_all(b["block"])
+

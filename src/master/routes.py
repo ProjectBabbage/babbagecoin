@@ -1,7 +1,6 @@
 import requests
 from flask import Flask, request
 
-from src.common.hash_service import hash_block
 from src.common.schemas import BlockSchema, SignedTransactionSchema
 from src.common.wallet import Wallet
 from src.master.blockchain_service import (
@@ -14,7 +13,7 @@ from src.master.transaction_service import (
     remove_signed_transactions_from_valid_block,
     mem_pool,
 )
-from src.master.transaction_service import update_block_signed_transactions
+from src.master.transaction_service import update_block_signed_transactions, update_reward_transaction
 
 wallet = Wallet()
 
@@ -43,7 +42,7 @@ def send_block_with_hash(block_hash: str):
 
 @app.get("/blocks/hashdict")
 def send_hash_dict():
-    return f"{hash_dict}"
+    return hash_dict
 
 
 @app.post("/blocks/minedblock")
@@ -53,6 +52,7 @@ def receive_mined_block_from_miner():
     remove_signed_transactions_from_valid_block(mem_pool, block)
     update_blockchain(block, block)  # synchrone et long
     broadcast_block(block)
+    update_reward_transaction()
     return "ok"
 
 
@@ -64,7 +64,7 @@ def receive_block_from_network():
     url = request.json["url"]
     block = leaf
 
-    if hash_block(leaf) not in hash_dict:
+    if leaf.hash() not in hash_dict:
         while block.prev_hash not in hash_dict:
             print(f"Fetching block: {block.prev_hash}")
             resp = requests.get(
@@ -72,7 +72,7 @@ def receive_block_from_network():
                 headers={"Content-Type": "application/json"},
             )
             prev_block = block_schema.load(resp.json())
-            prev_block.next_blocks.append(block)
+            prev_block.next_blocks.append({"hash": block.hash, "block": block})
             block = prev_block
         update_blockchain(block, leaf)
     return "ok"

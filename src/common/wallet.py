@@ -3,15 +3,15 @@ import hashlib
 import os
 
 from cryptography.exceptions import InvalidSignature
+
 from cryptography.hazmat.backends.openssl.rsa import RSAPublicKey
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import rsa, padding
 from cryptography.hazmat.primitives.asymmetric.rsa import RSAPrivateKey
 from cryptography.hazmat.primitives.serialization import load_pem_private_key
+from cryptography.hazmat.primitives.serialization import load_pem_public_key
 
-from src.common.hash_service import hash_transaction
-from src.common.models import Transaction, SignedTransaction
-from src.common.schemas import TransactionSchema
+from src.common.models import PubKey, Transaction, SignedTransaction
 
 
 class Wallet:
@@ -29,6 +29,9 @@ class Wallet:
             with open(".keys", "wb") as target_file:
                 target_file.write(self.decode_private_key())
 
+    def get_public_key(self) -> PubKey:
+        return PubKey(self.private_key.public_key())
+
     def decode_public_key(self) -> bytes:
         return self.private_key.public_key().public_bytes(
             encoding=serialization.Encoding.PEM,
@@ -42,8 +45,16 @@ class Wallet:
             encryption_algorithm=serialization.NoEncryption(),
         )
 
+    def load_public_key(self, filepath):
+        pub_key = ""
+        with open(filepath, "rb") as pKey:
+            pub_key = load_pem_public_key(pKey.read(), password=None)
+        if not pub_key:
+            raise Exception("No public key load")
+        return pub_key
+
     def sign(self, transaction: Transaction) -> SignedTransaction:
-        transaction_hash = hash_transaction(transaction)
+        transaction_hash = transaction.hash()
 
         signature = self.private_key.sign(
             transaction_hash.encode("utf-8"),
@@ -63,7 +74,7 @@ class Wallet:
 
         signature = base64.b64decode(signed_transaction.signature.encode())
         transaction = signed_transaction.transaction
-        transaction_hash = hash_transaction(transaction)
+        transaction_hash = transaction.hash()
         #
         try:
             pub_key.verify(
@@ -79,9 +90,10 @@ class Wallet:
         except InvalidSignature:
             return False
 
-    def get_public_address(self) -> str:
+    @staticmethod  # TODO : remove this ?
+    def get_public_address(decoded_public_key):
         hasher = hashlib.sha256()
-        hasher.update(self.decode_public_key())
+        hasher.update(decoded_public_key)
         return hasher.hexdigest()
 
 
