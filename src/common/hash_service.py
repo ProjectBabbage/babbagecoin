@@ -1,5 +1,5 @@
 import hashlib
-from src.common.models import Block
+from src.common.models import Block, Transaction
 
 
 def hash_block(block: Block) -> str:
@@ -11,6 +11,15 @@ def hash_block(block: Block) -> str:
     for transaction in block.signed_transactions:
         hasher.update(transaction.signature.encode("utf-8"))
     hasher.update(f"{block.nounce}".encode("utf-8"))
+    return hasher.hexdigest()
+
+def hash_transaction(transaction: Transaction):
+    hasher = hashlib.sha256()
+    hasher.update(transaction.uuid.encode("utf-8"))
+    hasher.update(transaction.sender.encode("utf-8"))
+    hasher.update(transaction.receiver.encode("utf-8"))
+    hasher.update(transaction.amount)
+    hasher.update(transaction.fees)
     return hasher.hexdigest()
 
 
