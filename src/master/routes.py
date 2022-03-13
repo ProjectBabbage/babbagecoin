@@ -9,7 +9,7 @@ from src.master.blockchain_service import (
     build_next_block_from_current,
     update_blockchain,
 )
-from src.master.broadcast_service import broadcast_block
+from src.master.broadcast_service import broadcast_block, broadcast_transaction
 from src.master.transaction_service import (
     remove_signed_transactions_from_valid_block,
     mem_pool,
@@ -75,6 +75,15 @@ def receive_block_from_network():
             prev_block.next_blocks.append(block)
             block = prev_block
         update_blockchain(block, leaf)
+    return "ok"
+
+
+@app.post("/transactions/emit")
+def emit_transaction():
+    signed_transaction_schema = SignedTransactionSchema()
+    signed_transaction = signed_transaction_schema.load(request.json)
+    mem_pool.add(signed_transaction)
+    broadcast_transaction(signed_transaction)
     return "ok"
 
 
