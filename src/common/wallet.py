@@ -9,8 +9,9 @@ from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import rsa, padding
 from cryptography.hazmat.primitives.asymmetric.rsa import RSAPrivateKey
 from cryptography.hazmat.primitives.serialization import load_pem_private_key
+from cryptography.hazmat.primitives.serialization import load_pem_public_key
 
-from src.common.models import Transaction, SignedTransaction
+from src.common.models import PubKey, Transaction, SignedTransaction
 
 
 class Wallet:
@@ -28,6 +29,9 @@ class Wallet:
             with open(".keys", "wb") as target_file:
                 target_file.write(self.decode_private_key())
 
+    def get_public_key(self) -> PubKey:
+        return PubKey(self.private_key.public_key())
+
     def decode_public_key(self) -> bytes:
         return self.private_key.public_key().public_bytes(
             encoding=serialization.Encoding.PEM,
@@ -40,6 +44,14 @@ class Wallet:
             format=serialization.PrivateFormat.PKCS8,
             encryption_algorithm=serialization.NoEncryption(),
         )
+
+    def load_public_key(self, filepath):
+        pub_key = ""
+        with open(filepath, "rb") as pKey:
+            pub_key = load_pem_public_key(pKey.read(), password=None)
+        if not pub_key:
+            raise Exception("No public key load")
+        return pub_key
 
     def sign(self, transaction: Transaction) -> SignedTransaction:
         transaction_hash = transaction.hash()

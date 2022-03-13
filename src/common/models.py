@@ -13,6 +13,9 @@ class PubKey:
     pub_key: RSAPublicKey
 
     def hash(self):
+        if self.pub_key == "BABBAGE_REWARD":
+            return self.pub_key
+
         encoded_key = self.pub_key.public_bytes(
             encoding=serialization.Encoding.PEM,
             format=serialization.PublicFormat.SubjectPublicKeyInfo,
@@ -43,6 +46,8 @@ class Transaction:
         return hasher.hexdigest()
 
     def __str__(self):
+        print("---")
+        print(self.uuid)
         uuid = self.uuid[:4]
         sender = str(self.sender)[:8]
         receiver = str(self.receiver)[:8]
@@ -66,7 +71,7 @@ class SignedTransaction:
         return hasher.hexdigest()
 
     def __hash__(self):
-        return int(hash(self), 16)
+        return int(self.hash(), 16)
 
     def __str__(self):
         return f"stx({self.transaction})"

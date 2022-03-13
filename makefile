@@ -6,3 +6,7 @@ worker:
 
 front:
 	streamlit run src/frontend/app.py
+
+docker:
+	poetry export > requirements.txt
+	docker build . -t babbagecoin

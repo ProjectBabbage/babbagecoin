@@ -8,6 +8,7 @@ from src.common.models import Transaction, SignedTransaction
 from src.common.schemas import TransactionSchema, SignedTransactionSchema
 
 load_dotenv()
+
 parser = ArgumentParser(description="Send a transaction on babbagecoin")
 
 parser.add_argument("receiver", type=str)
@@ -28,7 +29,7 @@ class Client:
         print(f"Sending {amount} to {receiver} with fees {fees}")
         tx = Transaction(
             uuid=str(uuid.uuid4()),
-            sender=self.wallet.decode_public_key(),
+            sender=self.wallet.get_public_key(),
             receiver=receiver,
             amount=amount,
             fees=fees,
@@ -40,6 +41,11 @@ class Client:
             signedTxSchema.dumps(signedTx),
             headers={"Content-Type": "application/json"},
         )
+
+    # TODO
+    def get_balance(self):
+        # get the client balance
+        pass
 
 
 if __name__ == "__main__":

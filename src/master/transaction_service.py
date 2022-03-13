@@ -1,9 +1,9 @@
 import uuid
 
-from src.common.models import Block, SignedTransaction, Transaction
+from src.common.models import PubKey, Block, SignedTransaction, Transaction
 from src.common.wallet import Wallet
 
-BABBAGE_REWARD = "BABBAGE_REWARD"
+BABBAGE_REWARD = PubKey("BABBAGE_REWARD")
 
 mem_pool = set()
 
@@ -28,7 +28,7 @@ def forge_reward_transaction() -> SignedTransaction:
     transaction = Transaction(
         uuid=str(uuid.uuid4()),
         sender=BABBAGE_REWARD,
-        receiver=wallet.decode_public_key(),
+        receiver=wallet.get_public_key(),
         amount=125,
     )
 
