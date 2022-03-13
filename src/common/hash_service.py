@@ -13,6 +13,7 @@ def hash_block(block: Block) -> str:
     hasher.update(f"{block.nounce}".encode("utf-8"))
     return hasher.hexdigest()
 
+
 def hash_transaction(transaction: Transaction):
     hasher = hashlib.sha256()
     hasher.update(transaction.uuid.encode("utf-8"))

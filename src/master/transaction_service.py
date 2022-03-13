@@ -7,6 +7,7 @@ BABBAGE_REWARD = "BABBAGE_REWARD"
 
 mem_pool = set()
 
+
 def update_block_signed_transactions(block: Block, mem_pool: set):
     block.signed_transactions.extend(list(mem_pool))
 

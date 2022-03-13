@@ -1,13 +1,18 @@
 from src.common.hash_service import hash_block
 from src.common.models import Block
 from src.common.schemas import BlockSchema
-from src.master.transaction_service import add_signed_transactions_from_old_block, \
-    remove_signed_transactions_from_valid_block, forge_reward_transaction, mem_pool
+from src.master.transaction_service import (
+    add_signed_transactions_from_old_block,
+    remove_signed_transactions_from_valid_block,
+    forge_reward_transaction,
+    mem_pool,
+)
 
 hash_dict = {}
 genesis: Block = Block(height=0)
 hash_dict[hash_block(genesis)] = genesis
 current: Block = genesis
+
 
 def update_blockchain(block: Block, leaf: Block):
     global current
@@ -44,7 +49,7 @@ def build_next_block_from_current() -> Block:
         prev_hash=hash_block(current),
         signed_transactions=[
             rewardTransaction,
-        ]
+        ],
     )
 
     return new_block

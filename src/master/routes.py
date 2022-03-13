@@ -4,9 +4,16 @@ from flask import Flask, request
 from src.common.hash_service import hash_block
 from src.common.schemas import BlockSchema, SignedTransactionSchema
 from src.common.wallet import Wallet
-from src.master.blockchain_service import hash_dict, build_next_block_from_current, update_blockchain
+from src.master.blockchain_service import (
+    hash_dict,
+    build_next_block_from_current,
+    update_blockchain,
+)
 from src.master.broadcast_service import broadcast_block
-from src.master.transaction_service import remove_signed_transactions_from_valid_block, mem_pool
+from src.master.transaction_service import (
+    remove_signed_transactions_from_valid_block,
+    mem_pool,
+)
 from src.master.transaction_service import update_block_signed_transactions
 
 wallet = Wallet()

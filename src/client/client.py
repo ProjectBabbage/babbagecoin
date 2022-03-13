@@ -31,7 +31,7 @@ class Client:
             sender=self.wallet.decode_public_key(),
             receiver=receiver,
             amount=amount,
-            fees=fees
+            fees=fees,
         )
         signedTxSchema = SignedTransactionSchema()
         signedTx = SignedTransaction(tx, self.wallet.sign(tx))

@@ -54,11 +54,11 @@ class Wallet:
         )
         return SignedTransaction(
             transaction=transaction,
-            signature=base64.urlsafe_b64encode(signature).decode()
+            signature=base64.urlsafe_b64encode(signature).decode(),
         )
 
     def verify_signature(
-            self, signed_transaction: SignedTransaction, pub_key: RSAPublicKey
+        self, signed_transaction: SignedTransaction, pub_key: RSAPublicKey
     ) -> bool:
 
         signature = base64.b64decode(signed_transaction.signature.encode())
