@@ -18,6 +18,6 @@ def hash_transaction(transaction: Transaction):
     hasher.update(transaction.uuid.encode("utf-8"))
     hasher.update(transaction.sender.encode("utf-8"))
     hasher.update(transaction.receiver.encode("utf-8"))
-    hasher.update(transaction.amount)
-    hasher.update(transaction.fees)
+    hasher.update(str(transaction.amount).encode("utf-8"))
+    hasher.update(str(transaction.fees).encode("utf-8"))
     return hasher.hexdigest()

@@ -9,6 +9,7 @@ from cryptography.hazmat.primitives.asymmetric import rsa, padding
 from cryptography.hazmat.primitives.asymmetric.rsa import RSAPrivateKey
 from cryptography.hazmat.primitives.serialization import load_pem_private_key
 
+from src.common.hash_service import hash_transaction
 from src.common.models import Transaction, SignedTransaction
 from src.common.schemas import TransactionSchema
 
@@ -42,11 +43,10 @@ class Wallet:
         )
 
     def sign(self, transaction: Transaction) -> SignedTransaction:
-        tx_schema = TransactionSchema()
-        tx_json = tx_schema.dumps(transaction)
+        transaction_hash = hash_transaction(transaction)
 
         signature = self.private_key.sign(
-            tx_json.encode("utf-8"),
+            transaction_hash.encode("utf-8"),
             padding.PSS(
                 mgf=padding.MGF1(hashes.SHA256()), salt_length=padding.PSS.MAX_LENGTH
             ),
@@ -58,12 +58,17 @@ class Wallet:
         )
 
     def verify_signature(
-            self, signature: str, signed_transaction: str, pub_key: RSAPublicKey
+            self, signed_transaction: SignedTransaction, pub_key: RSAPublicKey
     ) -> bool:
+
+        signature = base64.b64decode(signed_transaction.signature.encode())
+        transaction = signed_transaction.transaction
+        transaction_hash = hash_transaction(transaction)
+        #
         try:
             pub_key.verify(
-                signature.encode("utf-8"),
-                signed_transaction,
+                signature,
+                transaction_hash,
                 padding.PSS(
                     mgf=padding.MGF1(hashes.SHA256()),
                     salt_length=padding.PSS.MAX_LENGTH,
