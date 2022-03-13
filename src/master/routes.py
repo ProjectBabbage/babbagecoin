@@ -1,7 +1,6 @@
 import requests
 from flask import Flask, request
 
-from src.common.hash_service import hash_block
 from src.common.schemas import BlockSchema, SignedTransactionSchema
 from src.common.wallet import Wallet
 from src.master.blockchain_service import (
@@ -64,7 +63,7 @@ def receive_block_from_network():
     url = request.json["url"]
     block = leaf
 
-    if hash_block(leaf) not in hash_dict:
+    if leaf.hash() not in hash_dict:
         while block.prev_hash not in hash_dict:
             print(f"Fetching block: {block.prev_hash}")
             resp = requests.get(

@@ -1,4 +1,3 @@
-from src.common.hash_service import hash_block
 from src.common.models import Block
 from src.common.schemas import BlockSchema
 from src.master.transaction_service import (
@@ -10,7 +9,7 @@ from src.master.transaction_service import (
 
 hash_dict = {}
 genesis: Block = Block(height=0)
-hash_dict[hash_block(genesis)] = genesis
+hash_dict[genesis.hash()] = genesis
 current: Block = genesis
 
 
@@ -46,7 +45,7 @@ def build_next_block_from_current() -> Block:
     rewardTransaction = forge_reward_transaction()
     new_block = Block(
         height=current.height + 1,
-        prev_hash=hash_block(current),
+        prev_hash=current.hash(),
         signed_transactions=[
             rewardTransaction,
         ],
@@ -56,6 +55,6 @@ def build_next_block_from_current() -> Block:
 
 
 def update_hash_dict_all(block):
-    hash_dict[hash_block(block)] = block
+    hash_dict[block.hash()] = block
     for b in block.next_blocks:
         update_hash_dict_all(b)

@@ -28,7 +28,7 @@ def forge_reward_transaction() -> SignedTransaction:
     transaction = Transaction(
         uuid=str(uuid.uuid4()),
         sender=BABBAGE_REWARD,
-        receiver=wallet.get_public_address(),
+        receiver=wallet.decode_public_key(),
         amount=125,
     )
 

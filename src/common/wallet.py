@@ -3,15 +3,14 @@ import hashlib
 import os
 
 from cryptography.exceptions import InvalidSignature
+
 from cryptography.hazmat.backends.openssl.rsa import RSAPublicKey
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import rsa, padding
 from cryptography.hazmat.primitives.asymmetric.rsa import RSAPrivateKey
 from cryptography.hazmat.primitives.serialization import load_pem_private_key
 
-from src.common.hash_service import hash_transaction
 from src.common.models import Transaction, SignedTransaction
-from src.common.schemas import TransactionSchema
 
 
 class Wallet:
@@ -43,7 +42,7 @@ class Wallet:
         )
 
     def sign(self, transaction: Transaction) -> SignedTransaction:
-        transaction_hash = hash_transaction(transaction)
+        transaction_hash = transaction.hash()
 
         signature = self.private_key.sign(
             transaction_hash.encode("utf-8"),
@@ -63,7 +62,7 @@ class Wallet:
 
         signature = base64.b64decode(signed_transaction.signature.encode())
         transaction = signed_transaction.transaction
-        transaction_hash = hash_transaction(transaction)
+        transaction_hash = transaction.hash()
         #
         try:
             pub_key.verify(
@@ -79,9 +78,10 @@ class Wallet:
         except InvalidSignature:
             return False
 
-    def get_public_address(self) -> str:
+    @staticmethod  # TODO : remove this ?
+    def get_public_address(decoded_public_key):
         hasher = hashlib.sha256()
-        hasher.update(self.decode_public_key())
+        hasher.update(decoded_public_key)
         return hasher.hexdigest()
 
 

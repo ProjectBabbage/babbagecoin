@@ -2,7 +2,6 @@ from typing import Optional
 
 import requests
 
-from src.common.hash_service import hash_block
 from src.common.models import Block
 from src.common.schemas import BlockSchema
 
@@ -20,7 +19,7 @@ class BlockStore:
         print("Updating block...")
         block = get_next_block()
         block.nounce = 0
-        block_hash = hash_block(block)
+        block_hash = block.hash()
 
         if self.current_block_hash != block_hash:
             print("Changing block")
@@ -43,7 +42,7 @@ def post_mined_block(block: Block):
     json_block = block_schema.dumps(block)
 
     print(json_block)
-    res = requests.post(
+    requests.post(
         f"{url}blocks/minedblock",
         json_block,
         headers={"Content-Type": "application/json"},
@@ -56,7 +55,7 @@ def run():
 
     i = 0
     while i < hash_count_before_update:
-        block_hash = hash_block(block_store.current_block)
+        block_hash = block_store.current_block.hash()
         if int(block_hash, 16) <= bound:
             print("Block mined successfully")
             post_mined_block(block_store.current_block)
