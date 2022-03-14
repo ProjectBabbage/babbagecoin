@@ -8,9 +8,9 @@ from common.schemas import BlockSchema, SignedTransactionSchema
 
 known_hosts = [
     os.environ.get("IP_NODE_MARTIAL"),
-    os.environ.get("IP_NODE_QUENTIN"),
-    os.environ.get("IP_NODE_YOHANN"),
-    os.environ.get("IP_NODE_JULIEN"),
+    # os.environ.get("IP_NODE_QUENTIN"),
+    # os.environ.get("IP_NODE_YOHANN"),
+    # os.environ.get("IP_NODE_JULIEN"),
 ]
 
 myUrl = f"http://{os.environ.get('MYLOCALIP')}:5000"

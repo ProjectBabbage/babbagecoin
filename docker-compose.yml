@@ -1,0 +1,30 @@
+
+version: '3'
+
+services:
+  master:
+    build: .
+    # ports:
+    #   - "5000:5000"
+    # expose: 
+    #   - "5000"
+    volumes:
+      - .:/babbagecoin/
+    network_mode: host
+    # networks:
+    #   - node-network
+    command: ["master"]
+  miner:
+    build: .
+    volumes:
+      - .:/babbagecoin/
+    network_mode: host
+    # networks:
+    #   - node-network
+    command: ["miner"]
+    depends_on:
+      - master
+
+# networks:
+#   node-network:
+#     driver: bridge

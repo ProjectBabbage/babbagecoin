@@ -26,6 +26,9 @@ app = Flask(__name__)
 def run():
     app.run(debug=True, host="0.0.0.0")
 
+@app.get("/")
+def hello_world():
+    return f"Hello World, here are all the blocks I heard of: <a href='./blocks/hashdict'>blocks</a>"
 
 @app.get("/blocks/current")
 def send_current_block_to_miner():

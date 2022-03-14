@@ -1,18 +1,20 @@
 master:
 	python src/app.py master
 
-worker:
-	python src/app.py worker
+miner:
+	python src/app.py miner
 
 front:
 	mkdir -p plot
 	streamlit run src/frontend/app.py
 
-docker-image:
-	poetry export --without-hashes > generated-requirements.txt
-	docker build . -t babbagenode
+launch:
+	docker-compose up
+	
+# docker-image:
+# 	docker build . -t babbagenode
 
-docker-run:
-	docker run -it babbagenode
+# docker-run: # add master or miner as an argument
+# 	docker run -it -v $$(pwd):/babbagecoin -p 5000:5000  babbagenode master
 
 

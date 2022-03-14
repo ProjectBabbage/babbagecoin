@@ -1,5 +1,21 @@
 FROM python:3.9
+
+# Setup poetry
+RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
+ENV PATH="${PATH}:/root/.poetry/bin"
+RUN poetry config virtualenvs.create false # system-wide package installation
+
 WORKDIR /babbagecoin/
-COPY . ./
-RUN pip install -r generated-requirements.txt
-ENTRYPOINT python src/app.py
+
+COPY pyproject.toml poetry.lock  ./
+
+RUN poetry install
+
+ENTRYPOINT ["python", "src/app.py"]
+
+# # smaller, but first need a poetry export > requirements.txt
+# FROM python:3.9
+# WORKDIR /babbagecoin/
+# COPY . ./
+# RUN pip install -r requirements.txt
+# ENTRYPOINT python src/app.py
