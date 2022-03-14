@@ -8,6 +8,11 @@ front:
 	mkdir -p plot
 	streamlit run src/frontend/app.py
 
-docker:
-	poetry export > requirements.txt
-	docker build . -t babbagecoin
+docker-image:
+	poetry export --without-hashes > generated-requirements.txt
+	docker build . -t babbagenode
+
+docker-run:
+	docker run -it babbagenode
+
+

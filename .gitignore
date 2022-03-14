@@ -137,5 +137,8 @@ dmypy.json
 # containing the private keys
 .keys
 
-
+# front
 plot/
+
+# built dependencies
+*requirements.txt
