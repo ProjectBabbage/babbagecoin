@@ -1,11 +1,12 @@
 master:
-	PYTHONPATH=. python3 src/app.py master
+	python src/app.py master
 
 worker:
-	PYTHONPATH=. python3 src/app.py worker
+	python src/app.py worker
 
 front:
-	PYTHONPATH=. streamlit run src/frontend/app.py
+	mkdir -p plot
+	streamlit run src/frontend/app.py
 
 docker:
 	poetry export > requirements.txt

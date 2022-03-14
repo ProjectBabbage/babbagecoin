@@ -11,7 +11,7 @@ from cryptography.hazmat.primitives.asymmetric.rsa import RSAPrivateKey
 from cryptography.hazmat.primitives.serialization import load_pem_private_key
 from cryptography.hazmat.primitives.serialization import load_pem_public_key
 
-from src.common.models import PubKey, Transaction, SignedTransaction
+from common.models import PubKey, Transaction, SignedTransaction
 
 
 class Wallet:

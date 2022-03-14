@@ -1,7 +1,7 @@
 import uuid
 
-from src.common.models import PubKey, Block, SignedTransaction, Transaction
-from src.common.wallet import Wallet
+from common.models import PubKey, Block, SignedTransaction, Transaction
+from common.wallet import Wallet
 
 BABBAGE_REWARD = PubKey("BABBAGE_REWARD")
 
@@ -35,11 +35,14 @@ def forge_reward_transaction() -> SignedTransaction:
 
     return wallet.sign(transaction)
 
+
 reward_transaction = forge_reward_transaction()
+
 
 def update_reward_transaction():
     global reward_transaction
     reward_transaction = forge_reward_transaction()
+
 
 def get_reward_transaction():
     global reward_transaction

@@ -1,6 +1,6 @@
-from src.common.models import Block
-from src.common.schemas import BlockSchema
-from src.master.transaction_service import (
+from common.models import Block
+from common.schemas import BlockSchema
+from master.transaction_service import (
     add_signed_transactions_from_old_block,
     remove_signed_transactions_from_valid_block,
     forge_reward_transaction,
@@ -59,4 +59,3 @@ def update_hash_dict_all(block):
     hash_dict[block.hash()] = block
     for b in block.next_blocks:
         update_hash_dict_all(b["block"])
-

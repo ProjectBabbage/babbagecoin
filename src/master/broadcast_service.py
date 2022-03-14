@@ -3,8 +3,8 @@ import os
 
 import requests
 
-from src.common.models import Block, SignedTransaction
-from src.common.schemas import BlockSchema, SignedTransactionSchema
+from common.models import Block, SignedTransaction
+from common.schemas import BlockSchema, SignedTransactionSchema
 
 known_hosts = [
     os.environ.get("IP_NODE_MARTIAL"),

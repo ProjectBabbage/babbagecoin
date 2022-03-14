@@ -2,10 +2,10 @@ import os
 import requests
 import uuid
 from dotenv import load_dotenv
-from src.common.wallet import Wallet
+from common.wallet import Wallet
 from argparse import ArgumentParser
-from src.common.models import Transaction, SignedTransaction
-from src.common.schemas import TransactionSchema, SignedTransactionSchema
+from common.models import Transaction, SignedTransaction
+from common.schemas import TransactionSchema, SignedTransactionSchema
 
 load_dotenv()
 

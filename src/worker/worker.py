@@ -2,8 +2,8 @@ from typing import Optional
 
 import requests
 
-from src.common.models import Block
-from src.common.schemas import BlockSchema
+from common.models import Block
+from common.schemas import BlockSchema
 
 url = "http://127.0.0.1:5000/"
 hash_count_before_update = 1000000
