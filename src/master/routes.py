@@ -4,6 +4,7 @@ from flask import Flask, request
 from common.schemas import BlockSchema, SignedTransactionSchema
 from common.wallet import Wallet
 from master.blockchain_service import (
+    get_current,
     hash_dict,
     build_next_block_from_current,
     update_blockchain,
@@ -26,9 +27,16 @@ app = Flask(__name__)
 def run():
     app.run(debug=True, host="0.0.0.0")
 
+
 @app.get("/")
-def hello_world():
-    return f"Hello World, here are all the blocks I heard of: <a href='./blocks/hashdict'>blocks</a>"
+def print_chain():
+    s = ""
+    block_iter = get_current()
+    while block_iter.height != 0:
+        s += block_iter.html()
+        block_iter = hash_dict[block_iter.prev_hash]
+    return s
+
 
 @app.get("/blocks/current")
 def send_current_block_to_miner():

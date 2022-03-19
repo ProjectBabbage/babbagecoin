@@ -18,6 +18,9 @@ graphviz = "^0.19.1"
 [tool.poetry.dev-dependencies]
 black = "^22.1.0"
 
+[tool.black]
+line-length=100
+
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"

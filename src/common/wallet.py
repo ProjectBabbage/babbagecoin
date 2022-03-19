@@ -23,9 +23,7 @@ class Wallet:
             with open(".keys", "rb") as fkeys:
                 self.private_key = load_pem_private_key(fkeys.read(), password=None)
         else:
-            self.private_key = rsa.generate_private_key(
-                public_exponent=65537, key_size=512
-            )
+            self.private_key = rsa.generate_private_key(public_exponent=65537, key_size=512)
             with open(".keys", "wb") as target_file:
                 target_file.write(self.decode_private_key())
 
@@ -58,9 +56,7 @@ class Wallet:
 
         signature = self.private_key.sign(
             transaction_hash.encode("utf-8"),
-            padding.PSS(
-                mgf=padding.MGF1(hashes.SHA256()), salt_length=padding.PSS.MAX_LENGTH
-            ),
+            padding.PSS(mgf=padding.MGF1(hashes.SHA256()), salt_length=padding.PSS.MAX_LENGTH),
             hashes.SHA256(),
         )
         return SignedTransaction(

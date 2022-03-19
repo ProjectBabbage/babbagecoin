@@ -3,7 +3,6 @@ from common.schemas import BlockSchema
 from master.transaction_service import (
     add_signed_transactions_from_old_block,
     remove_signed_transactions_from_valid_block,
-    forge_reward_transaction,
     get_reward_transaction,
     mem_pool,
 )
@@ -39,6 +38,11 @@ def update_blockchain(block: Block, leaf: Block):
             b = hash_dict[b.prev_hash]
             if b.height == block.height:
                 remove_signed_transactions_from_valid_block(mem_pool, b)
+
+
+def get_current() -> Block:
+    global current
+    return current
 
 
 def build_next_block_from_current() -> Block:

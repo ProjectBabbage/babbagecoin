@@ -6,7 +6,7 @@ from common.models import Block
 from common.schemas import BlockSchema
 
 
-url = "http://192.168.0.45:5000/"
+url_master = "http://127.0.0.1:5000/"
 hash_count_before_update = 1000000
 difficulty = 2000000
 bound = 2**256 // difficulty
@@ -31,7 +31,7 @@ class BlockStore:
 
 
 def get_next_block() -> Block:
-    res = requests.get(f"{url}blocks/current")
+    res = requests.get(f"{url_master}blocks/current")
     block_schema = BlockSchema()
     print(res.json())
     return block_schema.load(res.json())
@@ -44,7 +44,7 @@ def post_mined_block(block: Block):
 
     print(json_block)
     requests.post(
-        f"{url}blocks/minedblock",
+        f"{url_master}blocks/minedblock",
         json_block,
         headers={"Content-Type": "application/json"},
     )

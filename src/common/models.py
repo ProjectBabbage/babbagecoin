@@ -1,11 +1,11 @@
-import json
 import hashlib
 
 from dataclasses import dataclass, field
 from typing import List, Optional
 from cryptography.hazmat.backends.openssl.rsa import RSAPublicKey
 from cryptography.hazmat.primitives import serialization
-import base64
+
+MINING_REWARD_ADDRESS = "REWARD"
 
 
 @dataclass
@@ -13,7 +13,7 @@ class PubKey:
     pub_key: RSAPublicKey
 
     def hash(self):
-        if self.pub_key == "BABBAGE_REWARD":
+        if self.pub_key == MINING_REWARD_ADDRESS:
             return self.pub_key
 
         encoded_key = self.pub_key.public_bytes(
@@ -50,11 +50,7 @@ class Transaction:
         sender = str(self.sender)[:8]
         receiver = str(self.receiver)[:8]
         amount = str(self.amount)
-        return (
-            "{"
-            + f"uuid: {uuid}, sender: {sender}, receiver: {receiver}, amount: {amount}"
-            + "}"
-        )
+        return f"uuid: {uuid}, sender: {sender}, receiver: {receiver}, amount: {amount}"
 
 
 @dataclass
@@ -73,6 +69,9 @@ class SignedTransaction:
 
     def __str__(self):
         return f"stx({self.transaction})"
+
+    def html(self):
+        return f"{self.transaction}"
 
 
 @dataclass
@@ -95,5 +94,16 @@ class Block:
         return hasher.hexdigest()
 
     def __str__(self):
-        prev = self.prev_hash[:8]
-        return f"blk(height: {self.height}, prev: {prev}, SignedTransactions{self.signed_transactions}, nounce: {self.nounce})"
+        return f"""BLOCK(height: {self.height}, prev: {self.prev_hash},
+        nounce: {self.nounce}, SignedTransactions{self.signed_transactions})"""
+
+    def html(self):
+        prev = self.prev_hash[:20]
+        str_stx = ""
+        for tx in self.signed_transactions:
+            str_stx += f"<li>{tx.html()}</li>"
+
+        return f"""<div style='border:1px solid black; padding:5px; margin:5px;'>
+        <b>height</b>: {self.height}, <b>prev</b>: {prev}, <b>nounce</b>: {self.nounce},<br>
+        <b>signed transactions</b>: <ul style='margin:0px'>{str_stx}</ul>
+        </div>"""
