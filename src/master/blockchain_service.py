@@ -1,5 +1,4 @@
 from common.models import Block
-from common.schemas import BlockSchema
 from master.transaction_service import (
     add_signed_transactions_from_old_block,
     remove_signed_transactions_from_valid_block,

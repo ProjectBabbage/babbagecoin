@@ -25,7 +25,8 @@ def remove_signed_transactions_from_valid_block(mem_pool: set, block: Block):
 
 def add_signed_transactions_from_old_block(mem_pool: set, block: Block):
     for signed_tx in block.signed_transactions:
-        mem_pool.add(signed_tx)
+        if signed_tx.transaction.sender != MINING_REWARD_ADDRESS:
+            mem_pool.add(signed_tx)
 
 
 def forge_reward_transaction() -> SignedTransaction:
@@ -36,7 +37,6 @@ def forge_reward_transaction() -> SignedTransaction:
         receiver=wallet.get_public_key(),
         amount=125,
     )
-
     return wallet.sign(transaction)
 
 
@@ -49,5 +49,4 @@ def update_reward_transaction():
 
 
 def get_reward_transaction():
-    global reward_transaction
     return reward_transaction
