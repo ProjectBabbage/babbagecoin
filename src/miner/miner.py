@@ -1,10 +1,10 @@
-from typing import Optional
-
+import random
 import requests
+
+from typing import Optional
 
 from common.models import Block
 from common.schemas import BlockSchema
-
 
 url_master = "http://127.0.0.1:5000/"
 hash_count_before_update = 1000000
@@ -19,7 +19,7 @@ class BlockStore:
     def update_block(self):
         print("Updating block...")
         block = get_next_block()
-        block.nounce = 0
+        block.nounce = random.randint(0, 2**100)
         block_hash = block.hash()
 
         if self.current_block_hash != block_hash:
@@ -33,7 +33,7 @@ class BlockStore:
 def get_next_block() -> Block:
     res = requests.get(f"{url_master}blocks/current")
     block_schema = BlockSchema()
-    print(res.json())
+    # print(res.json())
     return block_schema.load(res.json())
 
 
@@ -58,7 +58,7 @@ def run():
     while i < hash_count_before_update:
         block_hash = block_store.current_block.hash()
         if int(block_hash, 16) <= bound:
-            print("Block mined successfully")
+            print("BLOCK MINED SUCCESSFULLY")
             post_mined_block(block_store.current_block)
             block_store.update_block()
             i = 0
