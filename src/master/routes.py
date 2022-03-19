@@ -64,7 +64,7 @@ def receive_mined_block_from_miner():
     block_schema = BlockSchema()
     block = block_schema.load(request.json)
     remove_signed_transactions_from_valid_block(mem_pool, block)
-    update_blockchain(block, block)  # synchrone et long
+    update_blockchain(block, block)
     broadcast_block(block)
     update_reward_transaction()
     return "ok"

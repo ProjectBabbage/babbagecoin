@@ -13,31 +13,35 @@ hash_dict[genesis.hash()] = genesis
 current: Block = genesis
 
 
+def update_hash_dict_all(block):
+    hash_dict[block.hash()] = block
+    for b in block.next_blocks:
+        update_hash_dict_all(b["block"])
+
+
 def update_blockchain(block: Block, leaf: Block):
     global current
     if block.prev_hash in hash_dict:
+        update_hash_dict_all(block)
         prev_block = hash_dict[block.prev_hash]
         prev_block.next_blocks.append({"hash": block.hash(), "block": block})
-        update_hash_dict_all(block)
         if leaf.height > current.height:
-            current = leaf
-            block_schema = BlockSchema()
-            current_block = block_schema.dumps(current)
-            print(f"Changing current: {current_block}")
-
-        # update mempool
-        # add transactions of old branch to the mempool
-        b = current
-        while b.prev_hash != block.prev_hash:
-            add_signed_transactions_from_old_block(mem_pool, b)
-            b = hash_dict[b.prev_hash]
-        # remove transaction from the new current branch
-        b = leaf
-        while b.height != block.height:
-            remove_signed_transactions_from_valid_block(mem_pool, b)
-            b = hash_dict[b.prev_hash]
-            if b.height == block.height:
+            # update mempool
+            # add transactions of old branch to the mempool
+            b = current
+            while b.hash() != block.prev_hash:
+                add_signed_transactions_from_old_block(mem_pool, b)
+                b = hash_dict[b.prev_hash]
+            # remove transactions from the new branch
+            b = leaf
+            while b.hash() != block.prev_hash:
                 remove_signed_transactions_from_valid_block(mem_pool, b)
+                b = hash_dict[b.prev_hash]
+            # change current to be the new leaf
+            current = leaf
+            print(f"Changing current: {current}")
+    else:
+        raise Exception("Does not connect to our blockchain")
 
 
 def get_current() -> Block:
@@ -57,9 +61,3 @@ def build_next_block_from_current() -> Block:
     )
 
     return new_block
-
-
-def update_hash_dict_all(block):
-    hash_dict[block.hash()] = block
-    for b in block.next_blocks:
-        update_hash_dict_all(b["block"])
