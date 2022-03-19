@@ -1,19 +1,13 @@
 import json
-import os
 
 import requests
 
 from common.models import Block, SignedTransaction
 from common.schemas import BlockSchema, SignedTransactionSchema
+from common.ips import get_all_ips, get_my_ip
 
-known_hosts = [
-    os.environ.get("IP_NODE_MARTIAL"),
-    # os.environ.get("IP_NODE_QUENTIN"),
-    # os.environ.get("IP_NODE_YOHANN"),
-    # os.environ.get("IP_NODE_JULIEN"),
-]
-
-myUrl = f"http://{os.environ.get('MYLOCALIP')}:5000"
+known_hosts = get_all_ips()
+myUrl = f"http://{get_my_ip()}:5000"
 
 
 def broadcast_block(block: Block):

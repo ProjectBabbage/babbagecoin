@@ -4,10 +4,10 @@ import uuid
 from dotenv import load_dotenv
 from common.wallet import Wallet
 from argparse import ArgumentParser
-from common.models import Transaction, SignedTransaction
-from common.schemas import TransactionSchema, SignedTransactionSchema
+from common.models import PubKey, Transaction, SignedTransaction
+from common.schemas import SignedTransactionSchema
+from common.ips import get_my_ip
 
-load_dotenv()
 
 parser = ArgumentParser(description="Send a transaction on babbagecoin")
 
@@ -16,7 +16,7 @@ parser.add_argument("amount", type=float)
 parser.add_argument("fees", type=float)
 
 
-myUrl = f"http://{os.environ.get('MYLOCALIP')}:5000/"
+myUrl = f"http://{get_my_ip()}:5000/"
 
 
 class Client:
@@ -24,6 +24,16 @@ class Client:
 
     def __init__(self):
         self.wallet = Wallet()
+        self.receivers = self.load_receivers()
+
+    def load_receivers(self):
+        # load public keys from file in pub_keys/ and return a dict {hash_pk: PubKey}
+        address_to_pk = {}
+        for filepath in os.listdir("./pub_keys"):
+            pk = self.wallet.load_public_key(f"{os.getcwd()}/pub_keys/{filepath}")
+            address_to_pk[str(pk)] = pk
+            print(pk)
+        return address_to_pk
 
     def send_transaction(self, receiver: str, amount: float, fees: float):
         print(f"Sending {amount} to {receiver} with fees {fees}")
@@ -48,8 +58,5 @@ class Client:
         pass
 
 
-if __name__ == "__main__":
-    args = parser.parse_args()
-    print(args)
-    client = Client()
-    client.send_transaction(args.receiver, args.amount, args.fees)
+def run(receiver, amount, fees: float):
+    c = Client()
