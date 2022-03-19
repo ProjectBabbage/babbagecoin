@@ -11,9 +11,9 @@ requests = "^2.27.1"
 marshmallow = "^3.14.1"
 cryptography = "^36.0.1"
 python-dotenv = "^0.19.2"
-streamlit = "^1.7.0"
-treelib = "^1.6.1"
-graphviz = "^0.19.1"
+# streamlit = "^1.7.0"
+# treelib = "^1.6.1"
+# graphviz = "^0.19.1"
 
 [tool.poetry.dev-dependencies]
 black = "^22.1.0"

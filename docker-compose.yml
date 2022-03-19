@@ -6,7 +6,7 @@ services:
     build: .
     # ports:
     #   - "5000:5000"
-    # expose: 
+    # expose:
     #   - "5000"
     volumes:
       - .:/babbagecoin/
