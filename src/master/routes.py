@@ -42,15 +42,13 @@ def print_chain():
 def send_current_block_to_miner():
     next_block = build_next_block_from_current()
     update_block_signed_transactions(next_block, mem_pool)
-    block_schema = BlockSchema()
-    json_block = block_schema.dumps(next_block)
+    json_block = BlockSchema.dumps(next_block)
     return json_block
 
 
 @app.get("/blocks/<block_hash>")
 def send_block_with_hash(block_hash: str):
-    block_schema = BlockSchema()
-    json_block = block_schema.dumps(hash_dict[block_hash])
+    json_block = BlockSchema.dumps(hash_dict[block_hash])
     return json_block
 
 
@@ -61,8 +59,7 @@ def send_hash_dict():
 
 @app.post("/blocks/minedblock")
 def receive_mined_block_from_miner():
-    block_schema = BlockSchema()
-    block = block_schema.load(request.json)
+    block = BlockSchema.load(request.json)
     remove_signed_transactions_from_valid_block(mem_pool, block)
     update_blockchain(block, block)
     broadcast_block(block)
@@ -72,8 +69,7 @@ def receive_mined_block_from_miner():
 
 @app.post("/blocks/updateblock")
 def receive_block_from_network():
-    block_schema = BlockSchema()
-    leaf = block_schema.load(request.json["block"])
+    leaf = BlockSchema.load(request.json["block"])
 
     url = request.json["url"]
     block = leaf
@@ -94,8 +90,7 @@ def receive_block_from_network():
 
 @app.post("/transactions/emit")
 def emit_transaction():
-    signed_transaction_schema = SignedTransactionSchema()
-    signed_transaction = signed_transaction_schema.load(request.json)
+    signed_transaction = SignedTransactionSchema.load(request.json)
     mem_pool.add(signed_transaction)
     broadcast_transaction(signed_transaction)
     return "ok"
@@ -103,7 +98,6 @@ def emit_transaction():
 
 @app.post("/transactions/add")
 def add_transaction():
-    signed_transaction_schema = SignedTransactionSchema()
-    signed_transaction = signed_transaction_schema.load(request.json)
+    signed_transaction = SignedTransactionSchema.load(request.json)
     mem_pool.add(signed_transaction)
     return "ok"

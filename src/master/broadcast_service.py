@@ -12,8 +12,7 @@ myUrl = f"http://{myIp}:5000"
 
 
 def broadcast_block(block: Block):
-    bc = BlockSchema()
-    json_block_dict = {"url": myUrl, "block": bc.dump(block)}
+    json_block_dict = {"url": myUrl, "block": BlockSchema.dump(block)}
     print(f"Broacasting block")
     for host in known_hosts:
         if host != myIp:
@@ -30,8 +29,7 @@ def broadcast_block(block: Block):
 
 
 def broadcast_transaction(signed_transaction: SignedTransaction):
-    signed_transaction_schema = SignedTransactionSchema()
-    signed_transaction_json = signed_transaction_schema.dumps(signed_transaction)
+    signed_transaction_json = SignedTransactionSchema.dumps(signed_transaction)
     print(f"Broadcasting transaction {signed_transaction.hash()}")
     for host in known_hosts:
         if host != myUrl[7:-5]:

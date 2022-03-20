@@ -32,14 +32,12 @@ class BlockStore:
 
 def get_next_block() -> Block:
     res = requests.get(f"{url_master}blocks/current")
-    block_schema = BlockSchema()
     # print(res.json())
-    return block_schema.load(res.json())
+    return BlockSchema.load(res.json())
 
 
 def post_mined_block(block: Block):
-    block_schema = BlockSchema()
-    json_block = block_schema.dumps(block)
+    json_block = BlockSchema.dumps(block)
 
     try:
         requests.post(

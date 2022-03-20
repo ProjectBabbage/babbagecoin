@@ -44,11 +44,11 @@ class Client:
             amount=amount,
             fees=fees,
         )
-        signedTxSchema = SignedTransactionSchema()
+
         signedTx = SignedTransaction(tx, self.wallet.sign(tx))
         requests.post(
             f"{myUrl}/transactions/emit",
-            signedTxSchema.dumps(signedTx),
+            SignedTransactionSchema.dumps(signedTx),
             headers={"Content-Type": "application/json"},
         )
 

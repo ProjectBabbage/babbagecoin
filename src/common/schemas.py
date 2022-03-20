@@ -5,7 +5,7 @@ from marshmallow import Schema, fields, post_load
 from common.models import Transaction, SignedTransaction, Block
 
 
-class TransactionSchema(Schema):
+class _TransactionSchema(Schema):
     uuid = fields.String()
     sender = fields.String()
     receiver = fields.String()
@@ -17,7 +17,10 @@ class TransactionSchema(Schema):
         return Transaction(**data)
 
 
-class SignedTransactionSchema(Schema):
+TransactionSchema = _TransactionSchema()
+
+
+class _SignedTransactionSchema(Schema):
     transaction = fields.Nested(TransactionSchema)
     signature = fields.String()
 
@@ -26,7 +29,10 @@ class SignedTransactionSchema(Schema):
         return SignedTransaction(**data)
 
 
-class BlockSchema(Schema):
+SignedTransactionSchema = _SignedTransactionSchema()
+
+
+class _BlockSchema(Schema):
     prev_hash = fields.String(required=False)
     height = fields.Int()
     signed_transactions = fields.List(fields.Nested(SignedTransactionSchema))
@@ -35,3 +41,6 @@ class BlockSchema(Schema):
     @post_load
     def _make_model(self, data: Dict[str, Any], **kwargs) -> Block:
         return Block(**data)
+
+
+BlockSchema = _BlockSchema()
