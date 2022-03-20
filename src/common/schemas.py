@@ -2,7 +2,19 @@ from typing import Dict, Any
 
 from marshmallow import Schema, fields, post_load
 
-from common.models import Transaction, SignedTransaction, Block
+from common.models import PubKey, Transaction, SignedTransaction, Block
+
+
+# class _PubKeySchema(Schema):
+#     # pub_key = load_pem_public_key
+#     # pub_key = fields.String()
+
+#     @post_load
+#     def _make_model(self, data: str, **kwargs) -> PubKey:
+#         return PubKey(data)
+
+
+# PubKeySchema = _PubKeySchema()
 
 
 class _TransactionSchema(Schema):

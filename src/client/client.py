@@ -49,7 +49,6 @@ class Client:
 
         signedTx = SignedTransaction(tx, self.wallet.sign(tx))
         try:
-
             requests.post(
                 f"{myUrl}/transactions/emit",
                 SignedTransactionSchema.dumps(signedTx),
@@ -58,12 +57,23 @@ class Client:
         except requests.exceptions.ConnectionError:
             print(f"Node master at {myUrl} is not accessible.")
 
-    # TODO
     def get_balance(self):
-        # Ask master for this wallet address balance
-        pass
+        try:
+            addr = self.wallet.decode_public_key().decode("UTF-8")
+            res = requests.get(
+                f"{myUrl}/addresses/{addr}/balance",
+                headers={"Content-Type": "application/json"},
+            )
+            print(res.json())
+        except requests.exceptions.ConnectionError:
+            print(f"Node master at {myUrl} is not accessible.")
 
 
-def run(receiver, amount, fees: float):
+def check_balance():
+    client = Client()
+    client.get_balance()
+
+
+def send_transaction(receiver, amount, fees: float):
     client = Client()
     client.send_transaction(receiver, amount, fees)

@@ -87,12 +87,6 @@ class Wallet:
         except InvalidSignature:
             return False
 
-    @staticmethod  # TODO : remove this ?
-    def get_public_address(decoded_public_key):
-        hasher = hashlib.sha256()
-        hasher.update(decoded_public_key)
-        return hasher.hexdigest()
-
 
 if __name__ == "__main__":
     w = Wallet()

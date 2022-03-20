@@ -23,7 +23,6 @@ def update_blockchain(block: Block, leaf: Block):
     if block.prev_hash in hash_dict:
         update_hash_dict_all(block)
         prev_block = hash_dict[block.prev_hash]
-        prev_block.next_blocks.append({"hash": block.hash(), "block": block})
         if leaf.height > current.height:
             # update mempool
             # add (non reward) transactions of old branch to the mempool
@@ -38,7 +37,13 @@ def update_blockchain(block: Block, leaf: Block):
                 b = hash_dict[b.prev_hash]
             # change current to be the new leaf
             current = leaf
+            # we want to keep the invariant on next_blocks
+            prev_block.next_blocks = [block] + prev_block.next_blocks
             print(f"Changing current: {current.hash()}")
+        else:
+            # we want to keep the invariant on next_blocks
+            prev_block.next_blocks.append(block)
+
     else:
         raise Exception("Does not connect to our blockchain")
 
@@ -57,3 +62,30 @@ def build_next_block_from_current() -> Block:
         ],
     )
     return new_block
+
+
+def delta_balance_block(pubkey, block):
+    delta = 0
+    miner = block.signed_transactions[0].transaction.receiver
+    for stx in block.signed_transactions:
+        tx = stx.transaction
+        if str(tx.receiver) == str(pubkey):
+            delta += tx.amount
+        if str(tx.sender) == str(pubkey):
+            delta -= tx.amount
+        if str(miner) == str(pubkey):
+            delta += tx.fees
+    return delta
+
+
+def compute_balance(pubkey):
+    if genesis.next_blocks == []:
+        return 0
+    b = genesis.next_blocks[0]
+    amount = 0
+
+    while b.next_blocks != []:
+        amount += delta_balance_block(pubkey, b)
+        b = b.next_blocks[0]
+
+    return amount

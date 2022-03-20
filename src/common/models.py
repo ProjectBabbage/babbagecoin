@@ -4,6 +4,7 @@ from dataclasses import dataclass, field
 from typing import List, Optional
 from cryptography.hazmat.backends.openssl.rsa import RSAPublicKey
 from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.serialization import load_pem_public_key
 
 MINING_REWARD_ADDRESS = "REWARD"
 
@@ -11,6 +12,10 @@ MINING_REWARD_ADDRESS = "REWARD"
 @dataclass
 class PubKey:
     pub_key: RSAPublicKey
+
+    @staticmethod
+    def load_from_string(s):
+        return PubKey(load_pem_public_key(s))
 
     def hash(self):
         if self.pub_key == MINING_REWARD_ADDRESS:
@@ -81,9 +86,11 @@ class SignedTransaction:
 class Block:
     height: int
     prev_hash: Optional[str] = ""
+    # The first transaction should be the reward transaction for mining the block
     signed_transactions: List[SignedTransaction] = field(default_factory=list)
     nounce: int = 0
-    next_blocks: List["Block"] = field(default_factory=list)  # TODO: not up to date !!!
+    # WARNING: following the first element of next_blocks should lead to current
+    next_blocks: List["Block"] = field(default_factory=list)
 
     def hash(self):
         if self.height == 0:
