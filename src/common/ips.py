@@ -11,8 +11,8 @@ def get_my_ip():
 
 
 def isIP(env_var):
-    name, _ = env_var
-    if "IP_NODE" in name:
+    name, value = env_var
+    if "IP_NODE" in name and value:
         return True
     return False
 
@@ -25,4 +25,5 @@ def get_all_ips():
 
 
 if __name__ == "__main__":
-    print(get_all_ips())
+    print(get_env_variables())
+    # print(get_all_ips())
