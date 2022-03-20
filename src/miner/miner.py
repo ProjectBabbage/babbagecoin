@@ -39,15 +39,16 @@ def get_next_block() -> Block:
 
 def post_mined_block(block: Block):
     block_schema = BlockSchema()
-
     json_block = block_schema.dumps(block)
 
-    print(json_block)
-    requests.post(
-        f"{url_master}blocks/minedblock",
-        json_block,
-        headers={"Content-Type": "application/json"},
-    )
+    try:
+        requests.post(
+            f"{url_master}blocks/minedblock",
+            json_block,
+            headers={"Content-Type": "application/json"},
+        )
+    except Exception as e:
+        print(f"Could not send mined block: {e}")
 
 
 def run():

@@ -14,23 +14,32 @@ myUrl = f"http://{myIp}:5000"
 def broadcast_block(block: Block):
     bc = BlockSchema()
     json_block_dict = {"url": myUrl, "block": bc.dump(block)}
-    print(json_block_dict)
+    print(f"Broacasting block")
     for host in known_hosts:
         if host != myIp:
-            requests.post(
-                f"http://{host}:5000/blocks/updateblock",
-                json.dumps(json_block_dict),
-                headers={"Content-Type": "application/json"},
-            )
+            try:
+                requests.post(
+                    f"http://{host}:5000/blocks/updateblock",
+                    json.dumps(json_block_dict),
+                    headers={"Content-Type": "application/json"},
+                )
+            except requests.exceptions.ConnectionError:
+                print(f"Cannot connect to node {host}")
+            except Exception as e:
+                print(f"An error occured when broadcasting the block: {e}")
 
 
 def broadcast_transaction(signed_transaction: SignedTransaction):
     signed_transaction_schema = SignedTransactionSchema()
     signed_transaction_json = signed_transaction_schema.dumps(signed_transaction)
+    print(f"Broadcasting transaction {signed_transaction.hash()}")
     for host in known_hosts:
         if host != myUrl[7:-5]:
-            requests.post(
-                f"http://{host}:5000/transactions/add",
-                signed_transaction_json,
-                headers={"Content-Type": "application/json"},
-            )
+            try:
+                requests.post(
+                    f"http://{host}:5000/transactions/add",
+                    signed_transaction_json,
+                    headers={"Content-Type": "application/json"},
+                )
+            except Exception as e:
+                print(f"Cannot broadcast transaction: {e}")

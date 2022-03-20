@@ -26,7 +26,7 @@ def update_blockchain(block: Block, leaf: Block):
         prev_block.next_blocks.append({"hash": block.hash(), "block": block})
         if leaf.height > current.height:
             # update mempool
-            # add transactions of old branch to the mempool
+            # add (non reward) transactions of old branch to the mempool
             b = current
             while b.hash() != block.prev_hash:
                 add_signed_transactions_from_old_block(mem_pool, b)
@@ -38,7 +38,7 @@ def update_blockchain(block: Block, leaf: Block):
                 b = hash_dict[b.prev_hash]
             # change current to be the new leaf
             current = leaf
-            print(f"Changing current: {current}")
+            print(f"Changing current: {current.hash()}")
     else:
         raise Exception("Does not connect to our blockchain")
 
