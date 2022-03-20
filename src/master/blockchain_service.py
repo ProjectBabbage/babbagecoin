@@ -44,12 +44,10 @@ def update_blockchain(block: Block, leaf: Block):
 
 
 def get_current() -> Block:
-    global current
     return current
 
 
 def build_next_block_from_current() -> Block:
-    global current
     rewardTransaction = get_reward_transaction()
     new_block = Block(
         height=current.height + 1,
@@ -58,5 +56,4 @@ def build_next_block_from_current() -> Block:
             rewardTransaction,
         ],
     )
-
     return new_block
