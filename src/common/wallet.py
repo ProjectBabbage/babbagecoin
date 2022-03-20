@@ -18,13 +18,13 @@ class Wallet:
     private_key: RSAPrivateKey
 
     def __init__(self):
-        if os.path.isfile(".keys"):
+        if os.path.isfile(".skey"):
             # we read the alrdy generated keys
-            with open(".keys", "rb") as fkeys:
+            with open(".skey", "rb") as fkeys:
                 self.private_key = load_pem_private_key(fkeys.read(), password=None)
         else:
             self.private_key = rsa.generate_private_key(public_exponent=65537, key_size=512)
-            with open(".keys", "wb") as target_file:
+            with open(".skey", "wb") as target_file:
                 target_file.write(self.decode_private_key())
 
     def get_public_key(self) -> PubKey:
@@ -44,11 +44,12 @@ class Wallet:
         )
 
     def load_public_key(self, filepath):
-        pub_key = ""
+        pub_key = None
         with open(filepath, "rb") as pKey:
-            pub_key = load_pem_public_key(pKey.read(), password=None)
+            ls = pKey.read()
+            pub_key = load_pem_public_key(ls)
         if not pub_key:
-            raise Exception("No public key load")
+            raise Exception("No public key loaded.")
         return pub_key
 
     def sign(self, transaction: Transaction) -> SignedTransaction:

@@ -7,9 +7,8 @@ master:
 miner:
 	python src/app.py miner
 
-front:
-	mkdir -p plot
-	streamlit run src/frontend/app.py
+transaction:
+	python src/app.py client MARTIAL 5 0.3
 
 docker-image:
 	docker build . -t babbagenode
