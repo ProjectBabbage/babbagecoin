@@ -50,7 +50,10 @@ class Transaction:
         sender = str(self.sender)[:8]
         receiver = str(self.receiver)[:8]
         amount = str(self.amount)
-        return f"uuid: {uuid}, sender: {sender}, receiver: {receiver}, amount: {amount}"
+        fees = str(self.fees)
+        return (
+            f"uuid: {uuid}, sender: {sender}, receiver: {receiver}, amount: {amount}, fees: {fees}"
+        )
 
 
 @dataclass

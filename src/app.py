@@ -9,5 +9,5 @@ if __name__ == "__main__":
         master_run()
     elif command == "miner":
         miner_run()
-    elif command == "client":
+    elif command == "tx":
         client_run(*sys.argv[2:])

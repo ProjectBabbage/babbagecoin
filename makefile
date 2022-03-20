@@ -1,14 +1,14 @@
 launch:
-	docker-compose up
+	docker-compose up --remove-orphans
 
 master:
-	python src/app.py master
+	bash bbc.sh master
 
 miner:
-	python src/app.py miner
+	bash bbc.sh miner
 
-transaction:
-	python src/app.py client MARTIAL 5 0.3
+tx:
+	bash bbc.sh tx MARTIAL 5 0.3
 
 docker-image:
 	docker build . -t babbagenode
