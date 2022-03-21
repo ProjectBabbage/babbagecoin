@@ -105,8 +105,7 @@ def add_transaction():
     return "ok"
 
 
-@app.get("/addresses/<addr>/balance")
-def get_balance_of_address(addr):
-    pubkey = PubKey.load_from_string(addr.encode("utf-8"))
-    balance = compute_balance(pubkey)
-    return json.dumps({"balance": balance, "address": str(pubkey)})
+@app.get("/addresses/<address>/balance")
+def get_balance(address: str):
+    balance = compute_balance(address)
+    return json.dumps({"balance": balance, "address": address})

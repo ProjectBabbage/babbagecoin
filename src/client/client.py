@@ -15,7 +15,7 @@ parser.add_argument("amount", type=float)
 parser.add_argument("fees", type=float)
 
 
-myUrl = f"http://{get_my_ip()}:5000/"
+myUrl = f"http://{get_my_ip()}:5000"
 
 
 class Client:
@@ -59,7 +59,7 @@ class Client:
 
     def get_balance(self):
         try:
-            addr = self.wallet.decode_public_key().decode("UTF-8")
+            addr = str(self.wallet.get_public_key())
             res = requests.get(
                 f"{myUrl}/addresses/{addr}/balance",
                 headers={"Content-Type": "application/json"},

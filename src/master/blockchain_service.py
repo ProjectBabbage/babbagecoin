@@ -64,28 +64,28 @@ def build_next_block_from_current() -> Block:
     return new_block
 
 
-def delta_balance_block(pubkey, block):
+def delta_balance_block(address, block):
     delta = 0
     miner = block.signed_transactions[0].transaction.receiver
     for stx in block.signed_transactions:
         tx = stx.transaction
-        if str(tx.receiver) == str(pubkey):
+        if str(tx.receiver) == address:
             delta += tx.amount
-        if str(tx.sender) == str(pubkey):
+        if str(tx.sender) == address:
             delta -= tx.amount
-        if str(miner) == str(pubkey):
+        if str(miner) == address:
             delta += tx.fees
     return delta
 
 
-def compute_balance(pubkey):
+def compute_balance(address: str):
     if genesis.next_blocks == []:
         return 0
     b = genesis.next_blocks[0]
     amount = 0
 
     while b.next_blocks != []:
-        amount += delta_balance_block(pubkey, b)
+        amount += delta_balance_block(address, b)
         b = b.next_blocks[0]
 
     return amount
