@@ -11,6 +11,7 @@ requests = "^2.27.1"
 marshmallow = "^3.14.1"
 cryptography = "^36.0.1"
 python-dotenv = "^0.19.2"
+sentry-sdk = {extras = ["flask"], version = "^1.5.8"}
 
 [tool.poetry.dev-dependencies]
 black = "^22.1.0"

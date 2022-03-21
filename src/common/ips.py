@@ -10,6 +10,13 @@ def get_my_ip():
     return get_env_variables()[f"IP_NODE_{current_user}"]
 
 
+def get_sentry_dsn():
+    """
+    Monitoring of logs using glitchtip (open source clone of sentry)
+    """
+    return get_env_variables()[f"DSN_GLITCHTIP"]
+
+
 def isIP(env_var):
     name, value = env_var
     if "IP_NODE" in name and value:

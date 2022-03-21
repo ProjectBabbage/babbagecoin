@@ -1,4 +1,6 @@
 import uuid
+import sentry_sdk
+from sentry_sdk.integrations.flask import FlaskIntegration
 
 from common.models import (
     PubKey,

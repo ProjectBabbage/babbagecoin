@@ -32,12 +32,14 @@ def broadcast_transaction(signed_transaction: SignedTransaction):
     signed_transaction_json = SignedTransactionSchema.dumps(signed_transaction)
     print(f"Broadcasting transaction {signed_transaction.hash()}")
     for host in known_hosts:
-        if host != myUrl[7:-5]:
+        if host != myIp:
             try:
                 requests.post(
                     f"http://{host}:5000/transactions/add",
                     signed_transaction_json,
                     headers={"Content-Type": "application/json"},
                 )
+            except requests.exceptions.ConnectionError:
+                print(f"Cannot connect to node {host}")
             except Exception as e:
                 print(f"Cannot broadcast transaction: {e}")

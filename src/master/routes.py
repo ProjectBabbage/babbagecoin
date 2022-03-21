@@ -1,5 +1,8 @@
-import requests
 import json
+import requests
+import sentry_sdk
+from sentry_sdk.integrations.flask import FlaskIntegration
+
 
 from flask import Flask, request
 
@@ -13,6 +16,7 @@ from master.blockchain_service import (
     update_blockchain,
     compute_balance,
 )
+from common.ips import get_sentry_dsn
 from master.broadcast_service import broadcast_block, broadcast_transaction
 from master.transaction_service import (
     remove_signed_transactions_from_valid_block,
@@ -23,6 +27,7 @@ from master.transaction_service import (
 
 wallet = Wallet()
 
+sentry_sdk.init(dsn=get_sentry_dsn(), integrations=[FlaskIntegration()])
 app = Flask(__name__)
 
 
