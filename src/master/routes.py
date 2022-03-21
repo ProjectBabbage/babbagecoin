@@ -6,12 +6,11 @@ from sentry_sdk.integrations.flask import FlaskIntegration
 
 from flask import Flask, request
 
-from common.models import PubKey
 from common.schemas import BlockSchema, SignedTransactionSchema
 from common.wallet import Wallet
 from master.blockchain_service import (
     get_current,
-    hash_dict,
+    block_tbl,
     build_next_block_from_current,
     update_blockchain,
     compute_balance,
@@ -41,7 +40,7 @@ def print_chain():
     block_iter = get_current()
     while block_iter.height != 0:
         s += block_iter.html()
-        block_iter = hash_dict[block_iter.prev_hash]
+        block_iter = block_tbl[block_iter.prev_hash]
     return s
 
 
@@ -55,13 +54,13 @@ def send_current_block_to_miner():
 
 @app.get("/blocks/<block_hash>")
 def send_block_with_hash(block_hash: str):
-    json_block = BlockSchema.dumps(hash_dict[block_hash])
+    json_block = BlockSchema.dumps(block_tbl[block_hash])
     return json_block
 
 
 @app.get("/blocks/hashdict")
-def send_hash_dict():
-    return hash_dict
+def send_block_tbl():
+    return block_tbl
 
 
 @app.post("/blocks/minedblock")
@@ -81,15 +80,15 @@ def receive_block_from_network():
     url = request.json["url"]
     block = leaf
 
-    if leaf.hash() not in hash_dict:
-        while block.prev_hash not in hash_dict:
+    if leaf.hash() not in block_tbl:
+        while block.prev_hash not in block_tbl:
             print(f"Fetching block: {block.prev_hash}")
             resp = requests.get(
                 f"{url}/blocks/{block.prev_hash}",
                 headers={"Content-Type": "application/json"},
             )
             prev_block = BlockSchema.load(resp.json())
-            prev_block.next_blocks.append({"hash": block.hash(), "block": block})
+            prev_block.next_blocks.append(block)
             block = prev_block
         update_blockchain(block, leaf)
     return "ok"
