@@ -72,7 +72,7 @@ def delta_balance_block(address, block):
         if str(tx.receiver) == address:
             delta += tx.amount
         if str(tx.sender) == address:
-            delta -= tx.amount
+            delta -= tx.amount + tx.fees
         if str(miner) == address:
             delta += tx.fees
     return delta
