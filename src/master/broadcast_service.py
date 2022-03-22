@@ -13,7 +13,7 @@ myUrl = f"http://{myIp}:5000"
 
 def broadcast_block(block: Block):
     json_block_dict = {"url": myUrl, "block": BlockSchema.dump(block)}
-    print(f"Broacasting block")
+    print(f"Broacasting block {block.hash()}")
     for host in known_hosts:
         if host != myIp:
             try:

@@ -39,7 +39,7 @@ def update_blockchain(ancestor_next: Block, leaf: Block):
             head = leaf
             # we want to keep the invariant on next_blocks
             ancestor.next_blocks = [ancestor_next] + ancestor.next_blocks
-            print(f"Changing head: {head.hash()}")
+            print(f"Changing head to {head.hash()}")
         else:
             # we want to keep the invariant on next_blocks
             ancestor.next_blocks.append(ancestor_next)

@@ -6,7 +6,7 @@ from cryptography.hazmat.backends.openssl.rsa import RSAPublicKey
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.serialization import load_pem_public_key
 
-MINING_REWARD_ADDRESS = "REWARD"
+MINING_REWARD_ADDRESS = "BABBAGE"
 
 
 @dataclass
