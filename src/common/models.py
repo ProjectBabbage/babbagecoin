@@ -89,7 +89,7 @@ class Block:
     # The first transaction should be the reward transaction for mining the block
     signed_transactions: List[SignedTransaction] = field(default_factory=list)
     nounce: int = 0
-    # WARNING: following the first element of next_blocks should lead to current
+    # WARNING: following the first element of next_blocks should lead to head
     next_blocks: List["Block"] = field(default_factory=list)
 
     def hash(self):

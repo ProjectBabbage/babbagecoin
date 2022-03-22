@@ -9,7 +9,7 @@ from master.transaction_service import (
 block_tbl = {}
 genesis: Block = Block(height=0)
 block_tbl[genesis.hash()] = genesis
-current: Block = genesis
+head: Block = genesis
 
 
 def update_block_tbl_from(block):
@@ -18,48 +18,46 @@ def update_block_tbl_from(block):
         update_block_tbl_from(b)
 
 
-def update_blockchain(block: Block, leaf: Block):
-    global current
-    if block.prev_hash in block_tbl:
-        update_block_tbl_from(block)
-        prev_block = block_tbl[block.prev_hash]
-        if leaf.height > current.height:
+def update_blockchain(ancestor_next: Block, leaf: Block):
+    global head
+    if ancestor_next.prev_hash in block_tbl:
+        update_block_tbl_from(ancestor_next)
+        ancestor = block_tbl[ancestor_next.prev_hash]
+        if leaf.height > head.height:
             # update mempool
             # add (non reward) transactions of old branch to the mempool
-            b = current
-            while b.hash() != block.prev_hash:
+            b = head
+            while b.hash() != ancestor_next.prev_hash:
                 add_signed_transactions_from_old_block(mem_pool, b)
                 b = block_tbl[b.prev_hash]
             # remove transactions from the new branch
             b = leaf
-            while b.hash() != block.prev_hash:
+            while b.hash() != ancestor_next.prev_hash:
                 remove_signed_transactions_from_valid_block(mem_pool, b)
                 b = block_tbl[b.prev_hash]
-            # change current to be the new leaf
-            current = leaf
+            # change head to be the new leaf
+            head = leaf
             # we want to keep the invariant on next_blocks
-            prev_block.next_blocks = [block] + prev_block.next_blocks
-            print(f"Changing current: {current.hash()}")
+            ancestor.next_blocks = [ancestor_next] + ancestor.next_blocks
+            print(f"Changing head: {head.hash()}")
         else:
             # we want to keep the invariant on next_blocks
-            prev_block.next_blocks.append(block)
+            ancestor.next_blocks.append(ancestor_next)
 
     else:
         raise Exception("Does not connect to our blockchain")
 
 
-def get_current() -> Block:
-    return current
+def get_head() -> Block:
+    return head
 
 
-def build_next_block_from_current() -> Block:
+def build_working_block() -> Block:
     rewardTransaction = get_reward_transaction()
     new_block = Block(
-        height=current.height + 1,
-        prev_hash=current.hash(),
-        signed_transactions=[
-            rewardTransaction,
-        ],
+        height=head.height + 1,
+        prev_hash=head.hash(),
+        signed_transactions=[rewardTransaction],
     )
     return new_block
 
@@ -79,12 +77,12 @@ def delta_balance_block(address, block):
 
 
 def compute_balance(address: str):
-    if genesis.next_blocks == []:
+    if not genesis.next_blocks:
         return 0
     b = genesis.next_blocks[0]
     amount = 0
 
-    while b.next_blocks != []:
+    while b.next_blocks:
         amount += delta_balance_block(address, b)
         b = b.next_blocks[0]
 

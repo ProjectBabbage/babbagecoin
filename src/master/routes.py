@@ -9,9 +9,9 @@ from flask import Flask, request
 from common.schemas import BlockSchema, SignedTransactionSchema
 from common.wallet import Wallet
 from master.blockchain_service import (
-    get_current,
+    get_head,
     block_tbl,
-    build_next_block_from_current,
+    build_working_block,
     update_blockchain,
     compute_balance,
 )
@@ -37,16 +37,16 @@ def run():
 @app.get("/")
 def print_chain():
     s = ""
-    block_iter = get_current()
-    while block_iter.height != 0:
-        s += block_iter.html()
-        block_iter = block_tbl[block_iter.prev_hash]
+    b = get_head()
+    while b.height != 0:
+        s += b.html()
+        b = block_tbl[b.prev_hash]
     return s
 
 
-@app.get("/blocks/current")
-def send_current_block_to_miner():
-    next_block = build_next_block_from_current()
+@app.get("/blocks/working_block")
+def send_working_block_to_miner():
+    next_block = build_working_block()
     update_block_signed_transactions(next_block, mem_pool)
     json_block = BlockSchema.dumps(next_block)
     return json_block
@@ -65,10 +65,10 @@ def send_block_tbl():
 
 @app.post("/blocks/minedblock")
 def receive_mined_block_from_miner():
-    block = BlockSchema.load(request.json)
-    remove_signed_transactions_from_valid_block(mem_pool, block)
-    update_blockchain(block, block)
-    broadcast_block(block)
+    mined_block = BlockSchema.load(request.json)
+    remove_signed_transactions_from_valid_block(mem_pool, mined_block)
+    update_blockchain(mined_block, mined_block)
+    broadcast_block(mined_block)
     update_reward_transaction()
     return "ok"
 
@@ -76,21 +76,19 @@ def receive_mined_block_from_miner():
 @app.post("/blocks/updateblock")
 def receive_block_from_network():
     leaf = BlockSchema.load(request.json["block"])
-
     url = request.json["url"]
-    block = leaf
-
+    b = leaf
     if leaf.hash() not in block_tbl:
-        while block.prev_hash not in block_tbl:
-            print(f"Fetching block: {block.prev_hash}")
+        while b.prev_hash not in block_tbl:
+            print(f"Fetching block: {b.prev_hash}")
             resp = requests.get(
-                f"{url}/blocks/{block.prev_hash}",
+                f"{url}/blocks/{b.prev_hash}",
                 headers={"Content-Type": "application/json"},
             )
-            prev_block = BlockSchema.load(resp.json())
-            prev_block.next_blocks.append(block)
-            block = prev_block
-        update_blockchain(block, leaf)
+            prev_b = BlockSchema.load(resp.json())
+            prev_b.next_blocks.append(b)
+            b = prev_b
+        update_blockchain(b, leaf)
     return "ok"
 
 
