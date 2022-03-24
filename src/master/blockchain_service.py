@@ -18,7 +18,7 @@ def update_block_tbl_from(block):
         update_block_tbl_from(b)
 
 
-def find_ancestor(leaf1, leaf2):
+def find_common_ancestor_of(leaf1, leaf2):
     # requires leaf1.height > leaf2.height
     cursor1 = leaf1
     while cursor1.height > leaf2.height + 1:
@@ -32,15 +32,14 @@ def find_ancestor(leaf1, leaf2):
 
 def make_primary_between(start, end):
     """
-    a is start
-    d is end
+      start                                start           end
       ┌───┐   ┌───┐                        ┌───┐   ┌───┐  ┌───┐
-    ──┤ a ├─┬─┤ b │                      ──┤ a ├─┬─┤ c ├──┤ d │
+    ──┤ s ├─┬─┤ y │                      ──┤ s ├─┬─┤ x ├──┤ e │
       └───┘ │ └───┘                        └───┘ │ └───┘  └───┘
             │             ───────────►           │
-            │                                    │
+            │         end                        │
             │ ┌───┐  ┌───┐                       │ ┌───┐
-            └─┤ c ├──┤ d │                       └─┤ b │
+            └─┤ x ├──┤ e │                       └─┤ y │
               └───┘  └───┘                         └───┘
     """
     if start.hash() != end.hash():
@@ -57,6 +56,36 @@ def make_primary_between(start, end):
 
 
 def update_blockchain(anchor: Block, leaf: Block):
+    """
+                                head
+    ┌───┐   ┌───┐               ┌───┐
+    │ a ├─┬─┤ b ├───────────────┤ c │
+    └───┘ │ └───┘               └───┘
+          │
+          │ ┌───┐   ┌───┐
+          └─┤ d ├─┬─┤ e │
+            └───┘ │ └───┘
+                  │
+                  │ ┌───┐  ┌───┐         ┌───┐
+                  └─┤ f │  │ g ├─────────┤ h │
+                    └───┘  └───┘         └───┘
+                           anchor        leaf
+                 │
+                 │
+                 ▼
+    ancestor
+    ┌───┐   ┌───┐   ┌───┐   ┌───┐         ┌───┐
+    │ a ├─┬─┤ d ├─┬─┤ f ├───┤ g ├─────────┤ h │
+    └───┘ │ └───┘ │ └───┘   └───┘         └───┘
+          │       │         anchor        head
+          │       │ ┌───┐
+          │       └─┤ e │
+          │         └───┘
+          │
+          │ ┌───┐               ┌───┐
+          └─┤ b ├───────────────┤ c │
+            └───┘               └───┘
+    """
     global head
     if anchor.prev_hash not in block_tbl:
         raise Exception("Does not connect to our blockchain")
@@ -65,7 +94,7 @@ def update_blockchain(anchor: Block, leaf: Block):
         update_block_tbl_from(anchor)
         anchor_prev = block_tbl[anchor.prev_hash]
         anchor_prev.next_blocks.append(anchor)
-        ancestor = find_ancestor(leaf, head)
+        ancestor = find_common_ancestor_of(leaf, head)
         make_primary_between(ancestor, leaf)
         # update mempool
         # add (non reward) transactions of old branch to the mempool
