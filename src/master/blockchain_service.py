@@ -18,34 +18,72 @@ def update_block_tbl_from(block):
         update_block_tbl_from(b)
 
 
-def update_blockchain(ancestor_next: Block, leaf: Block):
-    global head
-    if ancestor_next.prev_hash in block_tbl:
-        update_block_tbl_from(ancestor_next)
-        ancestor = block_tbl[ancestor_next.prev_hash]
-        if leaf.height > head.height:
-            # update mempool
-            # add (non reward) transactions of old branch to the mempool
-            b = head
-            while b.hash() != ancestor_next.prev_hash:
-                add_signed_transactions_from_old_block(mem_pool, b)
-                b = block_tbl[b.prev_hash]
-            # remove transactions from the new branch
-            b = leaf
-            while b.hash() != ancestor_next.prev_hash:
-                remove_signed_transactions_from_valid_block(mem_pool, b)
-                b = block_tbl[b.prev_hash]
-            # change head to be the new leaf
-            head = leaf
-            # we want to keep the invariant on next_blocks
-            ancestor.next_blocks = [ancestor_next] + ancestor.next_blocks
-            print(f"Changing head to {head.hash()}")
-        else:
-            # we want to keep the invariant on next_blocks
-            ancestor.next_blocks.append(ancestor_next)
+def find_ancestor(leaf1, leaf2):
+    # requires leaf1.height > leaf2.height
+    cursor1 = leaf1
+    while cursor1.height > leaf2.height + 1:
+        cursor1 = block_tbl[cursor1.prev_hash]
+    cursor2 = leaf2
+    while cursor1.prev_hash != cursor2.hash():
+        cursor1 = block_tbl[cursor1.prev_hash]
+        cursor2 = block_tbl[cursor2.prev_hash]
+    return cursor2
 
-    else:
+
+def make_primary_between(start, end):
+    """
+    a is start
+    d is end
+      ┌───┐   ┌───┐                        ┌───┐   ┌───┐  ┌───┐
+    ──┤ a ├─┬─┤ b │                      ──┤ a ├─┬─┤ c ├──┤ d │
+      └───┘ │ └───┘                        └───┘ │ └───┘  └───┘
+            │             ───────────►           │
+            │                                    │
+            │ ┌───┐  ┌───┐                       │ ┌───┐
+            └─┤ c ├──┤ d │                       └─┤ b │
+              └───┘  └───┘                         └───┘
+    """
+    if start.hash() != end.hash():
+        prev = block_tbl[end.prev_hash]
+        i = 0
+        for j, e in enumerate(prev.next_blocks):
+            if e.hash() == end.hash():
+                i = j
+                break
+        temp = prev.next_blocks[0]
+        prev.next_blocks[0] = end
+        prev.next_blocks[i] = temp
+        make_primary_between(start, prev)
+
+
+def update_blockchain(anchor: Block, leaf: Block):
+    global head
+    if anchor.prev_hash not in block_tbl:
         raise Exception("Does not connect to our blockchain")
+    # TODO: verify chain between anchor and leaf
+    if leaf.height > head.height:
+        update_block_tbl_from(anchor)
+        anchor_prev = block_tbl[anchor.prev_hash]
+        anchor_prev.next_blocks.append(anchor)
+        ancestor = find_ancestor(leaf, head)
+        make_primary_between(ancestor, leaf)
+        # update mempool
+        # add (non reward) transactions of old branch to the mempool
+        b = head
+        while b.hash() != ancestor.hash():
+            add_signed_transactions_from_old_block(mem_pool, b)
+            b = block_tbl[b.prev_hash]
+        # remove transactions from the new branch
+        b = leaf
+        while b.hash() != ancestor.hash():
+            remove_signed_transactions_from_valid_block(mem_pool, b)
+            b = block_tbl[b.prev_hash]
+        # change head to be the new leaf
+        head = leaf
+        # we want to keep the invariant on next_blocks
+        print(f"Changing head to {head.hash()}")
+    else:
+        print("Discarding received block")
 
 
 def get_head() -> Block:
