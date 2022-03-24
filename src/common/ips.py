@@ -12,9 +12,12 @@ def get_my_ip():
 
 def get_sentry_dsn():
     """
-    Monitoring of logs using glitchtip (open source clone of sentry)
+    Return the sentry DSN for monitoring of logs using glitchtip (open source clone of sentry)
     """
-    return get_env_variables()["DSN_GLITCHTIP"]
+    envs = get_env_variables()
+    if "DSN_GLITCHTIP" in envs:
+        return get_env_variables()["DSN_GLITCHTIP"]
+    return None
 
 
 def isIP(env_var):
