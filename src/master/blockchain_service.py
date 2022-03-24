@@ -72,7 +72,7 @@ def update_blockchain(anchor: Block, leaf: Block):
                   │
                   │
                   ▼
-    ancestor                 anchor        head
+    ancestor                 anchor      head = leaf
      ┌───┐   ┌───┐   ┌───┐   ┌───┐         ┌───┐
      │ a ├─┬─┤ d ├─┬─┤ f ├───┤ g ├─────────┤ h │
      └───┘ │ └───┘ │ └───┘   └───┘         └───┘
