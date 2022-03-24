@@ -14,18 +14,17 @@ bound = 2**256 // difficulty
 
 class BlockStore:
     working_block: Optional[Block] = None
-    working_block_hash: Optional[str] = None
+    initial_hash: Optional[str] = None
 
     def update_working_block(self):
-        print("Updating working block...")
-        updated_working_block = get_working_block()
-        updated_working_block.nounce = random.randint(0, 2**100)
-        updated_working_block_hash = updated_working_block.hash()
+        new_block = get_working_block()
+        new_initial_hash = new_block.hash()
 
-        if self.working_block_hash != updated_working_block_hash:
-            print("Changing working block")
-            self.working_block = updated_working_block
-            self.working_block_hash = updated_working_block_hash
+        if self.initial_hash != new_initial_hash:
+            print("Updating working block")
+            new_block.nonce = random.randint(0, 2**64)
+            self.working_block = new_block
+            self.initial_hash = new_initial_hash
         else:
             print("Keeping same working block")
 
@@ -62,7 +61,7 @@ def run():
             block_store.update_working_block()
             i = 0
         else:
-            block_store.working_block.nounce += 1
+            block_store.working_block.nonce += 1
             i += 1
         if i == hash_count_before_update:
             block_store.update_working_block()

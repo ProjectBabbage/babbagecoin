@@ -88,7 +88,7 @@ class Block:
     prev_hash: Optional[str] = ""
     # The first transaction should be the reward transaction for mining the block
     signed_transactions: List[SignedTransaction] = field(default_factory=list)
-    nounce: int = 0
+    nonce: int = 0
     # WARNING: following the first element of next_blocks should lead to head
     next_blocks: List["Block"] = field(default_factory=list)
 
@@ -100,12 +100,12 @@ class Block:
         hasher.update(self.prev_hash.encode("utf-8"))
         for transaction in self.signed_transactions:
             hasher.update(transaction.signature.encode("utf-8"))
-        hasher.update(f"{self.nounce}".encode("utf-8"))
+        hasher.update(f"{self.nonce}".encode("utf-8"))
         return hasher.hexdigest()
 
     def __str__(self):
         return f"""BLOCK(height: {self.height}, prev: {self.prev_hash},
-        nounce: {self.nounce}, SignedTransactions{self.signed_transactions})"""
+        nonce: {self.nonce}, SignedTransactions{self.signed_transactions})"""
 
     def html(self):
         prev = self.prev_hash[:20]
@@ -114,6 +114,6 @@ class Block:
             str_stx += f"<li>{tx.html()}</li>"
 
         return f"""<div style='border:1px solid black; padding:5px; margin:5px;'>
-        <b>height</b>: {self.height}, <b>prev</b>: {prev}, <b>nounce</b>: {self.nounce},<br>
+        <b>height</b>: {self.height}, <b>prev</b>: {prev}, <b>nonce</b>: {self.nonce},<br>
         <b>signed transactions</b>: <ul style='margin:0px'>{str_stx}</ul>
         </div>"""

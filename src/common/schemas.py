@@ -48,7 +48,7 @@ class _BlockSchema(Schema):
     prev_hash = fields.String(required=False)
     height = fields.Int()
     signed_transactions = fields.List(fields.Nested(SignedTransactionSchema))
-    nounce = fields.Int(required=False)
+    nonce = fields.Int(required=False)
 
     @post_load
     def _make_model(self, data: Dict[str, Any], **kwargs) -> Block:
