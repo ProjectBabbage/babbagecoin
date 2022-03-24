@@ -85,13 +85,13 @@ class SignedTransaction:
 @dataclass
 class Block:
     height: int
-    prev_hash: Optional[str] = ""
+    prev_hash: Optional[str] = None
     # Invariant: the first transaction should be the reward transaction for mining the block
     signed_transactions: List[SignedTransaction] = field(default_factory=list)
     nonce: int = 0
     # Invariant: following the first element of next_blocks should lead to head
     next_blocks: List["Block"] = field(default_factory=list)
-    _hash: str
+    _hash: Optional[str] = None
 
     def hash(self):
         if not self._hash:
@@ -106,17 +106,20 @@ class Block:
                 self._hash = hasher.hexdigest()
         return self._hash
 
+    def reset_hash(self):
+        self._hash = None
+
     def __str__(self):
         return f"""BLOCK(height: {self.height}, prev: {self.prev_hash},
         nonce: {self.nonce}, SignedTransactions{self.signed_transactions})"""
 
     def html(self):
-        prev = self.prev_hash[:20]
+        hash = self.hash()[:20]
         str_stx = ""
         for tx in self.signed_transactions:
             str_stx += f"<li>{tx.html()}</li>"
 
         return f"""<div style='border:1px solid black; padding:5px; margin:5px;'>
-        <b>height</b>: {self.height}, <b>prev</b>: {prev}, <b>nonce</b>: {self.nonce},<br>
+        <b>height</b>: {self.height}, <b>hash</b>: {hash}, <b>nonce</b>: {self.nonce},<br>
         <b>signed transactions</b>: <ul style='margin:0px'>{str_stx}</ul>
         </div>"""

@@ -7,7 +7,7 @@ from master.transaction_service import (
 )
 
 block_tbl = {}
-genesis: Block = Block(height=0)
+genesis: Block = Block(prev_hash=None, height=0)
 block_tbl[genesis.hash()] = genesis
 head: Block = genesis
 

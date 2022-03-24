@@ -45,7 +45,7 @@ SignedTransactionSchema = _SignedTransactionSchema()
 
 
 class _BlockSchema(Schema):
-    prev_hash = fields.String(required=False)
+    prev_hash = fields.String()
     height = fields.Int()
     signed_transactions = fields.List(fields.Nested(SignedTransactionSchema))
     nonce = fields.Int(required=False)
