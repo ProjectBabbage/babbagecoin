@@ -14,7 +14,7 @@ def get_sentry_dsn():
     """
     Monitoring of logs using glitchtip (open source clone of sentry)
     """
-    return get_env_variables()[f"DSN_GLITCHTIP"]
+    return get_env_variables()["DSN_GLITCHTIP"]
 
 
 def isIP(env_var):

@@ -2,7 +2,7 @@ from typing import Dict, Any
 
 from marshmallow import Schema, fields, post_load
 
-from common.models import PubKey, Transaction, SignedTransaction, Block
+from common.models import Transaction, SignedTransaction, Block
 
 
 # class _PubKeySchema(Schema):

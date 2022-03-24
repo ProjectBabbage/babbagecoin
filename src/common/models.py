@@ -86,10 +86,10 @@ class SignedTransaction:
 class Block:
     height: int
     prev_hash: Optional[str] = ""
-    # The first transaction should be the reward transaction for mining the block
+    # Invariant: the first transaction should be the reward transaction for mining the block
     signed_transactions: List[SignedTransaction] = field(default_factory=list)
     nonce: int = 0
-    # WARNING: following the first element of next_blocks should lead to head
+    # Invariant: following the first element of next_blocks should lead to head
     next_blocks: List["Block"] = field(default_factory=list)
 
     def hash(self):
