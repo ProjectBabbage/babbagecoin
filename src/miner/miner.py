@@ -64,6 +64,7 @@ def run():
             i = 0
         else:
             block_store.working_block.nonce += 1
+            block_store.working_block.reset_hash()
             i += 1
         if i == hash_count_before_update:
             block_store.update_working_block()
