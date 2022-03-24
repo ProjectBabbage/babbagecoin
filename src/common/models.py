@@ -91,17 +91,20 @@ class Block:
     nonce: int = 0
     # Invariant: following the first element of next_blocks should lead to head
     next_blocks: List["Block"] = field(default_factory=list)
+    _hash: str
 
     def hash(self):
-        if self.height == 0:
-            return ""
-
-        hasher = hashlib.sha256()
-        hasher.update(self.prev_hash.encode("utf-8"))
-        for transaction in self.signed_transactions:
-            hasher.update(transaction.signature.encode("utf-8"))
-        hasher.update(f"{self.nonce}".encode("utf-8"))
-        return hasher.hexdigest()
+        if not self._hash:
+            if self.height == 0:
+                self._hash = ""
+            else:
+                hasher = hashlib.sha256()
+                hasher.update(self.prev_hash.encode("utf-8"))
+                for transaction in self.signed_transactions:
+                    hasher.update(transaction.signature.encode("utf-8"))
+                hasher.update(f"{self.nonce}".encode("utf-8"))
+                self._hash = hasher.hexdigest()
+        return self._hash
 
     def __str__(self):
         return f"""BLOCK(height: {self.height}, prev: {self.prev_hash},
