@@ -1,3 +1,4 @@
+import time
 import random
 import requests
 
@@ -49,6 +50,7 @@ def post_mined_block(block: Block):
 
 
 def run():
+    time.sleep(0.5)  # waiting for the master to be up
     block_store = BlockStore()
     block_store.update_working_block()
 
