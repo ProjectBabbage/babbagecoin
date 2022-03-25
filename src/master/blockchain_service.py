@@ -64,7 +64,7 @@ def make_primary_between(start, end):
         prev.next_blocks[i] = temp
         make_primary_between(start, prev)
 
-def valid_from(start: Block):
+def sane_from(start: Block):
     seen_txs = set()    
     def verify_block(block: Block):
         if not verify_block_hash(block):
@@ -132,7 +132,7 @@ def update_blockchain(anchor: Block, leaf: Block):
     global head
     if anchor.prev_hash not in block_tbl:
         raise Exception("Does not connect to our blockchain")
-    if leaf.height > head.height and valid_from(anchor):
+    if leaf.height > head.height and sane_from(anchor):
         update_block_tbl_from(anchor)
         anchor_prev = block_tbl[anchor.prev_hash]
         anchor_prev.next_blocks.append(anchor)
@@ -157,8 +157,63 @@ def update_blockchain(anchor: Block, leaf: Block):
             anchor_prev.next_blocks.pop()
             remove_block_tbl_from(anchor)
             print("Discarding block due to a already validated transaction.")
+"""
+Verification of an already validated transaction (b) ending up in rejecting the incomming blocks:
 
 
+ancestor            anchor    leaf                      │
+ ┌───┐    ┌───┐     ┌───┐     ┌───┐          ┌───┐    ┌─▼─┐     ┌───┐     ┌───┐
+ │ b │    │ f │     │ a │     │ c │          │ b │    │ f │     │ a │     │ c │
+ │ e ├────┤   │     │ b ├─────┤ d │          │ e ├────┤   │     │ b ├─────┤ d │
+ └──┬┘    └───┘     └───┘     └───┘          └──┬┘    └───┘     └───┘     └───┘
+    │              head                         │
+    │     ┌───┐   ┌───┐                         │     ┌───┐   ┌───┐
+    └─────┤ r ├───┤ x │                         └─────┤ r ├───┤ x │
+          │ t │   │ y │                               │ t │   │ y │
+          └───┘   └─▲─┘            ────────►          └───┘   └───┘
+                    │
+
+     validated     mempool                       validated     mempool
+     ┌─────┐       ┌─────┐                       ┌─────┐       ┌─────┐
+     │     │       │     │                       │     │       │     │
+     │  b  │       │  a  │                       │  b  │       │  a  │
+     │  e  │       │  c  │                       │  e  │       │  c  │
+     │  r  │       │  f  │                       │  f  │       │     │
+     │  t  │       │     │                       │     │       │  r  │
+     │  x  │       │     │                       │     │       │  t  │
+     │  y  │       │     │                       │     │       │  x  │
+     │     │       │     │                       │     │       │  y  │
+     └─────┘       └─────┘                       └─────┘       └─────┘
+
+                                                            │
+                                                            │
+                                                            │
+                                                            ▼
+                                                                  │
+ ┌───┐    ┌───┐                              ┌───┐    ┌───┐     ┌─▼─┐     ┌───┐
+ │ b │    │ f │                              │ b │    │ f │     │ a │     │ c │
+ │ e ├────┤   │                              │ e ├────┤   │     │ b ├─────┤ d │
+ └──┬┘    └───┘                              └──┬┘    └───┘     └───┘     └───┘
+    │                                           │
+    │     ┌───┐   ┌───┐                         │     ┌───┐   ┌───┐
+    └─────┤ r ├───┤ x │                         └─────┤ r ├───┤ x │
+          │ t │   │ y │            ◄────────          │ t │   │ y │
+          └───┘   └─▲─┘                               └───┘   └───┘
+                    │
+
+     validated     mempool                       validated     mempool     excess
+     ┌─────┐       ┌─────┐                       ┌─────┐       ┌─────┐     ┌─────┐
+     │     │       │     │                       │     │       │     │     │     │
+     │  b  │       │  a  │                       │  b  │       │     │     │  b  │
+     │  e  │       │  c  │                       │  e  │       │  c  │     │     │
+     │  r  │       │  f  │                       │  f  │       │     │     │     │
+     │  t  │       │     │                       │  a  │       │  r  │     │     │
+     │  x  │       │     │                       │     │       │  t  │     │     │
+     │  y  │       │     │                       │     │       │  x  │     │     │
+     │     │       │     │                       │     │       │  y  │     │     │
+     └─────┘       └─────┘                       └─────┘       └─────┘     └─────┘
+
+"""
 
 def get_head() -> Block:
     return head

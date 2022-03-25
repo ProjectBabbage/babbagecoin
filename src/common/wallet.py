@@ -8,7 +8,7 @@ from cryptography.hazmat.primitives.asymmetric.rsa import RSAPrivateKey
 from cryptography.hazmat.primitives.serialization import load_pem_private_key
 from cryptography.hazmat.primitives.serialization import load_pem_public_key
 
-from common.models import PubKey, Transaction, SignedTransaction
+from common.models import MINING_REWARD_ADDRESS, PubKey, Transaction, SignedTransaction
 
 
 class Wallet:
@@ -41,13 +41,7 @@ class Wallet:
         )
 
     def load_public_key(self, filepath):
-        pub_key = None
-        with open(filepath, "rb") as pKey:
-            ls = pKey.read()
-            pub_key = load_pem_public_key(ls)
-        if not pub_key:
-            raise Exception("No public key loaded.")
-        return pub_key
+        return PubKey.load_from_file(filepath)
 
     def sign(self, transaction: Transaction) -> SignedTransaction:
         transaction_hash = transaction.hash()
@@ -67,23 +61,15 @@ class Wallet:
 
         signature = base64.b64decode(signed_transaction.signature.encode())
         transaction = signed_transaction.transaction
-        transaction_hash = transaction.hash()
-        #
-        signed_transaction.transaction.sender.verify(
-            signature,
-            transaction_hash,
-            padding.PSS(
-                mgf=padding.MGF1(hashes.SHA256()),
-                salt_length=padding.PSS.MAX_LENGTH,
-            ),
-            hashes.SHA256(),
-        )
-        # can raise an InvalidSignature 
 
-
-if __name__ == "__main__":
-    w = Wallet()
-    # print(w.decode_public())
-    # print(w.decode_private())
-    tx = Transaction("sldk", "sender", "slkdl", 0.1)
-    print(w.sign(tx))
+        if transaction.hash() != MINING_REWARD_ADDRESS:
+            signed_transaction.transaction.sender.verify(
+                signature,
+                transaction.hash(),
+                padding.PSS(
+                    mgf=padding.MGF1(hashes.SHA256()),
+                    salt_length=padding.PSS.MAX_LENGTH,
+                ),
+                hashes.SHA256(),
+            )
+            # can raise an InvalidSignature 

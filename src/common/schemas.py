@@ -19,8 +19,8 @@ from common.models import Transaction, SignedTransaction, Block
 
 class _TransactionSchema(Schema):
     uuid = fields.String()
-    sender = fields.String()
-    receiver = fields.String()
+    receiver = fields.String() # TODO get a RSAPubKey
+    sender = fields.String() # TODO
     amount = fields.Float()
     fees = fields.Float()
 

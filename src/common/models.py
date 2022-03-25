@@ -1,3 +1,4 @@
+from curses.ascii import RS
 import hashlib
 
 from dataclasses import dataclass, field
@@ -8,19 +9,18 @@ from cryptography.hazmat.primitives.serialization import load_pem_public_key
 
 MINING_REWARD_ADDRESS = "BABBAGE"
 
-
 @dataclass
 class PubKey:
-    pub_key: RSAPublicKey
+    pub_key: RSAPublicKey or str
 
     @staticmethod
-    def load_from_string(s):
-        return PubKey(load_pem_public_key(s))
+    def load_from_file(filepath: str):
+        with open(filepath, 'rb') as bf:
+            return PubKey(load_pem_public_key(bf.read()))
 
     def hash(self):
         if self.pub_key == MINING_REWARD_ADDRESS:
-            return self.pub_key
-
+            return MINING_REWARD_ADDRESS
         encoded_key = self.pub_key.public_bytes(
             encoding=serialization.Encoding.PEM,
             format=serialization.PublicFormat.SubjectPublicKeyInfo,
