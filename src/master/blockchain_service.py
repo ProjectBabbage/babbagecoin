@@ -1,3 +1,5 @@
+from cryptography.exceptions import InvalidSignature
+from common.exceptions import DuplicatedTransaction, InvalidBlockHash
 from common.models import Block
 from common.block_service import verify_block_hash
 from common.wallet import Wallet
@@ -62,18 +64,29 @@ def make_primary_between(start, end):
         prev.next_blocks[i] = temp
         make_primary_between(start, prev)
 
+def valid_from(start: Block):
+    seen_txs = set()    
+    def verify_block(block: Block):
+        if not verify_block_hash(block):
+            raise InvalidBlockHash
+        for stx in block.signed_transactions:
+            Wallet.verify_signature(stx)
+            if stx.transaction in seen_txs:
+                raise DuplicatedTransaction
+            seen_txs.add(stx)
+    try:
+        b = start
+        while True:
+            verify_block(b)
+            if len(b.next_blocks) == 0:
+                break
+            b = b.next_blocks[0]
+        return True
+    except (InvalidBlockHash, InvalidSignature, DuplicatedTransaction) as e:
+        print(e)
+        return False
 
-def verify_block(block):
-    is_valid = True
-    for stx in block.signed_transactions:
-        tx = stx.transaction
-        is_valid &= Wallet().verify_signature(stx, tx.sender)
-        is_valid &= tx not in validated_transactions
-    is_valid &= verify_block_hash(block)
-    return is_valid
-
-
-def refresh_transactions_switch(start, ancestor, end):
+def refresh_transactions_switch(start: Block, ancestor: Block, end: Block):
     # take into account transactions of the old branch start
     b = start
     while b.hash() != ancestor.hash():
@@ -119,7 +132,7 @@ def update_blockchain(anchor: Block, leaf: Block):
     global head
     if anchor.prev_hash not in block_tbl:
         raise Exception("Does not connect to our blockchain")
-    if leaf.height > head.height:
+    if leaf.height > head.height and valid_from(anchor):
         update_block_tbl_from(anchor)
         anchor_prev = block_tbl[anchor.prev_hash]
         anchor_prev.next_blocks.append(anchor)
@@ -143,9 +156,8 @@ def update_blockchain(anchor: Block, leaf: Block):
                 validated_transactions.add(stx)
             anchor_prev.next_blocks.pop()
             remove_block_tbl_from(anchor)
-            print("Discarding received blocks")
-    else:
-        print("Discarding received blocks")
+            print("Discarding block due to a already validated transaction.")
+
 
 
 def get_head() -> Block:

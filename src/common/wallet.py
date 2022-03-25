@@ -1,8 +1,6 @@
 import base64
 import os
 
-from cryptography.exceptions import InvalidSignature
-
 from cryptography.hazmat.backends.openssl.rsa import RSAPublicKey
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import rsa, padding
@@ -65,25 +63,22 @@ class Wallet:
         )
 
     @staticmethod
-    def verify_signature(signed_transaction: SignedTransaction, pub_key: RSAPublicKey) -> bool:
+    def verify_signature(signed_transaction: SignedTransaction) -> bool:
 
         signature = base64.b64decode(signed_transaction.signature.encode())
         transaction = signed_transaction.transaction
         transaction_hash = transaction.hash()
         #
-        try:
-            pub_key.verify(
-                signature,
-                transaction_hash,
-                padding.PSS(
-                    mgf=padding.MGF1(hashes.SHA256()),
-                    salt_length=padding.PSS.MAX_LENGTH,
-                ),
-                hashes.SHA256(),
-            )
-            return True
-        except InvalidSignature:
-            return False
+        signed_transaction.transaction.sender.verify(
+            signature,
+            transaction_hash,
+            padding.PSS(
+                mgf=padding.MGF1(hashes.SHA256()),
+                salt_length=padding.PSS.MAX_LENGTH,
+            ),
+            hashes.SHA256(),
+        )
+        # can raise an InvalidSignature 
 
 
 if __name__ == "__main__":

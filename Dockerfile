@@ -9,7 +9,7 @@ WORKDIR /babbagecoin/
 
 COPY pyproject.toml poetry.lock  ./
 
-RUN poetry install
+RUN poetry install --no-dev
 
 ENTRYPOINT ["python", "-u", "src/app.py"]
 
