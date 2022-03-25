@@ -1,0 +1,51 @@
+version: '3'
+
+services:
+  master:
+    container_name: master
+    image: base_image_bbc
+    build: .
+    volumes:
+      - .:/babbagecoin/
+    network_mode: host
+    command: [ "master" ]
+  miner1:
+    container_name: miner1
+    image: base_image_bbc
+    build: .
+    volumes:
+      - .:/babbagecoin/
+    network_mode: host
+    command: [ "miner" ]
+    depends_on:
+      - master
+  miner2:
+    container_name: miner2
+    image: base_image_bbc
+    build: .
+    volumes:
+      - .:/babbagecoin/
+    network_mode: host
+    command: [ "miner" ]
+    depends_on:
+      - master
+  miner3:
+    container_name: miner3
+    image: base_image_bbc
+    build: .
+    volumes:
+      - .:/babbagecoin/
+    network_mode: host
+    command: [ "miner" ]
+    depends_on:
+      - master
+  miner4:
+    container_name: miner4
+    image: base_image_bbc
+    build: .
+    volumes:
+      - .:/babbagecoin/
+    network_mode: host
+    command: [ "miner" ]
+    depends_on:
+      - master

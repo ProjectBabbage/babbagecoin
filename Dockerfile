@@ -11,7 +11,7 @@ COPY pyproject.toml poetry.lock  ./
 
 RUN poetry install
 
-ENTRYPOINT ["python", "src/app.py"]
+ENTRYPOINT ["python", "-u", "src/app.py"]
 
 # # smaller, but first need a poetry export > requirements.txt
 # FROM python:3.9

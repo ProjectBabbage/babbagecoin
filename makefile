@@ -1,5 +1,5 @@
 launch:
-	docker-compose up --remove-orphans
+	docker-compose --project-directory=. -f nodes/docker-compose.yml up --build
 
 master:
 	bash bbc.sh master
@@ -11,7 +11,10 @@ tx:
 	bash bbc.sh tx MARTIAL 5 0.3
 
 docker-image:
-	docker build . -t babbagenode
+	docker build . -t base_image_bbc
 
-# docker-run: # add master or miner as an argument
-# 	docker run -it -v $$(pwd):/babbagecoin -p 5000:5000  babbagenode master
+test-2:
+	docker-compose --project-directory=. -f nodes/docker-compose-2.yml up --build
+
+test-4:
+	docker-compose --project-directory=. -f nodes/docker-compose-4.yml up --build

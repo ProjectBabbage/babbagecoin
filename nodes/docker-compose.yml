@@ -2,14 +2,16 @@ version: '3'
 
 services:
   master:
-    image: babbagecoinnode
+    container_name: master
+    image: base_image_bbc
     build: .
     volumes:
       - .:/babbagecoin/
     network_mode: host
     command: [ "master" ]
   miner:
-    image: babbagecoinnode
+    container_name: miner
+    image: base_image_bbc
     build: .
     volumes:
       - .:/babbagecoin/
