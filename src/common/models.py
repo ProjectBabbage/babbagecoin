@@ -93,8 +93,8 @@ class Block:
     next_blocks: List["Block"] = field(default_factory=list)
     _hash: Optional[str] = None
 
-    def hash(self):
-        if not self._hash:
+    def hash(self, recompute=False):
+        if not self._hash or recompute:
             if self.height == 0:
                 self._hash = ""
             else:
@@ -105,9 +105,6 @@ class Block:
                 hasher.update(f"{self.nonce}".encode("utf-8"))
                 self._hash = hasher.hexdigest()
         return self._hash
-
-    def reset_hash(self):
-        self._hash = None
 
     def __str__(self):
         return f"""BLOCK(height: {self.height}, prev: {self.prev_hash},

@@ -56,7 +56,7 @@ def run():
 
     i = 0
     while i < hash_count_before_update:
-        block_hash = block_store.working_block.hash()
+        block_hash = block_store.working_block.hash(recompute=True)
         if int(block_hash, 16) <= bound:
             print("BLOCK MINED SUCCESSFULLY")
             post_mined_block(block_store.working_block)
@@ -64,7 +64,6 @@ def run():
             i = 0
         else:
             block_store.working_block.nonce += 1
-            block_store.working_block.reset_hash()
             i += 1
         if i == hash_count_before_update:
             block_store.update_working_block()
