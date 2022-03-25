@@ -18,10 +18,9 @@ from master.blockchain_service import (
 from common.ips import get_sentry_dsn
 from master.broadcast_service import broadcast_block, broadcast_transaction
 from master.transaction_service import (
-    remove_signed_transactions_from_valid_block,
-    mem_pool,
-    update_block_signed_transactions,
+    update_block_transactions,
     update_reward_transaction,
+    mem_pool,
 )
 
 wallet = Wallet()
@@ -46,7 +45,7 @@ def print_chain():
 @app.get("/blocks/working_block")
 def send_working_block_to_miner():
     next_block = build_working_block()
-    update_block_signed_transactions(next_block, mem_pool)
+    update_block_transactions(next_block)
     json_block = BlockSchema.dumps(next_block)
     return json_block
 
@@ -65,7 +64,6 @@ def send_block_tbl():
 @app.post("/blocks/minedblock")
 def receive_mined_block_from_miner():
     mined_block = BlockSchema.load(request.json)
-    remove_signed_transactions_from_valid_block(mem_pool, mined_block)
     update_blockchain(mined_block, mined_block)
     broadcast_block(mined_block)
     update_reward_transaction()

@@ -18,7 +18,7 @@ class Wallet:
 
     def __init__(self):
         if os.path.isfile(".skey"):
-            # we read the alrdy generated keys
+            # we read the already generated keys
             with open(".skey", "rb") as fkeys:
                 self.private_key = load_pem_private_key(fkeys.read(), password=None)
         else:

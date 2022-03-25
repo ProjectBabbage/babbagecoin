@@ -11,22 +11,35 @@ from common.wallet import Wallet
 
 reward_transaction = None
 mem_pool = set()
+validated_transactions = set()
 
 
-def update_block_signed_transactions(block: Block, mem_pool: set):
+def update_block_transactions(block: Block):
+    global mem_pool
     block.signed_transactions.extend(list(mem_pool))
 
 
-def remove_signed_transactions_from_valid_block(mem_pool: set, block: Block):
-    for signed_transaction in block.signed_transactions:
-        if signed_transaction in mem_pool:
-            mem_pool.remove(signed_transaction)
+def refresh_transactions_from_new_block(block: Block):
+    global mem_pool
+    global validated_transactions
+    excess_transactions = set()
+    for stx in block.signed_transactions:
+        if stx in validated_transactions:
+            excess_transactions.add(stx)
+        else:
+            validated_transactions.add(stx)
+        if stx in mem_pool:
+            mem_pool.remove(stx)
+    return excess_transactions
 
 
-def add_signed_transactions_from_old_block(mem_pool: set, block: Block):
-    for signed_tx in block.signed_transactions:
-        if signed_tx.transaction.sender != MINING_REWARD_ADDRESS:
-            mem_pool.add(signed_tx)
+def refresh_transactions_from_old_block(block: Block):
+    global mem_pool
+    global validated_transactions
+    for stx in block.signed_transactions:
+        validated_transactions.remove(stx)
+        if stx.transaction.sender != MINING_REWARD_ADDRESS:
+            mem_pool.add(stx)
 
 
 def forge_reward_transaction() -> SignedTransaction:

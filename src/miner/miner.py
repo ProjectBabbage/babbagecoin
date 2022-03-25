@@ -6,11 +6,10 @@ from typing import Optional
 
 from common.models import Block
 from common.schemas import BlockSchema
+from common.block_service import verify_block_hash
 
 url_master = "http://127.0.0.1:5000/"
 hash_count_before_update = 1000000
-difficulty = 2000000
-bound = 2**256 // difficulty
 
 
 class BlockStore:
@@ -56,8 +55,7 @@ def run():
 
     i = 0
     while i < hash_count_before_update:
-        block_hash = block_store.working_block.hash(recompute=True)
-        if int(block_hash, 16) <= bound:
+        if verify_block_hash(block_store.working_block):
             print("BLOCK MINED SUCCESSFULLY")
             post_mined_block(block_store.working_block)
             block_store.update_working_block()

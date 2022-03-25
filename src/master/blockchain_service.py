@@ -1,12 +1,14 @@
 from common.models import Block
+from common.block_service import verify_block_hash
+from common.wallet import Wallet
 from master.transaction_service import (
-    add_signed_transactions_from_old_block,
-    remove_signed_transactions_from_valid_block,
+    refresh_transactions_from_old_block,
+    refresh_transactions_from_new_block,
     get_reward_transaction,
-    mem_pool,
+    validated_transactions,
 )
 
-block_tbl = {}
+block_tbl = {}  # map from hash to block
 genesis: Block = Block(prev_hash=None, height=0)
 block_tbl[genesis.hash()] = genesis
 head: Block = genesis
@@ -16,6 +18,12 @@ def update_block_tbl_from(block):
     block_tbl[block.hash()] = block
     for b in block.next_blocks:
         update_block_tbl_from(b)
+
+
+def remove_block_tbl_from(block):
+    block_tbl.pop(block.hash())
+    for b in block.next_blocks:
+        remove_block_tbl_from(b)
 
 
 def find_common_ancestor_of(leaf1, leaf2):
@@ -55,6 +63,29 @@ def make_primary_between(start, end):
         make_primary_between(start, prev)
 
 
+def verify_block(block):
+    is_valid = True
+    for stx in block.signed_transactions:
+        tx = stx.transaction
+        is_valid &= Wallet().verify_signature(stx, tx.sender)
+        is_valid &= tx not in validated_transactions
+    is_valid &= verify_block_hash(block)
+    return is_valid
+
+
+def refresh_transactions_switch(start, ancestor, end):
+    # take into account transactions of the old branch start
+    b = start
+    while b.hash() != ancestor.hash():
+        refresh_transactions_from_old_block(b)
+        b = block_tbl[b.prev_hash]
+    # take into account transactions from the new branch end
+    b = end
+    while b.hash() != ancestor.hash():
+        refresh_transactions_from_new_block(b)
+        b = block_tbl[b.prev_hash]
+
+
 def update_blockchain(anchor: Block, leaf: Block):
     """
                                  head
@@ -88,30 +119,33 @@ def update_blockchain(anchor: Block, leaf: Block):
     global head
     if anchor.prev_hash not in block_tbl:
         raise Exception("Does not connect to our blockchain")
-    # TODO: verify chain between anchor and leaf
     if leaf.height > head.height:
         update_block_tbl_from(anchor)
         anchor_prev = block_tbl[anchor.prev_hash]
         anchor_prev.next_blocks.append(anchor)
         ancestor = find_common_ancestor_of(leaf, head)
-        make_primary_between(ancestor, leaf)
-        # update mempool
-        # add (non reward) transactions of old branch to the mempool
-        b = head
-        while b.hash() != ancestor.hash():
-            add_signed_transactions_from_old_block(mem_pool, b)
-            b = block_tbl[b.prev_hash]
-        # remove transactions from the new branch
-        b = leaf
-        while b.hash() != ancestor.hash():
-            remove_signed_transactions_from_valid_block(mem_pool, b)
-            b = block_tbl[b.prev_hash]
-        # change head to be the new leaf
-        head = leaf
-        # we want to keep the invariant on next_blocks
-        print(f"Changing head to {head.hash()}")
+        refresh_transactions_switch(head, ancestor, anchor_prev)
+        b = anchor
+        while True:
+            excess_transactions = refresh_transactions_from_new_block(b)
+            if b.hash() == leaf.hash() or excess_transactions != set():
+                break
+            b = b.next_blocks[0]
+        if excess_transactions == set():
+            # we want to keep the invariant on next_blocks
+            make_primary_between(ancestor, anchor)
+            # change head to be the new leaf
+            head = leaf
+            print(f"Changing head to {head.hash()}")
+        else:
+            refresh_transactions_switch(b, ancestor, head)
+            for stx in excess_transactions:
+                validated_transactions.add(stx)
+            anchor_prev.next_blocks.pop()
+            remove_block_tbl_from(anchor)
+            print("Discarding received blocks")
     else:
-        print("Discarding received block")
+        print("Discarding received blocks")
 
 
 def get_head() -> Block:

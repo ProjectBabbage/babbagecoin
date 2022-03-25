@@ -1,9 +1,9 @@
 import os
 import requests
 import uuid
-from common.wallet import Wallet
 from argparse import ArgumentParser
 from common.models import PubKey, Transaction, SignedTransaction
+from common.wallet import Wallet
 from common.schemas import SignedTransactionSchema
 from common.ips import get_my_ip
 
