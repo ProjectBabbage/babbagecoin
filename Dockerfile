@@ -7,15 +7,10 @@ RUN poetry config virtualenvs.create false # system-wide package installation
 
 WORKDIR /babbagecoin/
 
+# copy only what `poetry install` needs, src code will be mapped as a volume
 COPY pyproject.toml poetry.lock  ./
 
 RUN poetry install --no-dev
 
+# -u for unbuffered, so that python display each line of log asap
 ENTRYPOINT ["python", "-u", "src/app.py"]
-
-# # smaller, but first need a poetry export > requirements.txt
-# FROM python:3.9
-# WORKDIR /babbagecoin/
-# COPY . ./
-# RUN pip install -r requirements.txt
-# ENTRYPOINT python src/app.py

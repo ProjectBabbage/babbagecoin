@@ -132,7 +132,7 @@ dmypy.json
 .idea
 
 # vscode
-.vscode
+.vscode/settings.json
 
 # containing the private keys
 .keys

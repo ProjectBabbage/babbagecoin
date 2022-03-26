@@ -21,7 +21,7 @@ Run locally the master or miner:
 
 `make (master | miner)` 
 
-There is also VSCode actions for debugging each one of them.
+There are also VSCode actions for debugging each one of them.
 
 ## Interact with the blockchain
 
