@@ -76,7 +76,7 @@ class SignedTransaction:
     signature: str
 
     def hash(self):
-        signedTxString = str(self.transaction) + str(self.signature)
+        signedTxString = self.transaction.hash() + self.signature
         hasher = hashlib.sha256()
         hasher.update(signedTxString.encode("utf-8"))
         return hasher.hexdigest()

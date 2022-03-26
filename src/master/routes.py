@@ -28,10 +28,6 @@ sentry_sdk.init(dsn=get_sentry_dsn(), integrations=[FlaskIntegration()])
 app = Flask(__name__)
 
 
-def run():
-    app.run(debug=True, host="0.0.0.0")
-
-
 @app.get("/")
 def print_chain():
     s = ""

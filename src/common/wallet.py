@@ -46,7 +46,6 @@ class Wallet:
 
     def sign(self, transaction: Transaction) -> SignedTransaction:
         transaction_hash = transaction.hash()
-        print(type(transaction_hash), transaction_hash)
 
         signature = self.private_key.sign(
             transaction_hash.encode("utf-8"),
