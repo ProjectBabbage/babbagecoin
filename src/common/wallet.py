@@ -41,10 +41,12 @@ class Wallet:
         )
 
     def load_public_key(self, filepath):
-        return PubKey.load_from_file(filepath)
+        with open(filepath, "rb") as bf:
+            return PubKey.load_from_bytes(bf.read())
 
     def sign(self, transaction: Transaction) -> SignedTransaction:
         transaction_hash = transaction.hash()
+        print(type(transaction_hash), transaction_hash)
 
         signature = self.private_key.sign(
             transaction_hash.encode("utf-8"),
@@ -53,17 +55,17 @@ class Wallet:
         )
         return SignedTransaction(
             transaction=transaction,
-            signature=base64.urlsafe_b64encode(signature).decode(),
+            signature=base64.urlsafe_b64encode(signature).decode("utf-8"),
         )
 
     @staticmethod
     def verify_signature(signed_transaction: SignedTransaction) -> bool:
 
-        signature = base64.b64decode(signed_transaction.signature.encode())
+        signature = base64.urlsafe_b64encode(signed_transaction.signature.encode("utf-8"))
         transaction = signed_transaction.transaction
 
-        if transaction.hash() != MINING_REWARD_ADDRESS:
-            signed_transaction.transaction.sender.verify(
+        if transaction.sender.dumps() != MINING_REWARD_ADDRESS:
+            signed_transaction.transaction.sender.rsa_pub_key.verify(
                 signature,
                 transaction.hash(),
                 padding.PSS(
@@ -72,4 +74,4 @@ class Wallet:
                 ),
                 hashes.SHA256(),
             )
-            # can raise an InvalidSignature 
+            # can raise an InvalidSignature

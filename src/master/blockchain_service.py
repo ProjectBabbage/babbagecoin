@@ -64,16 +64,19 @@ def make_primary_between(start, end):
         prev.next_blocks[i] = temp
         make_primary_between(start, prev)
 
+
 def sane_from(start: Block):
-    seen_txs = set()    
+    seen_txs = set()
+
     def verify_block(block: Block):
         if not verify_block_hash(block):
             raise InvalidBlockHash
         for stx in block.signed_transactions:
             Wallet.verify_signature(stx)
-            if stx.transaction in seen_txs:
+            if stx in seen_txs:
                 raise DuplicatedTransaction
             seen_txs.add(stx)
+
     try:
         b = start
         while True:
@@ -85,6 +88,7 @@ def sane_from(start: Block):
     except (InvalidBlockHash, InvalidSignature, DuplicatedTransaction) as e:
         print(e)
         return False
+
 
 def refresh_transactions_switch(start: Block, ancestor: Block, end: Block):
     # take into account transactions of the old branch start
@@ -157,6 +161,8 @@ def update_blockchain(anchor: Block, leaf: Block):
             anchor_prev.next_blocks.pop()
             remove_block_tbl_from(anchor)
             print("Discarding block due to a already validated transaction.")
+
+
 """
 Verification of an already validated transaction (b) ending up in rejecting the incomming blocks:
 
@@ -214,6 +220,7 @@ ancestor            anchor    leaf                      │
      └─────┘       └─────┘                       └─────┘       └─────┘     └─────┘
 
 """
+
 
 def get_head() -> Block:
     return head

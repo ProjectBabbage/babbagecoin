@@ -2,25 +2,23 @@ from typing import Dict, Any
 
 from marshmallow import Schema, fields, post_load
 
-from common.models import Transaction, SignedTransaction, Block
+from common.models import PubKey, Transaction, SignedTransaction, Block, MINING_REWARD_ADDRESS
 
 
-# class _PubKeySchema(Schema):
-#     # pub_key = load_pem_public_key
-#     # pub_key = fields.String()
+class PubKeyField(fields.Field):
+    def _serialize(self, value: PubKey, attr: str, obj: Any, **kwargs) -> str:
+        return value.dumps()
 
-#     @post_load
-#     def _make_model(self, data: str, **kwargs) -> PubKey:
-#         return PubKey(data)
-
-
-# PubKeySchema = _PubKeySchema()
+    def _deserialize(self, value: str, attr, data, **kwargs) -> PubKey:
+        if value == MINING_REWARD_ADDRESS:
+            return PubKey(MINING_REWARD_ADDRESS)
+        return PubKey.load_from_bytes(value.encode("utf-8"))
 
 
 class _TransactionSchema(Schema):
     uuid = fields.String()
-    receiver = fields.String() # TODO get a RSAPubKey
-    sender = fields.String() # TODO
+    receiver = PubKeyField()
+    sender = PubKeyField()
     amount = fields.Float()
     fees = fields.Float()
 

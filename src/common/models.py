@@ -1,4 +1,3 @@
-from curses.ascii import RS
 import hashlib
 
 from dataclasses import dataclass, field
@@ -9,22 +8,30 @@ from cryptography.hazmat.primitives.serialization import load_pem_public_key
 
 MINING_REWARD_ADDRESS = "BABBAGE"
 
+
 @dataclass
 class PubKey:
-    pub_key: RSAPublicKey or str
+    rsa_pub_key: RSAPublicKey or str
 
     @staticmethod
-    def load_from_file(filepath: str):
-        with open(filepath, 'rb') as bf:
-            return PubKey(load_pem_public_key(bf.read()))
+    def load_from_bytes(b: bytes):
+        return PubKey(load_pem_public_key(b))
 
-    def hash(self):
-        if self.pub_key == MINING_REWARD_ADDRESS:
-            return MINING_REWARD_ADDRESS
-        encoded_key = self.pub_key.public_bytes(
+    def dump(self) -> bytes:
+        if self.rsa_pub_key == MINING_REWARD_ADDRESS:
+            return MINING_REWARD_ADDRESS.encode("utf-8")
+        return self.rsa_pub_key.public_bytes(
             encoding=serialization.Encoding.PEM,
             format=serialization.PublicFormat.SubjectPublicKeyInfo,
         )
+
+    def dumps(self) -> str:
+        return self.dump().decode("utf-8")
+
+    def hash(self) -> str:
+        if self.rsa_pub_key == MINING_REWARD_ADDRESS:
+            return MINING_REWARD_ADDRESS
+        encoded_key = self.dump()
         hasher = hashlib.sha256()
         hasher.update(encoded_key)
         return hasher.hexdigest()
@@ -42,10 +49,12 @@ class Transaction:
     fees: float = 0
 
     def hash(self):
+        if self.sender.rsa_pub_key == MINING_REWARD_ADDRESS:
+            return MINING_REWARD_ADDRESS
         hasher = hashlib.sha256()
         hasher.update(self.uuid.encode("utf-8"))
-        hasher.update(self.sender.hash().encode("utf-8"))
-        hasher.update(self.receiver.hash().encode("utf-8"))
+        hasher.update(self.sender.dump())
+        hasher.update(self.receiver.dump())
         hasher.update(str(self.amount).encode("utf-8"))
         hasher.update(str(self.fees).encode("utf-8"))
         return hasher.hexdigest()
