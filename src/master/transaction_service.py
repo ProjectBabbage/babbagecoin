@@ -38,7 +38,7 @@ def refresh_transactions_from_old_block(block: Block):
     global validated_transactions
     for stx in block.signed_transactions:
         validated_transactions.remove(stx)
-        if stx.transaction.sender != MINING_REWARD_ADDRESS:
+        if stx.transaction.sender.rsa_pub_key != MINING_REWARD_ADDRESS:
             mem_pool.add(stx)
 
 

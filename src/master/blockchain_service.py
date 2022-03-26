@@ -86,7 +86,7 @@ def sane_from(start: Block):
             b = b.next_blocks[0]
         return True
     except (InvalidBlockHash, InvalidSignature, DuplicatedTransaction) as e:
-        print(e)
+        print("INVALID BLOCK", e)
         return False
 
 
