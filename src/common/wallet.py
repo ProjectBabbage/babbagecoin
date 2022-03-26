@@ -40,10 +40,6 @@ class Wallet:
             encryption_algorithm=serialization.NoEncryption(),
         )
 
-    def load_public_key(self, filepath):
-        with open(filepath, "rb") as bf:
-            return PubKey.load_from_bytes(bf.read())
-
     def sign(self, transaction: Transaction) -> SignedTransaction:
         transaction_hash = transaction.hash()
 
@@ -66,11 +62,17 @@ class Wallet:
         if transaction.sender.dumps() != MINING_REWARD_ADDRESS:
             signed_transaction.transaction.sender.rsa_pub_key.verify(
                 signature,
-                transaction.hash(),
+                transaction.hash().encode("utf-8"),
                 padding.PSS(
                     mgf=padding.MGF1(hashes.SHA256()),
                     salt_length=padding.PSS.MAX_LENGTH,
                 ),
                 hashes.SHA256(),
             )
-            # can raise an InvalidSignature
+            # can raise an InvalidSignature exception
+
+    @staticmethod
+    def load_pub_key(filepath):
+        with open(filepath, "rb") as bf:
+            return PubKey.load_from_bytes(bf.read())
+

@@ -28,12 +28,12 @@ class Client:
 
     def load_contacts(self):
         # load public keys from file in pub_keys/ and return a dict {hash_pk: PubKey}
-        address_to_pk = {}
+        contact_name_to_pk = {}
         for filepath in os.listdir("./pub_keys"):
-            pk = PubKey(self.wallet.load_public_key(f"{os.getcwd()}/pub_keys/{filepath}"))
-            name = filepath.split(".")[0]
-            address_to_pk[name] = pk
-        return address_to_pk
+            absolute_filepath = f"{os.getcwd()}/pub_keys/{filepath}"
+            name, pk = filepath.split(".")[0], Wallet.load_pub_key(absolute_filepath)
+            contact_name_to_pk[name] = pk
+        return contact_name_to_pk
 
     def send_transaction(self, receiver: str, amount: float, fees: float):
         print(f"Sending {amount} to {receiver} with fees {fees}")

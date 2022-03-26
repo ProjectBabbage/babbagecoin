@@ -1,6 +1,9 @@
 launch:
 	docker-compose --project-directory=. -f nodes/docker-compose.yml up --build
 
+stop:
+	docker-compose --project-directory=. -f nodes/docker-compose.yml down
+
 master:
 	bash bbc.sh master
 
