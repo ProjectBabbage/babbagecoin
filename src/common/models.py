@@ -13,20 +13,16 @@ MINING_REWARD_ADDRESS = "BABBAGE"
 class PubKey:
     rsa_pub_key: RSAPublicKey or str
 
-    @staticmethod
-    def load_from_bytes(b: bytes):
-        return PubKey(load_pem_public_key(b))
-
     def dump(self) -> bytes:
         if self.rsa_pub_key == MINING_REWARD_ADDRESS:
-            return MINING_REWARD_ADDRESS.encode("utf-8")
+            return MINING_REWARD_ADDRESS.encode()
         return self.rsa_pub_key.public_bytes(
             encoding=serialization.Encoding.PEM,
             format=serialization.PublicFormat.SubjectPublicKeyInfo,
         )
-
-    def dumps(self) -> str:
-        return self.dump().decode("utf-8")
+    
+    def dumps(self):
+        return self.dump().decode()
 
     def hash(self) -> str:
         if self.rsa_pub_key == MINING_REWARD_ADDRESS:
@@ -38,6 +34,12 @@ class PubKey:
 
     def __str__(self):
         return self.hash()
+    
+    @staticmethod
+    def load_from_bytes(rsa_pk: bytes):
+        if rsa_pk.decode() == MINING_REWARD_ADDRESS:
+            return PubKey(MINING_REWARD_ADDRESS)
+        return PubKey(load_pem_public_key(rsa_pk))
 
 
 @dataclass
@@ -52,11 +54,11 @@ class Transaction:
         if self.sender.rsa_pub_key == MINING_REWARD_ADDRESS:
             return MINING_REWARD_ADDRESS
         hasher = hashlib.sha256()
-        hasher.update(self.uuid.encode("utf-8"))
+        hasher.update(self.uuid.encode())
         hasher.update(self.sender.dump())
         hasher.update(self.receiver.dump())
-        hasher.update(str(self.amount).encode("utf-8"))
-        hasher.update(str(self.fees).encode("utf-8"))
+        hasher.update(str(self.amount).encode())
+        hasher.update(str(self.fees).encode())
         return hasher.hexdigest()
 
     def __str__(self):
@@ -68,17 +70,20 @@ class Transaction:
         return (
             f"uuid: {uuid}, sender: {sender}, receiver: {receiver}, amount: {amount}, fees: {fees}"
         )
+    
+    def __repr__(self) -> str:
+        return f"Transaction({str(self)})"
 
 
 @dataclass
 class SignedTransaction:
     transaction: Transaction
-    signature: str
+    signature: bytes
 
     def hash(self):
-        signedTxString = self.transaction.hash() + self.signature
         hasher = hashlib.sha256()
-        hasher.update(signedTxString.encode("utf-8"))
+        hasher.update(self.transaction.hash().encode())
+        hasher.update(self.signature)
         return hasher.hexdigest()
 
     def __hash__(self):
@@ -108,10 +113,10 @@ class Block:
                 self._hash = ""
             else:
                 hasher = hashlib.sha256()
-                hasher.update(self.prev_hash.encode("utf-8"))
-                for transaction in self.signed_transactions:
-                    hasher.update(transaction.signature.encode("utf-8"))
-                hasher.update(f"{self.nonce}".encode("utf-8"))
+                hasher.update(self.prev_hash.encode())
+                for stx in self.signed_transactions:
+                    hasher.update(stx.signature)
+                hasher.update(f"{self.nonce}".encode())
                 self._hash = hasher.hexdigest()
         return self._hash
 

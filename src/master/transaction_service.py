@@ -50,8 +50,10 @@ def forge_reward_transaction() -> SignedTransaction:
         receiver=wallet.get_public_key(),
         amount=100,
     )
-    return wallet.sign(transaction)
-
+    return SignedTransaction(
+        transaction=transaction,
+        signature=wallet.sign(transaction),
+    )
 
 reward_transaction = forge_reward_transaction()
 

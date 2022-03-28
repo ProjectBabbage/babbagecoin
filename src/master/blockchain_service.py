@@ -66,6 +66,14 @@ def make_primary_between(start, end):
 
 
 def sane_from(start: Block):
+    """
+    Run verify_block on each block from start.
+    Returns False if a unconsistency is detected:
+    - InvalidBlockHash: the block hash doesn't match the required difficulty
+    - DuplicatedTransaction: the same transaction appeared twice in the blocks.
+    - InvalidSignature: the signature for a stx is incorrect.
+
+    """
     seen_txs = set()
 
     def verify_block(block: Block):
@@ -79,15 +87,19 @@ def sane_from(start: Block):
 
     try:
         b = start
-        while True:
-            verify_block(b)
-            if len(b.next_blocks) == 0:
-                break
+        verify_block(b)
+        while len(b.next_blocks) != 0:
             b = b.next_blocks[0]
+            verify_block(b)
         return True
-    except (InvalidBlockHash, InvalidSignature, DuplicatedTransaction) as e:
-        print("INVALID BLOCK", e)
+    except InvalidSignature as e:
+        print(f"INVALID SIGNATURE in {b.signed_transactions}", e)
         return False
+    except InvalidBlockHash as e:
+        print("INVALID block hash", e)
+        return False
+    except DuplicatedTransaction as e:
+        print("DUPLICATED transaction", e)
 
 
 def refresh_transactions_switch(start: Block, ancestor: Block, end: Block):
@@ -161,11 +173,8 @@ def update_blockchain(anchor: Block, leaf: Block):
             anchor_prev.next_blocks.pop()
             remove_block_tbl_from(anchor)
             print("Discarding block due to a already validated transaction.")
-
-
 """
 Verification of an already validated transaction (b) ending up in rejecting the incomming blocks:
-
 
 ancestor            anchor    leaf                      │
  ┌───┐    ┌───┐     ┌───┐     ┌───┐          ┌───┐    ┌─▼─┐     ┌───┐     ┌───┐
@@ -190,8 +199,6 @@ ancestor            anchor    leaf                      │
      │  y  │       │     │                       │     │       │  x  │
      │     │       │     │                       │     │       │  y  │
      └─────┘       └─────┘                       └─────┘       └─────┘
-
-                                                            │
                                                             │
                                                             │
                                                             ▼

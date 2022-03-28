@@ -1,12 +1,9 @@
-import base64
 import os
 
-from cryptography.hazmat.backends.openssl.rsa import RSAPublicKey
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import rsa, padding
 from cryptography.hazmat.primitives.asymmetric.rsa import RSAPrivateKey
 from cryptography.hazmat.primitives.serialization import load_pem_private_key
-from cryptography.hazmat.primitives.serialization import load_pem_public_key
 
 from common.models import MINING_REWARD_ADDRESS, PubKey, Transaction, SignedTransaction
 
@@ -40,29 +37,34 @@ class Wallet:
             encryption_algorithm=serialization.NoEncryption(),
         )
 
-    def sign(self, transaction: Transaction) -> SignedTransaction:
-        transaction_hash = transaction.hash()
-
-        signature = self.private_key.sign(
-            transaction_hash.encode("utf-8"),
+    def sign(self, transaction: Transaction) -> bytes:
+        return self.private_key.sign(
+            transaction.hash().encode(),
             padding.PSS(mgf=padding.MGF1(hashes.SHA256()), salt_length=padding.PSS.MAX_LENGTH),
-            hashes.SHA256(),
-        )
-        return SignedTransaction(
-            transaction=transaction,
-            signature=base64.urlsafe_b64encode(signature).decode("utf-8"),
+            hashes.SHA256()
         )
 
     @staticmethod
     def verify_signature(signed_transaction: SignedTransaction) -> bool:
 
-        signature = base64.urlsafe_b64encode(signed_transaction.signature.encode("utf-8"))
+        signature = signed_transaction.signature
         transaction = signed_transaction.transaction
-
-        if transaction.sender.dumps() != MINING_REWARD_ADDRESS:
+        transaction_hash = transaction.hash().encode()
+        
+        if transaction.sender.dumps() == MINING_REWARD_ADDRESS:
+            signed_transaction.transaction.receiver.rsa_pub_key.verify(
+                signature,
+                transaction_hash,
+                padding.PSS(
+                    mgf=padding.MGF1(hashes.SHA256()),
+                    salt_length=padding.PSS.MAX_LENGTH,
+                ),
+                hashes.SHA256(),
+            )
+        else:
             signed_transaction.transaction.sender.rsa_pub_key.verify(
                 signature,
-                transaction.hash().encode("utf-8"),
+                transaction_hash,
                 padding.PSS(
                     mgf=padding.MGF1(hashes.SHA256()),
                     salt_length=padding.PSS.MAX_LENGTH,
