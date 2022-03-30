@@ -27,17 +27,10 @@ class _TransactionSchema(Schema):
 
 TransactionSchema = _TransactionSchema()
 
-class SignatureField(fields.Field):
-    def _serialize(self, value: bytes, attr: str, obj: Any, **kwargs) -> str:
-        return bytes.hex(value)
-
-    def _deserialize(self, value: str, attr: str, data: Any, **kwargs) -> bytes:
-        return bytes.fromhex(value)
-
 
 class _SignedTransactionSchema(Schema):
     transaction = fields.Nested(TransactionSchema)
-    signature = SignatureField()
+    signature = fields.String()
 
     @post_load
     def _make_model(self, data: Dict[str, Any], **kwargs) -> SignedTransaction:

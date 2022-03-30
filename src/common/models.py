@@ -78,12 +78,12 @@ class Transaction:
 @dataclass
 class SignedTransaction:
     transaction: Transaction
-    signature: bytes
+    signature: str
 
     def hash(self):
         hasher = hashlib.sha256()
         hasher.update(self.transaction.hash().encode())
-        hasher.update(self.signature)
+        hasher.update(self.signature.encode())
         return hasher.hexdigest()
 
     def __hash__(self):
@@ -115,7 +115,7 @@ class Block:
                 hasher = hashlib.sha256()
                 hasher.update(self.prev_hash.encode())
                 for stx in self.signed_transactions:
-                    hasher.update(stx.signature)
+                    hasher.update(stx.signature.encode())
                 hasher.update(f"{self.nonce}".encode())
                 self._hash = hasher.hexdigest()
         return self._hash

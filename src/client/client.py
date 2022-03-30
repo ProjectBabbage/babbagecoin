@@ -43,8 +43,8 @@ class Client:
             uuid=str(uuid.uuid4()),
             sender=self.wallet.get_public_key(),
             receiver=self.contacts[receiver],
-            amount=amount,
-            fees=fees,
+            amount=float(amount),
+            fees=float(fees),
         )
 
         signedTx = SignedTransaction(tx, self.wallet.sign(tx))

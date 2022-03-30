@@ -1,5 +1,4 @@
-from cryptography.exceptions import InvalidSignature
-from common.exceptions import DuplicatedTransaction, InvalidBlockHash
+from common.exceptions import DuplicatedTransaction, InvalidBlockHash, InvalidSignatureForTransaction
 from common.models import Block
 from common.block_service import verify_block_hash
 from common.wallet import Wallet
@@ -78,11 +77,11 @@ def sane_from(start: Block):
 
     def verify_block(block: Block):
         if not verify_block_hash(block):
-            raise InvalidBlockHash
+            raise InvalidBlockHash(f"INVALID BLOCK HASH {block.hash()}")
         for stx in block.signed_transactions:
-            Wallet.verify_signature(stx)
+            Wallet.verify_signature(stx)  # can raise an InvalidSignatureForTransaction
             if stx in seen_txs:
-                raise DuplicatedTransaction
+                raise DuplicatedTransaction(f"DUPLICATED TRANSACTION {stx}")
             seen_txs.add(stx)
 
     try:
@@ -92,15 +91,10 @@ def sane_from(start: Block):
             b = b.next_blocks[0]
             verify_block(b)
         return True
-    except InvalidSignature as e:
-        print(f"INVALID SIGNATURE in {b.signed_transactions}", e)
+    except (InvalidBlockHash, InvalidSignatureForTransaction, DuplicatedTransaction) as e:
+        print(e)
         return False
-    except InvalidBlockHash as e:
-        print("INVALID block hash", e)
-        return False
-    except DuplicatedTransaction as e:
-        print("DUPLICATED transaction", e)
-
+        
 
 def refresh_transactions_switch(start: Block, ancestor: Block, end: Block):
     # take into account transactions of the old branch start

@@ -1,12 +1,14 @@
+from sentry_sdk import capture_message
 import os
 
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import rsa, padding
 from cryptography.hazmat.primitives.asymmetric.rsa import RSAPrivateKey
 from cryptography.hazmat.primitives.serialization import load_pem_private_key
+from cryptography.exceptions import InvalidSignature
 
 from common.models import MINING_REWARD_ADDRESS, PubKey, Transaction, SignedTransaction
-
+from common.exceptions import InvalidSignatureForTransaction
 
 class Wallet:
     private_key: RSAPrivateKey
@@ -37,41 +39,33 @@ class Wallet:
             encryption_algorithm=serialization.NoEncryption(),
         )
 
-    def sign(self, transaction: Transaction) -> bytes:
+    def sign(self, transaction: Transaction) -> str:
         return self.private_key.sign(
             transaction.hash().encode(),
             padding.PSS(mgf=padding.MGF1(hashes.SHA256()), salt_length=padding.PSS.MAX_LENGTH),
             hashes.SHA256()
-        )
+        ).hex()
 
     @staticmethod
     def verify_signature(signed_transaction: SignedTransaction) -> bool:
 
-        signature = signed_transaction.signature
+        signature = bytes.fromhex(signed_transaction.signature)
         transaction = signed_transaction.transaction
         transaction_hash = transaction.hash().encode()
         
-        if transaction.sender.dumps() == MINING_REWARD_ADDRESS:
-            signed_transaction.transaction.receiver.rsa_pub_key.verify(
-                signature,
-                transaction_hash,
-                padding.PSS(
-                    mgf=padding.MGF1(hashes.SHA256()),
-                    salt_length=padding.PSS.MAX_LENGTH,
-                ),
-                hashes.SHA256(),
-            )
-        else:
-            signed_transaction.transaction.sender.rsa_pub_key.verify(
-                signature,
-                transaction_hash,
-                padding.PSS(
-                    mgf=padding.MGF1(hashes.SHA256()),
-                    salt_length=padding.PSS.MAX_LENGTH,
-                ),
-                hashes.SHA256(),
-            )
-            # can raise an InvalidSignature exception
+        if transaction.sender.dumps() != MINING_REWARD_ADDRESS:
+            try:
+                signed_transaction.transaction.sender.rsa_pub_key.verify(
+                    signature,
+                    transaction_hash,
+                    padding.PSS(
+                        mgf=padding.MGF1(hashes.SHA256()),
+                        salt_length=padding.PSS.MAX_LENGTH,
+                    ),
+                    hashes.SHA256(),
+                )
+            except InvalidSignature:
+                raise InvalidSignatureForTransaction(f"INVALID SIGNATURE {signed_transaction.signature}, for stx {signed_transaction}, of tx hash: {transaction_hash}")
 
     @staticmethod
     def load_pub_key(filepath):
