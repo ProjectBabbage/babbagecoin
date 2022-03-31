@@ -33,7 +33,9 @@ Use the bbc.sh script (chmod +x it first):
 
 `./bbc.sh tx MARTIAL 10 0.3` --> sending 10BBC with 0.5BBC fees to MARTIAL
 
-(`make tx` is a shortcut for the above transaction)
+(`make tx` is a shortcut for the above command)
 
 ### Balance
-`./bbc balance` to get your wallet balance
+`./bbc.sh balance` to get your wallet balance
+
+(`make balance` is a shortcut for the above command)

@@ -1,4 +1,3 @@
-from sentry_sdk import capture_message
 import os
 
 from cryptography.hazmat.primitives import hashes, serialization
