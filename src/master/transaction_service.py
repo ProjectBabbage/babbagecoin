@@ -1,11 +1,12 @@
 import uuid
 
 from common.models import (
+    MINING_REWARD_AMOUNT,
+    MINING_REWARD_ADDRESS,
     PubKey,
     Block,
     SignedTransaction,
     Transaction,
-    MINING_REWARD_ADDRESS,
 )
 from common.wallet import Wallet
 
@@ -38,7 +39,7 @@ def refresh_transactions_from_old_block(block: Block):
     global validated_transactions
     for stx in block.signed_transactions:
         validated_transactions.remove(stx)
-        if stx.transaction.sender.rsa_pub_key != MINING_REWARD_ADDRESS:
+        if stx.transaction.sender.dumps() != MINING_REWARD_ADDRESS:
             mem_pool.add(stx)
 
 
@@ -48,12 +49,13 @@ def forge_reward_transaction() -> SignedTransaction:
         uuid=str(uuid.uuid4()),
         sender=PubKey(MINING_REWARD_ADDRESS),
         receiver=wallet.get_public_key(),
-        amount=100,
+        amount=MINING_REWARD_AMOUNT,
     )
     return SignedTransaction(
         transaction=transaction,
         signature=wallet.sign(transaction),
     )
+
 
 reward_transaction = forge_reward_transaction()
 

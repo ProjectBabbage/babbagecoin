@@ -6,6 +6,7 @@ from cryptography.hazmat.backends.openssl.rsa import RSAPublicKey
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.serialization import load_pem_public_key
 
+MINING_REWARD_AMOUNT = 100
 MINING_REWARD_ADDRESS = "BABBAGE"
 
 
@@ -20,7 +21,7 @@ class PubKey:
             encoding=serialization.Encoding.PEM,
             format=serialization.PublicFormat.SubjectPublicKeyInfo,
         )
-    
+
     def dumps(self):
         return self.dump().decode()
 
@@ -34,7 +35,7 @@ class PubKey:
 
     def __str__(self):
         return self.hash()
-    
+
     @staticmethod
     def load_from_bytes(rsa_pk: bytes):
         if rsa_pk.decode() == MINING_REWARD_ADDRESS:
@@ -70,7 +71,7 @@ class Transaction:
         return (
             f"uuid: {uuid}, sender: {sender}, receiver: {receiver}, amount: {amount}, fees: {fees}"
         )
-    
+
     def __repr__(self) -> str:
         return f"Transaction({str(self)})"
 
@@ -86,8 +87,13 @@ class SignedTransaction:
         hasher.update(self.signature.encode())
         return hasher.hexdigest()
 
+    # __hash__() and __eq__() should be defined for 
+    # sets of SignedTransaction to work propely
     def __hash__(self):
         return int(self.hash(), 16)
+
+    def __eq__(self, stx: "SignedTransaction"):
+        return self.hash() == stx.hash()
 
     def __str__(self):
         return f"stx({self.transaction})"

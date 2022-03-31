@@ -1,5 +1,11 @@
-from common.exceptions import DuplicatedTransaction, InvalidBlockHash, InvalidSignatureForTransaction
-from common.models import Block
+from common.exceptions import (
+    DuplicatedTransaction,
+    InvalidBlockHash,
+    InvalidSignatureForTransaction,
+    RewardTransactionNotUnique,
+    BadRewardTransaction,
+)
+from common.models import Block, MINING_REWARD_AMOUNT, MINING_REWARD_ADDRESS
 from common.block_service import verify_block_hash
 from common.wallet import Wallet
 from master.transaction_service import (
@@ -71,14 +77,23 @@ def sane_from(start: Block):
     - InvalidBlockHash: the block hash doesn't match the required difficulty
     - DuplicatedTransaction: the same transaction appeared twice in the blocks.
     - InvalidSignature: the signature for a stx is incorrect.
-
+    - BadRewardTransaction: the reward transaction as bad amount or bad address
+    - RewardTransactionNotUnique: the reward transaction address appears after the first tx 
     """
     seen_txs = set()
 
     def verify_block(block: Block):
         if not verify_block_hash(block):
             raise InvalidBlockHash(f"INVALID BLOCK HASH {block.hash()}")
-        for stx in block.signed_transactions:
+        for i, stx in enumerate(block.signed_transactions):
+            if (
+                i == 0
+                and stx.transaction.sender.dumps() != MINING_REWARD_ADDRESS
+                and stx.transaction.amount != MINING_REWARD_AMOUNT
+            ):
+                raise BadRewardTransaction(f"Bad block reward transaction {stx}")
+            if i != 0 and stx.transaction.sender.dumps() == MINING_REWARD_ADDRESS:
+                raise RewardTransactionNotUnique(f"REWARD TRANSACTION NOT UNIQUE {stx}")
             Wallet.verify_signature(stx)  # can raise an InvalidSignatureForTransaction
             if stx in seen_txs:
                 raise DuplicatedTransaction(f"DUPLICATED TRANSACTION {stx}")
@@ -91,10 +106,16 @@ def sane_from(start: Block):
             b = b.next_blocks[0]
             verify_block(b)
         return True
-    except (InvalidBlockHash, InvalidSignatureForTransaction, DuplicatedTransaction) as e:
+    except (
+        InvalidBlockHash,
+        RewardTransactionNotUnique,
+        InvalidSignatureForTransaction,
+        DuplicatedTransaction,
+        BadRewardTransaction,
+    ) as e:
         print(e)
         return False
-        
+
 
 def refresh_transactions_switch(start: Block, ancestor: Block, end: Block):
     # take into account transactions of the old branch start
@@ -167,60 +188,60 @@ def update_blockchain(anchor: Block, leaf: Block):
             anchor_prev.next_blocks.pop()
             remove_block_tbl_from(anchor)
             print("Discarding block due to a already validated transaction.")
-"""
-Verification of an already validated transaction (b) ending up in rejecting the incomming blocks:
-
-ancestor            anchor    leaf                      │
- ┌───┐    ┌───┐     ┌───┐     ┌───┐          ┌───┐    ┌─▼─┐     ┌───┐     ┌───┐
- │ b │    │ f │     │ a │     │ c │          │ b │    │ f │     │ a │     │ c │
- │ e ├────┤   │     │ b ├─────┤ d │          │ e ├────┤   │     │ b ├─────┤ d │
- └──┬┘    └───┘     └───┘     └───┘          └──┬┘    └───┘     └───┘     └───┘
-    │              head                         │
-    │     ┌───┐   ┌───┐                         │     ┌───┐   ┌───┐
-    └─────┤ r ├───┤ x │                         └─────┤ r ├───┤ x │
-          │ t │   │ y │                               │ t │   │ y │
-          └───┘   └─▲─┘            ────────►          └───┘   └───┘
-                    │
-
-     validated     mempool                       validated     mempool
-     ┌─────┐       ┌─────┐                       ┌─────┐       ┌─────┐
-     │     │       │     │                       │     │       │     │
-     │  b  │       │  a  │                       │  b  │       │  a  │
-     │  e  │       │  c  │                       │  e  │       │  c  │
-     │  r  │       │  f  │                       │  f  │       │     │
-     │  t  │       │     │                       │     │       │  r  │
-     │  x  │       │     │                       │     │       │  t  │
-     │  y  │       │     │                       │     │       │  x  │
-     │     │       │     │                       │     │       │  y  │
-     └─────┘       └─────┘                       └─────┘       └─────┘
-                                                            │
-                                                            │
-                                                            ▼
-                                                                  │
- ┌───┐    ┌───┐                              ┌───┐    ┌───┐     ┌─▼─┐     ┌───┐
- │ b │    │ f │                              │ b │    │ f │     │ a │     │ c │
- │ e ├────┤   │                              │ e ├────┤   │     │ b ├─────┤ d │
- └──┬┘    └───┘                              └──┬┘    └───┘     └───┘     └───┘
-    │                                           │
-    │     ┌───┐   ┌───┐                         │     ┌───┐   ┌───┐
-    └─────┤ r ├───┤ x │                         └─────┤ r ├───┤ x │
-          │ t │   │ y │            ◄────────          │ t │   │ y │
-          └───┘   └─▲─┘                               └───┘   └───┘
-                    │
-
-     validated     mempool                       validated     mempool     excess
-     ┌─────┐       ┌─────┐                       ┌─────┐       ┌─────┐     ┌─────┐
-     │     │       │     │                       │     │       │     │     │     │
-     │  b  │       │  a  │                       │  b  │       │     │     │  b  │
-     │  e  │       │  c  │                       │  e  │       │  c  │     │     │
-     │  r  │       │  f  │                       │  f  │       │     │     │     │
-     │  t  │       │     │                       │  a  │       │  r  │     │     │
-     │  x  │       │     │                       │     │       │  t  │     │     │
-     │  y  │       │     │                       │     │       │  x  │     │     │
-     │     │       │     │                       │     │       │  y  │     │     │
-     └─────┘       └─────┘                       └─────┘       └─────┘     └─────┘
-
-"""
+    """
+    Verification of an already validated transaction (b) ending up in rejecting the incoming blocks:
+    
+    ancestor            anchor    leaf                      │
+     ┌───┐    ┌───┐     ┌───┐     ┌───┐          ┌───┐    ┌─▼─┐     ┌───┐     ┌───┐
+     │ b │    │ f │     │ a │     │ c │          │ b │    │ f │     │ a │     │ c │
+     │ e ├────┤   │     │ b ├─────┤ d │          │ e ├────┤   │     │ b ├─────┤ d │
+     └──┬┘    └───┘     └───┘     └───┘          └──┬┘    └───┘     └───┘     └───┘
+        │              head                         │
+        │     ┌───┐   ┌───┐                         │     ┌───┐   ┌───┐
+        └─────┤ r ├───┤ x │                         └─────┤ r ├───┤ x │
+              │ t │   │ y │                               │ t │   │ y │
+              └───┘   └─▲─┘            ────────►          └───┘   └───┘
+                        │
+    
+         validated     mempool                       validated     mempool
+         ┌─────┐       ┌─────┐                       ┌─────┐       ┌─────┐
+         │     │       │     │                       │     │       │     │
+         │  b  │       │  a  │                       │  b  │       │  a  │
+         │  e  │       │  c  │                       │  e  │       │  c  │
+         │  r  │       │  f  │                       │  f  │       │     │
+         │  t  │       │     │                       │     │       │  r  │
+         │  x  │       │     │                       │     │       │  t  │
+         │  y  │       │     │                       │     │       │  x  │
+         │     │       │     │                       │     │       │  y  │
+         └─────┘       └─────┘                       └─────┘       └─────┘
+                                                                │
+                                                                │
+                                                                ▼
+                                                                      │
+     ┌───┐    ┌───┐                              ┌───┐    ┌───┐     ┌─▼─┐     ┌───┐
+     │ b │    │ f │                              │ b │    │ f │     │ a │     │ c │
+     │ e ├────┤   │                              │ e ├────┤   │     │ b ├─────┤ d │
+     └──┬┘    └───┘                              └──┬┘    └───┘     └───┘     └───┘
+        │                                           │
+        │     ┌───┐   ┌───┐                         │     ┌───┐   ┌───┐
+        └─────┤ r ├───┤ x │                         └─────┤ r ├───┤ x │
+              │ t │   │ y │            ◄────────          │ t │   │ y │
+              └───┘   └─▲─┘                               └───┘   └───┘
+                        │
+    
+         validated     mempool                       validated     mempool     excess
+         ┌─────┐       ┌─────┐                       ┌─────┐       ┌─────┐     ┌─────┐
+         │     │       │     │                       │     │       │     │     │     │
+         │  b  │       │  a  │                       │  b  │       │     │     │  b  │
+         │  e  │       │  c  │                       │  e  │       │  c  │     │     │
+         │  r  │       │  f  │                       │  f  │       │     │     │     │
+         │  t  │       │     │                       │  a  │       │  r  │     │     │
+         │  x  │       │     │                       │     │       │  t  │     │     │
+         │  y  │       │     │                       │     │       │  x  │     │     │
+         │     │       │     │                       │     │       │  y  │     │     │
+         └─────┘       └─────┘                       └─────┘       └─────┘     └─────┘
+    
+    """
 
 
 def get_head() -> Block:

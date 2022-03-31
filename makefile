@@ -13,6 +13,9 @@ miner:
 tx:
 	bash bbc.sh tx MARTIAL 5 0.3
 
+balance:
+	bash bbc.sh balance
+
 docker-image:
 	docker build . -t base_image_bbc
 
