@@ -23,8 +23,9 @@ from master.transaction_service import (
     mem_pool,
 )
 
-wallet = Wallet()
 sentry_sdk.init(dsn=get_sentry_dsn(), integrations=[FlaskIntegration()])
+
+wallet = Wallet()
 app = Flask(__name__)
 
 

@@ -6,7 +6,7 @@ from common.exceptions import (
     BadRewardTransaction,
 )
 from common.models import Block, MINING_REWARD_AMOUNT, MINING_REWARD_ADDRESS
-from common.block_service import verify_block_hash
+from common.block_service import is_block_hash_valid
 from common.wallet import Wallet
 from master.transaction_service import (
     refresh_transactions_from_old_block,
@@ -75,15 +75,15 @@ def sane_from(start: Block):
     Run verify_block on each block from start.
     Returns False if a unconsistency is detected:
     - InvalidBlockHash: the block hash doesn't match the required difficulty
-    - DuplicatedTransaction: the same transaction appeared twice in the blocks.
-    - InvalidSignature: the signature for a stx is incorrect.
     - BadRewardTransaction: the reward transaction as bad amount or bad address
     - RewardTransactionNotUnique: the reward transaction address appears after the first tx 
+    - InvalidSignature: the signature for a stx is incorrect
+    - DuplicatedTransaction: the same transaction appeared twice in the blocks
     """
     seen_txs = set()
 
     def verify_block(block: Block):
-        if not verify_block_hash(block):
+        if not is_block_hash_valid(block):
             raise InvalidBlockHash(f"INVALID BLOCK HASH {block.hash()}")
         for i, stx in enumerate(block.signed_transactions):
             if (
@@ -91,7 +91,7 @@ def sane_from(start: Block):
                 and stx.transaction.sender.dumps() != MINING_REWARD_ADDRESS
                 and stx.transaction.amount != MINING_REWARD_AMOUNT
             ):
-                raise BadRewardTransaction(f"Bad block reward transaction {stx}")
+                raise BadRewardTransaction(f"BAD REWARD TRANSACTION {stx}")
             if i != 0 and stx.transaction.sender.dumps() == MINING_REWARD_ADDRESS:
                 raise RewardTransactionNotUnique(f"REWARD TRANSACTION NOT UNIQUE {stx}")
             Wallet.verify_signature(stx)  # can raise an InvalidSignatureForTransaction
@@ -108,10 +108,10 @@ def sane_from(start: Block):
         return True
     except (
         InvalidBlockHash,
+        BadRewardTransaction,
         RewardTransactionNotUnique,
         InvalidSignatureForTransaction,
         DuplicatedTransaction,
-        BadRewardTransaction,
     ) as e:
         print(e)
         return False

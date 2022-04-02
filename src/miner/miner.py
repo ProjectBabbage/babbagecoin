@@ -6,7 +6,7 @@ from typing import Optional
 
 from common.models import Block
 from common.schemas import BlockSchema
-from common.block_service import verify_block_hash
+from common.block_service import is_block_hash_valid
 
 url_master = "http://127.0.0.1:5000/"
 hash_count_before_update = 1000000
@@ -55,7 +55,7 @@ def run():
 
     i = 0
     while i < hash_count_before_update:
-        if verify_block_hash(block_store.working_block):
+        if is_block_hash_valid(block_store.working_block):
             print("BLOCK MINED SUCCESSFULLY")
             post_mined_block(block_store.working_block)
             block_store.update_working_block()

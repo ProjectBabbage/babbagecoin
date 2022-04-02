@@ -88,7 +88,7 @@ class SignedTransaction:
         return hasher.hexdigest()
 
     # __hash__() and __eq__() should be defined for 
-    # sets of SignedTransaction to work propely
+    # sets of SignedTransaction to work properly
     def __hash__(self):
         return int(self.hash(), 16)
 
