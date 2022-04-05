@@ -19,8 +19,11 @@ balance:
 docker-image:
 	docker build . -t base_image_bbc
 
-test-2:
+two-nodes:
 	docker-compose --project-directory=. -f nodes/docker-compose-2.yml up --build
 
-test-4:
+four-nodes:
 	docker-compose --project-directory=. -f nodes/docker-compose-4.yml up --build
+
+test:
+	python -m unittest discover --start-directory src
