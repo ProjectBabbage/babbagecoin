@@ -66,7 +66,8 @@ class Wallet:
                 )
             except InvalidSignature:
                 raise InvalidSignatureForTransaction(
-                    f"INVALID SIGNATURE {signed_transaction.signature}, for stx {signed_transaction}, of tx hash: {transaction_hash}"
+                    f"INVALID SIGNATURE {signed_transaction.signature}, for stx "
+                    "{signed_transaction}, of tx hash: {transaction_hash}"
                 )
 
     @staticmethod

@@ -87,7 +87,7 @@ class SignedTransaction:
         hasher.update(self.signature.encode())
         return hasher.hexdigest()
 
-    # __hash__() and __eq__() should be defined for 
+    # __hash__() and __eq__() should be defined for
     # sets of SignedTransaction to work properly
     def __hash__(self):
         return int(self.hash(), 16)

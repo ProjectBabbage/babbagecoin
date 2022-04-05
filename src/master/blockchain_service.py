@@ -76,7 +76,7 @@ def sane_from(start: Block):
     Returns False if a unconsistency is detected:
     - InvalidBlockHash: the block hash doesn't match the required difficulty
     - BadRewardTransaction: the reward transaction as bad amount or bad address
-    - RewardTransactionNotUnique: the reward transaction address appears after the first tx 
+    - RewardTransactionNotUnique: the reward transaction address appears after the first tx
     - InvalidSignature: the signature for a stx is incorrect
     - DuplicatedTransaction: the same transaction appeared twice in the blocks
     """
@@ -190,7 +190,7 @@ def update_blockchain(anchor: Block, leaf: Block):
             print("Discarding block due to a already validated transaction.")
     """
     Verification of an already validated transaction (b) ending up in rejecting the incoming blocks:
-    
+
     ancestor            anchor    leaf                      │
      ┌───┐    ┌───┐     ┌───┐     ┌───┐          ┌───┐    ┌─▼─┐     ┌───┐     ┌───┐
      │ b │    │ f │     │ a │     │ c │          │ b │    │ f │     │ a │     │ c │
@@ -202,7 +202,7 @@ def update_blockchain(anchor: Block, leaf: Block):
               │ t │   │ y │                               │ t │   │ y │
               └───┘   └─▲─┘            ────────►          └───┘   └───┘
                         │
-    
+
          validated     mempool                       validated     mempool
          ┌─────┐       ┌─────┐                       ┌─────┐       ┌─────┐
          │     │       │     │                       │     │       │     │
@@ -228,7 +228,7 @@ def update_blockchain(anchor: Block, leaf: Block):
               │ t │   │ y │            ◄────────          │ t │   │ y │
               └───┘   └─▲─┘                               └───┘   └───┘
                         │
-    
+
          validated     mempool                       validated     mempool     excess
          ┌─────┐       ┌─────┐                       ┌─────┐       ┌─────┐     ┌─────┐
          │     │       │     │                       │     │       │     │     │     │
@@ -240,7 +240,7 @@ def update_blockchain(anchor: Block, leaf: Block):
          │  y  │       │     │                       │     │       │  x  │     │     │
          │     │       │     │                       │     │       │  y  │     │     │
          └─────┘       └─────┘                       └─────┘       └─────┘     └─────┘
-    
+
     """
 
 
