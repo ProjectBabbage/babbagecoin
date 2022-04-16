@@ -13,15 +13,18 @@ from common.exceptions import InvalidSignatureForTransaction
 class Wallet:
     private_key: RSAPrivateKey
 
-    def __init__(self):
-        if os.path.isfile(".skey"):
-            # we read the already generated keys
-            with open(".skey", "rb") as fkeys:
-                self.private_key = load_pem_private_key(fkeys.read(), password=None)
+    def __init__(self, load_from_file=False):
+        if load_from_file:
+            if os.path.isfile(".skey"):
+                # we read the already generated keys
+                self.private_key = Wallet.load_priv_keys(".skey")
+
+            else:
+                self.private_key = rsa.generate_private_key(public_exponent=65537, key_size=512)
+                with open(".skey", "wb") as target_file:
+                    target_file.write(self.decode_private_key())
         else:
             self.private_key = rsa.generate_private_key(public_exponent=65537, key_size=512)
-            with open(".skey", "wb") as target_file:
-                target_file.write(self.decode_private_key())
 
     def get_public_key(self) -> PubKey:
         return PubKey(self.private_key.public_key())
@@ -32,7 +35,7 @@ class Wallet:
             format=serialization.PublicFormat.SubjectPublicKeyInfo,
         )
 
-    def decode_private_key(self):
+    def decode_private_key(self) -> bytes:
         return self.private_key.private_bytes(
             encoding=serialization.Encoding.PEM,
             format=serialization.PrivateFormat.PKCS8,
@@ -74,3 +77,14 @@ class Wallet:
     def load_pub_key(filepath):
         with open(filepath, "rb") as bf:
             return PubKey.load_from_bytes(bf.read())
+
+    @staticmethod
+    def load_from_file(filepath):
+        w = Wallet()
+        w.private_key = Wallet.load_priv_keys(filepath)
+        return w
+
+    @staticmethod
+    def load_priv_keys(filepath):
+        with open(filepath, "rb") as fkey:
+            return load_pem_private_key(fkey.read(), password=None)

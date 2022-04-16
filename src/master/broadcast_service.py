@@ -4,18 +4,16 @@ import requests
 
 from common.models import Block, SignedTransaction
 from common.schemas import BlockSchema, SignedTransactionSchema
-from common.ips import get_all_ips, get_my_ip
+from common.context import Context
 
-known_hosts = get_all_ips()
-myIp = get_my_ip()
-myUrl = f"http://{myIp}:5000"
+context = Context()
 
 
 def broadcast_block(block: Block):
-    json_block_dict = {"url": myUrl, "block": BlockSchema.dump(block)}
+    json_block_dict = {"url": context.myUrl, "block": BlockSchema.dump(block)}
     print(f"Broacasting block {block.hash()}")
-    for host in known_hosts:
-        if host != myIp:
+    for host in context.known_hosts:
+        if host != context.myIp:
             try:
                 requests.post(
                     f"http://{host}:5000/blocks/updateblock",
@@ -31,8 +29,8 @@ def broadcast_block(block: Block):
 def broadcast_transaction(signed_transaction: SignedTransaction):
     signed_transaction_json = SignedTransactionSchema.dumps(signed_transaction)
     print(f"Broadcasting transaction {signed_transaction.hash()}")
-    for host in known_hosts:
-        if host != myIp:
+    for host in context.known_hosts:
+        if host != context.myIp:
             try:
                 requests.post(
                     f"http://{host}:5000/transactions/add",

@@ -15,7 +15,7 @@ from master.blockchain_service import (
     update_blockchain,
     compute_balance,
 )
-from common.ips import get_sentry_dsn
+from common.context import get_sentry_dsn
 from master.broadcast_service import broadcast_block, broadcast_transaction
 from master.transaction_service import (
     update_block_transactions,

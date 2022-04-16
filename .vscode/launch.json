@@ -30,6 +30,22 @@
             ],
             "jinja": true,
             "justMyCode": true
+        },
+        {
+            "name": "Debug unittest",
+            "type": "python",
+            "request": "launch",
+            "module": "unittest",
+            "env": {
+                "FLASK_APP": "src/app.py:master_app",
+                "FLASK_ENV": "development"
+            },
+            "args": [
+                "discover",
+                "--start-directory",
+                "src"
+            ],
+            "justMyCode": true
         }
     ]
 }

@@ -2,6 +2,11 @@
 
 The project babbage proof of work blockchain.
 
+![Visual representation](bbc.excalidraw.svg)
+
+
+## Requirements
+
 Install docker, docker-compose and python3.8 or above.
 You also need poetry.
 

@@ -34,6 +34,18 @@ def get_all_ips():
     return ips
 
 
+class Context:
+    def __init__(self):
+        self.known_hosts = get_all_ips()
+        self.myIp = get_my_ip()
+        self.myUrl = f"http://{self.myIp}:5000"
+
+    def build(self, myIp: str, known_hosts: list):
+        self.myIp = myIp
+        self.myUrl = f"http://{myIp}:5000"
+        self.known_hosts = known_hosts
+
+
 if __name__ == "__main__":
     print(get_env_variables())
     # print(get_all_ips())

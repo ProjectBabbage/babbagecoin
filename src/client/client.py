@@ -5,7 +5,7 @@ from argparse import ArgumentParser
 from common.models import PubKey, Transaction, SignedTransaction
 from common.wallet import Wallet
 from common.schemas import SignedTransactionSchema
-from common.ips import get_my_ip
+from common.context import get_my_ip
 
 
 parser = ArgumentParser(description="Send a transaction on babbagecoin")

@@ -25,5 +25,5 @@ two-nodes:
 four-nodes:
 	docker-compose --project-directory=. -f nodes/docker-compose-4.yml up --build
 
-test:
+unittest:
 	python -m unittest discover --start-directory src
