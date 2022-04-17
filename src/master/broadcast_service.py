@@ -4,15 +4,15 @@ import requests
 
 from common.models import Block, SignedTransaction
 from common.schemas import BlockSchema, SignedTransactionSchema
-from common.context import Context
+from common.context import NetworkContext
 
-context = Context()
+context = NetworkContext()
 
 
 def broadcast_block(block: Block):
     json_block_dict = {"url": context.myUrl, "block": BlockSchema.dump(block)}
     print(f"Broacasting block {block.hash()}")
-    for host in context.known_hosts:
+    for host in context.known_nodes:
         if host != context.myIp:
             try:
                 requests.post(
@@ -29,7 +29,7 @@ def broadcast_block(block: Block):
 def broadcast_transaction(signed_transaction: SignedTransaction):
     signed_transaction_json = SignedTransactionSchema.dumps(signed_transaction)
     print(f"Broadcasting transaction {signed_transaction.hash()}")
-    for host in context.known_hosts:
+    for host in context.known_nodes:
         if host != context.myIp:
             try:
                 requests.post(

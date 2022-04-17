@@ -5,7 +5,7 @@ from argparse import ArgumentParser
 from common.models import PubKey, Transaction, SignedTransaction
 from common.wallet import Wallet
 from common.schemas import SignedTransactionSchema
-from common.context import get_my_ip
+from common.context import NetworkContext
 
 
 parser = ArgumentParser(description="Send a transaction on babbagecoin")
@@ -14,8 +14,7 @@ parser.add_argument("receiver", type=str)
 parser.add_argument("amount", type=float)
 parser.add_argument("fees", type=float)
 
-
-myUrl = f"http://{get_my_ip()}:5000"
+context = NetworkContext()
 
 
 class Client:
@@ -50,23 +49,23 @@ class Client:
         signedTx = SignedTransaction(tx, self.wallet.sign(tx))
         try:
             requests.post(
-                f"{myUrl}/transactions/emit",
+                f"{context.myUrl}/transactions/emit",
                 SignedTransactionSchema.dumps(signedTx),
                 headers={"Content-Type": "application/json"},
             )
         except requests.exceptions.ConnectionError:
-            print(f"Node master at {myUrl} is not accessible.")
+            print(f"Node master at {context.myUrl} is not accessible.")
 
     def get_balance(self):
         try:
             addr = str(self.wallet.get_public_key())
             res = requests.get(
-                f"{myUrl}/addresses/{addr}/balance",
+                f"{context.myUrl}/addresses/{addr}/balance",
                 headers={"Content-Type": "application/json"},
             )
             print(res.json())
         except requests.exceptions.ConnectionError:
-            print(f"Node master at {myUrl} is not accessible.")
+            print(f"Node master at {context.myUrl} is not accessible.")
 
 
 def check_balance():

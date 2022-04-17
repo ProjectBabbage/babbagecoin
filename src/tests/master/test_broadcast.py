@@ -12,7 +12,7 @@ class TestBroadcast(TestCase):
         mock_context.myIp = "192.168.122.1"
         mock_context.myUrl = "http://192.168.122.1:5000"
         # two nodes tests
-        mock_context.known_hosts = ["192.168.122.1", "192.168.122.2"]
+        mock_context.known_nodes = ["192.168.122.1", "192.168.122.2"]
 
         sender_privk_filepath = "src/tests/fixtures/private_keys/USER1.txt"
         receiver_privk_filepath = "src/tests/fixtures/private_keys/USER2.txt"
