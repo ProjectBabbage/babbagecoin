@@ -46,6 +46,28 @@
                 "src"
             ],
             "justMyCode": true
+        },
+        {
+            "name": "Debug tests",
+            "type": "python",
+            "request": "launch",
+            "module": "pytest",
+            "args": [
+                "-v",
+            ],
+            "justMyCode": true
+        },
+        {
+            "name": "Debug specific tests",
+            "type": "python",
+            "request": "launch",
+            "module": "pytest",
+            "args": [
+                "-k",
+                "test_send_transaction",
+                "-s"
+            ],
+            "justMyCode": true
         }
     ]
 }

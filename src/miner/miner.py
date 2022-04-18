@@ -7,9 +7,9 @@ from typing import Optional
 from common.models import Block
 from common.schemas import BlockSchema
 from common.block_service import is_block_hash_valid
+from common.context import NetworkContext
 
-url_master = "http://127.0.0.1:5000/"
-hash_count_before_update = 1000000
+context = NetworkContext()
 
 
 class BlockStore:
@@ -30,7 +30,7 @@ class BlockStore:
 
 
 def get_working_block() -> Block:
-    res = requests.get(f"{url_master}blocks/working_block")
+    res = requests.get(f"{context.myUrl}/blocks/working_block")
     # print(res.json())
     return BlockSchema.load(res.json())
 
@@ -40,7 +40,7 @@ def post_mined_block(block: Block):
 
     try:
         requests.post(
-            f"{url_master}blocks/minedblock",
+            f"{context.myUrl}/blocks/minedblock",
             json_block,
             headers={"Content-Type": "application/json"},
         )
@@ -53,6 +53,7 @@ def run():
     block_store = BlockStore()
     block_store.update_working_block()
 
+    hash_count_before_update = 1000000
     i = 0
     while i < hash_count_before_update:
         if is_block_hash_valid(block_store.working_block):

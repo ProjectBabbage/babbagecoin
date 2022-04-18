@@ -26,7 +26,7 @@ from master.transaction_service import (
 
 sentry_sdk.init(dsn=NetworkContext().sentry_dsn, integrations=[FlaskIntegration()])
 
-wallet = Wallet()
+wallet = Wallet(load_from_file=True)
 app = Flask(__name__)
 
 
@@ -41,7 +41,7 @@ def print_chain():
 
 
 @app.get("/blocks/working_block")
-def send_working_block_to_miner():
+def get_working_block():
     next_block = build_working_block()
     update_block_transactions(next_block)
     json_block = BlockSchema.dumps(next_block)
@@ -49,7 +49,7 @@ def send_working_block_to_miner():
 
 
 @app.get("/blocks/<block_hash>")
-def send_block_with_hash(block_hash: str):
+def get_block_with_hash(block_hash: str):
     json_block = BlockSchema.dumps(block_tbl[block_hash])
     return json_block
 

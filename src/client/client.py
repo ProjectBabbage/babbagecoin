@@ -21,8 +21,8 @@ class Client:
     wallet: Wallet
     contacts: dict[str:PubKey]
 
-    def __init__(self):
-        self.wallet = Wallet()
+    def __init__(self, load_from_file=True):
+        self.wallet = Wallet(load_from_file=load_from_file)
         self.contacts = self.load_contacts()
 
     def load_contacts(self):

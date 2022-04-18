@@ -43,12 +43,17 @@ class NetworkContext:
 
     def __init__(self):
         if NetworkContext.instance is None:
-            has_env_file = os.path.isfile(".env")
+            if os.environ.get("TESTING") or not os.path.isfile(".env"):
+                self.myIp = "127.0.0.1"
+                self.known_nodes = [self.myIp]
+                self.sentry_dsn = None
+                print("here")
+            else:
+                self.myIp = get_my_ip()
+                self.known_nodes = get_all_ips()
+                self.sentry_dsn = get_sentry_dsn()
 
-            self.myIp = get_my_ip() if has_env_file else "127.0.0.1"
             self.myUrl = f"http://{self.myIp}:5000"
-            self.known_nodes = get_all_ips() if has_env_file else [self.myIp]
-            self.sentry_dsn = get_sentry_dsn()
 
             NetworkContext.instance = self
 
@@ -59,8 +64,8 @@ class NetworkContext:
 
 
 if __name__ == "__main__":
-    # print("env variables in .env :", get_env_variables())
     print(id(NetworkContext().instance))
     print(id(NetworkContext()))
     a = NetworkContext()
     print(id(a))
+    # always the same object

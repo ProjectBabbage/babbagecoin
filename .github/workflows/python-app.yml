@@ -13,12 +13,14 @@ permissions:
   contents: read
 
 jobs:
-  tests:
-
+  linting-tests-coverage:
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v3
+    - name: Check presence of requirements.manual.txt (Run `make requirements` before committing)
+      run: |
+        if ! [ -f requirements.manual.txt ]; then exit 1; fi
     - name: Set up Python 3.10
       uses: actions/setup-python@v3
       with:
@@ -26,14 +28,10 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install flake8
-        # generated manually with `poetry export --without-hashes`
-        if [ -f requirements.manual.txt ]; then pip install -r requirements.manual.txt; fi
-    - name: Lint with flake8
+        pip install -r requirements.manual.txt
+    - name: Linting
       run: |
-        # stop the build if there are Python syntax errors or undefined names
-        flake8
-    - name: Unit tests
+        make lint
+    - name: Tests and coverage
       run: |
-        # `make unittest` command
-        python -m unittest discover --start-directory src
+        make test

@@ -122,7 +122,7 @@ class Block:
                 hasher.update(self.prev_hash.encode())
                 for stx in self.signed_transactions:
                     hasher.update(stx.signature.encode())
-                hasher.update(f"{self.nonce}".encode())
+                hasher.update(str(self.nonce).encode())
                 self._hash = hasher.hexdigest()
         return self._hash
 
