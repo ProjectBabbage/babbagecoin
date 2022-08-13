@@ -1,6 +1,7 @@
 from babbagecoin.common.exceptions import (
     DuplicatedTransaction,
     InvalidBlockHash,
+    InvalidBlockHeight,
     InvalidSignatureForTransaction,
     RewardTransactionNotUnique,
     BadRewardTransaction,
@@ -73,7 +74,7 @@ def make_primary_between(start, end):
         make_primary_between(start, prev)
 
 
-def sane_from(start: Block):
+def sane_from(start: Block, starting_height: int):
     """
     Run verify_block on each block from start.
     Returns False if a unconsistency is detected:
@@ -85,7 +86,11 @@ def sane_from(start: Block):
     """
     seen_txs = set()
 
-    def verify_block(block: Block):
+    def verify_block(block: Block, expected_height: int):
+        if block.height != expected_height:
+            raise InvalidBlockHeight(
+                f"Expected height {expected_height}, actual height {block.height}"
+            )
         if not is_block_hash_valid(block):
             raise InvalidBlockHash(f"INVALID BLOCK HASH {block.hash()}")
         for i, stx in enumerate(block.signed_transactions):
@@ -105,13 +110,16 @@ def sane_from(start: Block):
 
     try:
         b = start
-        verify_block(b)
+        expected_height = starting_height
+        verify_block(b, expected_height)
         while len(b.next_blocks) != 0:
             b = b.next_blocks[0]
-            verify_block(b)
+            expected_height += 1
+            verify_block(b, expected_height)
         return True
     except (
         InvalidBlockHash,
+        InvalidBlockHeight,
         BadRewardTransaction,
         RewardTransactionNotUnique,
         InvalidSignatureForTransaction,
@@ -167,9 +175,9 @@ def update_blockchain(anchor: Block, leaf: Block):
     global head
     if anchor.prev_hash not in block_tbl:
         raise Exception("Does not connect to our blockchain")
-    if leaf.height > head.height and sane_from(anchor):
+    anchor_prev = block_tbl[anchor.prev_hash]
+    if leaf.height > head.height and sane_from(anchor, anchor_prev.height + 1):
         update_block_tbl_from(anchor)
-        anchor_prev = block_tbl[anchor.prev_hash]
         anchor_prev.next_blocks.append(anchor)
         ancestor = find_common_ancestor_of(leaf, head)
         refresh_transactions_switch(head, ancestor, anchor_prev)
@@ -191,9 +199,9 @@ def update_blockchain(anchor: Block, leaf: Block):
                 validated_transactions.add(stx)
             anchor_prev.next_blocks.pop()
             remove_block_tbl_from(anchor)
-            print("Discarding block due to a already validated transaction.")
+            print("Discarding new blocks due to a transaction already validated")
     """
-    Verification of an already validated transaction (b) ending up in rejecting the incoming blocks:
+    Verification of a transaction already validated (b) ending up in rejecting the incoming blocks:
 
     ancestor            anchor    leaf                      │
      ┌───┐    ┌───┐     ┌───┐     ┌───┐          ┌───┐    ┌─▼─┐     ┌───┐     ┌───┐

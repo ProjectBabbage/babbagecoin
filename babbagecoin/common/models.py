@@ -109,6 +109,8 @@ class Block:
     # Invariant: the first transaction should be the reward transaction for mining the block
     signed_transactions: List[SignedTransaction] = field(default_factory=list)
     nonce: int = 0
+
+    # The following data is not hashed
     # Invariant: following the first element of next_blocks should lead to head
     next_blocks: List["Block"] = field(default_factory=list)
     _hash: Optional[str] = None
@@ -119,6 +121,7 @@ class Block:
                 self._hash = ""
             else:
                 hasher = hashlib.sha256()
+                hasher.update(str(self.height).encode())
                 hasher.update(self.prev_hash.encode())
                 for stx in self.signed_transactions:
                     hasher.update(stx.signature.encode())
