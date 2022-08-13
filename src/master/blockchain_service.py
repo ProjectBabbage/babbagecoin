@@ -142,7 +142,8 @@ def refresh_transactions_switch(start: Block, ancestor: Block, end: Block):
     # take into account transactions from the new branch end
     b = end
     while b.hash() != ancestor.hash():
-        refresh_transactions_from_new_block(b)
+        insufficient_funds = refresh_transactions_from_new_block(b)
+        assert not insufficient_funds
         b = block_tbl[b.prev_hash]
 
 
@@ -188,11 +189,11 @@ def update_blockchain(anchor: Block, leaf: Block):
         refresh_transactions_switch(head, ancestor, anchor_prev)
         b = anchor
         while True:
-            excess_transactions = refresh_transactions_from_new_block(b)
-            if b.hash() == leaf.hash() or excess_transactions != set():
+            excess_transactions, insufficient_funds = refresh_transactions_from_new_block(b)
+            if b.hash() == leaf.hash() or excess_transactions != set() or insufficient_funds:
                 break
             b = b.next_blocks[0]
-        if excess_transactions == set():
+        if excess_transactions == set() and not insufficient_funds:
             # enforce the head path invariant
             make_primary_between(anchor_prev, anchor)
             # change head to be the new leaf
@@ -204,7 +205,10 @@ def update_blockchain(anchor: Block, leaf: Block):
                 validated_transactions.add(stx)
             anchor_prev.next_blocks.pop()
             remove_block_tbl_from(anchor)
-            print("Discarding new blocks due to a transaction already validated")
+            if excess_transactions != set():
+                print("Discarding new blocks due to a transaction already validated")
+            if insufficient_funds:
+                print("Discarding new blocks due to a transaction sender missing funds")
     """
     Verification of a transaction already validated (b) ending up in rejecting the incoming blocks:
 

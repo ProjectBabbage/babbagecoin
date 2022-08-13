@@ -14,11 +14,23 @@ reward_transaction = None
 mem_pool = set()
 validated_transactions = set()
 reward_transaction: Transaction = None
+balances = []
 
 
 def update_block_transactions(block: Block):
     global mem_pool
     block.signed_transactions.extend(list(mem_pool))
+
+
+def check_balance(account: PubKey):
+    account.dumps() == MINING_REWARD_ADDRESS or balances[account] >= 0
+
+
+def update_balances_from_transaction(stx: SignedTransaction):
+    tx = stx.transaction
+    balances[tx.sender] -= tx.amount
+    balances[tx.receiver] += tx.amount
+    return check_balance(tx.sender) and check_balance(tx.receiver)
 
 
 def refresh_transactions_from_new_block(block: Block):
@@ -32,7 +44,8 @@ def refresh_transactions_from_new_block(block: Block):
             validated_transactions.add(stx)
         if stx in mem_pool:
             mem_pool.remove(stx)
-    return excess_transactions
+        insufficient_funds = update_balances_from_transaction(stx)
+    return excess_transactions, insufficient_funds
 
 
 def refresh_transactions_from_old_block(block: Block):
