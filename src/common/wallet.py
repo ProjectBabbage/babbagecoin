@@ -12,47 +12,46 @@ from common.context import get_current_user
 
 
 class Wallet:
-    secret_key: RSAPrivateKey
+    private_key: RSAPrivateKey
 
     def __init__(self, load_from_file=False):
-        user_skey = f"{get_current_user()}.skey"
+        self.user_private_key_filename = f"private.key.{get_current_user()}"
+        self.user_public_key_filename = f"public.key.{get_current_user()}"
 
-        if load_from_file and Path(user_skey).is_file():
-            # we read the already existing secret key
-            self.secret_key = Wallet.load_priv_keys(user_skey)
+        if load_from_file and Path(self.user_private_key_filename).is_file():
+            # we read the already existing private key
+            self.private_key = Wallet.load_priv_keys(self.user_private_key_filename)
         else:
             # or we create a new one
-            self.secret_key = rsa.generate_private_key(public_exponent=65537, key_size=512)
+            self.private_key = rsa.generate_private_key(public_exponent=65537, key_size=512)
 
         self.create_key_files()
 
     def create_key_files(self):
-        """Create the <CURRENT_USER>.skey and <CURRENT_USER>.pkey files."""
-        user_skey, user_pkey = f"{get_current_user()}.skey", f"{get_current_user()}.pkey"
-
-        with open(user_skey, "wb") as skfile:
-            skfile.write(self.decode_secret_key())
-        with open(user_pkey, "wb") as pkfile:
-            pkfile.write(self.get_public_key().dump())
+        """Create the private.key.<CURRENT_USER> and public.key.<CURRENT_USER> files."""
+        with open(self.user_private_key_filename, "wb") as priv:
+            priv.write(self.decode_private_key())
+        with open(self.user_public_key_filename, "wb") as pub:
+            pub.write(self.get_public_key().dump())
 
     def get_public_key(self) -> PubKey:
-        return PubKey(self.secret_key.public_key())
+        return PubKey(self.private_key.public_key())
 
     def decode_public_key(self) -> bytes:
-        return self.secret_key.public_key().public_bytes(
+        return self.private_key.public_key().public_bytes(
             encoding=serialization.Encoding.PEM,
             format=serialization.PublicFormat.SubjectPublicKeyInfo,
         )
 
-    def decode_secret_key(self) -> bytes:
-        return self.secret_key.private_bytes(
+    def decode_private_key(self) -> bytes:
+        return self.private_key.private_bytes(
             encoding=serialization.Encoding.PEM,
             format=serialization.PrivateFormat.PKCS8,
             encryption_algorithm=serialization.NoEncryption(),
         )
 
     def sign(self, transaction: Transaction) -> str:
-        return self.secret_key.sign(
+        return self.private_key.sign(
             transaction.hash().encode(),
             padding.PSS(mgf=padding.MGF1(hashes.SHA256()), salt_length=padding.PSS.MAX_LENGTH),
             hashes.SHA256(),
@@ -90,7 +89,7 @@ class Wallet:
     @staticmethod
     def load_from_file(filepath):
         w = Wallet()
-        w.secret_key = Wallet.load_priv_keys(filepath)
+        w.private_key = Wallet.load_priv_keys(filepath)
         return w
 
     @staticmethod

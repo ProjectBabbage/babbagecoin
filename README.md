@@ -30,7 +30,9 @@ There are also VSCode actions for debugging each one of them.
 
 ## Interact with the blockchain
 
-The wallet will generate a private key for you, save it to .skey, and reuse it afterward. A public key is derived from this private key. The hash of the public key is your address, for example e93417c7 (first 8 characters).
+Configure your blockchain by creating a .env file on the same model as what's in `.env.dist`.
+
+The wallet will generate a private key for you, save it to private.key.<CURRENT_USER>, and reuse it afterward. A public key is derived from this private key. The hash of the public key is your address, for example e93417c7 (first 8 characters).
 The wallet is managing only one private key at the time.
 
 ### Transactions

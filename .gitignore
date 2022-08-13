@@ -132,8 +132,7 @@ dmypy.json
 .idea
 
 # containing the private keys
-.keys
-.skey
+private.key.*
 
 # front
 plot/
