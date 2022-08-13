@@ -22,7 +22,7 @@ class Client:
     contacts: dict[str:PubKey]
 
     def __init__(self):
-        self.wallet = Wallet.load_from_file()
+        self.wallet = Wallet()
         self.contacts = self.load_contacts()
 
     def load_contacts(self):
