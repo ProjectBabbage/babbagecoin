@@ -7,7 +7,7 @@ from client.client import send_transaction, check_balance
 if __name__ == "__main__":
     command = sys.argv[1]
     if command == "master":
-        master_app.run_simple(
+        master_app.run(
             debug=True,
             host="0.0.0.0",
             threaded=False,
