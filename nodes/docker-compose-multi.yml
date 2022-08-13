@@ -1,0 +1,47 @@
+version: '3'
+
+services:
+  db:
+    image: redis:latest
+    ports:
+    - 6379:6379
+
+  master1:
+    container_name: master1
+    image: base_image_bbc
+    build: .
+    volumes:
+      - .:/babbagecoin/
+    network_mode: host
+    command: [ "master" ]
+  miner1:
+    container_name: miner
+    image: base_image_bbc
+    build: .
+    volumes:
+      - .:/babbagecoin/
+    network_mode: host
+    command: [ "miner" ]
+    depends_on:
+      - master1
+
+  # master2:
+  #   container_name: master2
+  #   image: base_image_bbc
+  #   build: .
+  #   volumes:
+  #     - .:/babbagecoin/
+  #   network_mode: host
+  #   command: [ "master" ]
+
+  # miner2:
+  #   container_name: miner2
+  #   image: base_image_bbc
+  #   build: .
+  #   volumes:
+  #     - .:/babbagecoin/
+  #   network_mode: host
+  #   command: [ "miner" ]
+  #   depends_on:
+  #     - master2
+    

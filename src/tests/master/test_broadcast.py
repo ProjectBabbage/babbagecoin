@@ -6,7 +6,7 @@ from tests.factory.models import make_block, make_stx
 
 class TestBroadcast(TestCase):
     @patch("master.broadcast_service.context")
-    @patch("requests.post", return_value="")
+    @patch("node_request.post", return_value="")
     def test_broadcast_block(self, mock_post, mock_context):
 
         mock_context.myIp = "192.168.122.1"
@@ -23,7 +23,7 @@ class TestBroadcast(TestCase):
         mock_post.assert_called_once()
 
     @patch("master.broadcast_service.context")
-    @patch("requests.post", return_value="")
+    @patch("node_request.post", return_value="")
     def test_broadcast_transaction(self, mock_post, mock_context):
         mock_context.myIp = "192.168.122.1"
         mock_context.myUrl = "http://192.168.122.1:5000"

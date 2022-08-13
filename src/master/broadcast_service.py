@@ -1,12 +1,12 @@
 import json
 
-import requests
+from common.request import node_request
 
 from common.models import Block, SignedTransaction
 from common.schemas import BlockSchema, SignedTransactionSchema
-from common.context import NetworkContext
+from config import Config
 
-context = NetworkContext()
+context = Config()
 
 
 def broadcast_block(block: Block):
@@ -15,12 +15,12 @@ def broadcast_block(block: Block):
     for host in context.known_nodes:
         if host != context.myIp:
             try:
-                requests.post(
+                node_request.post(
                     f"http://{host}:5000/blocks/updateblock",
                     json.dumps(json_block_dict),
                     headers={"Content-Type": "application/json"},
                 )
-            except requests.exceptions.ConnectionError:
+            except node_request.exceptions.ConnectionError:
                 print(f"Cannot connect to node {host}")
             except Exception as e:
                 print(f"An error occured when broadcasting the block: {e}")
@@ -32,12 +32,12 @@ def broadcast_transaction(signed_transaction: SignedTransaction):
     for host in context.known_nodes:
         if host != context.myIp:
             try:
-                requests.post(
+                node_request.post(
                     f"http://{host}:5000/transactions/add",
                     signed_transaction_json,
                     headers={"Content-Type": "application/json"},
                 )
-            except requests.exceptions.ConnectionError:
+            except node_request.exceptions.ConnectionError:
                 print(f"Cannot connect to node {host}")
             except Exception as e:
                 print(f"Cannot broadcast transaction: {e}")

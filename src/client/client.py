@@ -1,11 +1,11 @@
 import os
-import requests
+import node_request
 import uuid
 from argparse import ArgumentParser
 from common.models import PubKey, Transaction, SignedTransaction
 from common.wallet import Wallet
 from common.schemas import SignedTransactionSchema
-from common.context import NetworkContext
+from config import Config
 
 
 parser = ArgumentParser(description="Send a transaction on babbagecoin")
@@ -14,7 +14,7 @@ parser.add_argument("receiver", type=str)
 parser.add_argument("amount", type=float)
 parser.add_argument("fees", type=float)
 
-context = NetworkContext()
+context = Config()
 
 
 class Client:
@@ -48,23 +48,23 @@ class Client:
 
         signedTx = SignedTransaction(tx, self.wallet.sign(tx))
         try:
-            requests.post(
+            node_request.post(
                 f"{context.myUrl}/transactions/emit",
                 SignedTransactionSchema.dumps(signedTx),
                 headers={"Content-Type": "application/json"},
             )
-        except requests.exceptions.ConnectionError:
+        except node_request.exceptions.ConnectionError:
             print(f"Node master at {context.myUrl} is not accessible.")
 
     def get_balance(self):
         try:
             addr = str(self.wallet.get_public_key())
-            res = requests.get(
+            res = node_request.get(
                 f"{context.myUrl}/addresses/{addr}/balance",
                 headers={"Content-Type": "application/json"},
             )
             print(res.json())
-        except requests.exceptions.ConnectionError:
+        except node_request.exceptions.ConnectionError:
             print(f"Node master at {context.myUrl} is not accessible.")
 
 

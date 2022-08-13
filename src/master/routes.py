@@ -1,5 +1,5 @@
 import json
-import requests
+from common.request import node_request
 import sentry_sdk
 from sentry_sdk.integrations.flask import FlaskIntegration
 
@@ -15,7 +15,7 @@ from master.blockchain_service import (
     update_blockchain,
     compute_balance,
 )
-from common.context import NetworkContext
+from config import Config
 from master.broadcast_service import broadcast_block, broadcast_transaction
 from master.transaction_service import (
     update_block_transactions,
@@ -24,7 +24,7 @@ from master.transaction_service import (
 )
 
 
-sentry_sdk.init(dsn=NetworkContext().sentry_dsn, integrations=[FlaskIntegration()])
+sentry_sdk.init(dsn=Config().sentry_dsn, integrations=[FlaskIntegration()])
 
 wallet = Wallet(load_from_file=True)
 app = Flask(__name__)
@@ -76,7 +76,7 @@ def receive_block_from_network():
     if leaf.hash() not in block_tbl:
         while b.prev_hash not in block_tbl:
             print(f"Fetching block: {b.prev_hash}")
-            resp = requests.get(
+            resp = node_request.get(
                 f"{url}/blocks/{b.prev_hash}",
                 headers={"Content-Type": "application/json"},
             )

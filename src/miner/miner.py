@@ -1,15 +1,15 @@
 import time
 import random
-import requests
+from common.request import node_request
 
 from typing import Optional
 
 from common.models import Block
 from common.schemas import BlockSchema
 from common.block_service import is_block_hash_valid
-from common.context import NetworkContext
+from config import Config
 
-context = NetworkContext()
+context = Config()
 
 
 class BlockStore:
@@ -30,7 +30,7 @@ class BlockStore:
 
 
 def get_working_block() -> Block:
-    res = requests.get(f"{context.myUrl}/blocks/working_block")
+    res = node_request.get(f"{context.myUrl}/blocks/working_block")
     # print(res.json())
     return BlockSchema.load(res.json())
 
@@ -39,7 +39,7 @@ def post_mined_block(block: Block):
     json_block = BlockSchema.dumps(block)
 
     try:
-        requests.post(
+        node_request.post(
             f"{context.myUrl}/blocks/minedblock",
             json_block,
             headers={"Content-Type": "application/json"},
