@@ -1,3 +1,9 @@
+# Babbage coin
+
+
+![Visual representation](../bbc.excalidraw.svg)
+
+
 ## Welcome to GitHub Pages
 
 You can use the [editor on GitHub](https://github.com/ProjectBabbage/babbagecoin/edit/main/docs/index.md) to maintain and preview the content for your website in Markdown files.
