@@ -2,7 +2,7 @@
 
 The project babbage proof of work blockchain. 
 
-Visit the ![github page](https://projectbabbage.github.io/babbagecoin/) for a nice overview of the project !
+Visit the [github page](https://projectbabbage.github.io/babbagecoin/) for a nice overview of the project !
 
 ## Requirements
 
