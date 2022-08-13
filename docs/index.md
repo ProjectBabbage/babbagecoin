@@ -1,7 +1,7 @@
 # Babbage coin
 
 
-![Visual representation](../bbc.excalidraw.svg)
+![Visual representation](bbc.excalidraw.svg)
 
 
 ## Welcome to GitHub Pages
