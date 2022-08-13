@@ -2,5 +2,9 @@
   "files.exclude": {
     "**/__init__.py": true,
     "**/__pycache__": true
-  }
+  },
+  "python.linting.flake8Enabled": true,
+  "python.linting.enabled": true,
+  "python.formatting.provider": "black",
+  "editor.defaultFormatter": "ms-python.python"
 }
