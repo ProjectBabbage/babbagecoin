@@ -1,9 +1,8 @@
 # Babbagecoin
 
-The project babbage proof of work blockchain.
+The project babbage proof of work blockchain. 
 
-![Visual representation](bbc.excalidraw.svg)
-
+Visit the ![github page](https://projectbabbage.github.io/babbagecoin/) for a nice overview of the project !
 
 ## Requirements
 
