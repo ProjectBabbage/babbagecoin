@@ -15,7 +15,7 @@ from master.blockchain_service import (
     update_blockchain,
     compute_balance,
 )
-from common.context import NetworkContext
+from common.context import NetworkContext, get_current_user
 from master.broadcast_service import broadcast_block, broadcast_transaction
 from master.transaction_service import (
     update_block_transactions,
@@ -26,7 +26,9 @@ from master.transaction_service import (
 
 sentry_sdk.init(dsn=NetworkContext().sentry_dsn, integrations=[FlaskIntegration()])
 
-wallet = Wallet(load_from_file=True)
+wallet = Wallet.load_from_file()
+wallet.save_to_files()
+
 app = Flask(__name__)
 
 

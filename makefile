@@ -1,9 +1,9 @@
 ## Running bbc
 launch:
-	docker-compose --project-directory=. -f nodes/docker-compose.yml up --build
+	docker-compose --project-directory=. -f docker/docker-compose.yml up --build
 
 stop:
-	docker-compose --project-directory=. -f nodes/docker-compose.yml down
+	docker-compose --project-directory=. -f docker/docker-compose.yml down
 
 master:
 	bash bbc.sh master
@@ -15,10 +15,10 @@ docker-image:
 	docker build . -t base_image_bbc
 
 two-nodes:
-	docker-compose --project-directory=. -f nodes/docker-compose-2.yml up --build
+	docker-compose --project-directory=. -f docker/docker-compose-2.yml up --build
 
 four-nodes:
-	docker-compose --project-directory=. -f nodes/docker-compose-4.yml up --build
+	docker-compose --project-directory=. -f docker/docker-compose-4.yml up --build
 
 ## Interacting with the node
 tx:

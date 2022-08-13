@@ -14,24 +14,16 @@ from common.context import get_current_user
 class Wallet:
     private_key: RSAPrivateKey
 
-    def __init__(self, load_from_file=False):
-        self.user_private_key_filename = f"private.key.{get_current_user()}"
-        self.user_public_key_filename = f"public.key.{get_current_user()}"
+    def __init__(self):
+        self.private_key = rsa.generate_private_key(public_exponent=65537, key_size=512)
 
-        if load_from_file and Path(self.user_private_key_filename).is_file():
-            # we read the already existing private key
-            self.private_key = Wallet.load_priv_keys(self.user_private_key_filename)
-        else:
-            # or we create a new one
-            self.private_key = rsa.generate_private_key(public_exponent=65537, key_size=512)
-
-        self.create_key_files()
-
-    def create_key_files(self):
+    def save_to_files(self):
         """Create the private.key.<CURRENT_USER> and public.key.<CURRENT_USER> files."""
-        with open(self.user_private_key_filename, "wb") as priv:
+        user_private = f"private.key.{get_current_user()}"
+        user_public = f"public.key.{get_current_user()}"
+        with open(user_private, "wb") as priv:
             priv.write(self.decode_private_key())
-        with open(self.user_public_key_filename, "wb") as pub:
+        with open(user_public, "wb") as pub:
             pub.write(self.get_public_key().dump())
 
     def get_public_key(self) -> PubKey:
@@ -82,14 +74,15 @@ class Wallet:
                 )
 
     @staticmethod
-    def load_pub_key(filepath):
+    def load_pub_key(filepath) -> PubKey:
         with open(filepath, "rb") as bf:
             return PubKey.load_from_bytes(bf.read())
 
     @staticmethod
-    def load_from_file(filepath):
+    def load_from_file(filepath: str = f"private.key.{get_current_user()}") -> "Wallet":
         w = Wallet()
-        w.private_key = Wallet.load_priv_keys(filepath)
+        if Path(filepath).is_file():
+            w.private_key = Wallet.load_priv_keys(filepath)
         return w
 
     @staticmethod
