@@ -1,4 +1,4 @@
-import os
+from pathlib import Path
 
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import rsa, padding
@@ -8,42 +8,51 @@ from cryptography.exceptions import InvalidSignature
 
 from common.models import MINING_REWARD_ADDRESS, PubKey, Transaction, SignedTransaction
 from common.exceptions import InvalidSignatureForTransaction
+from common.context import get_current_user
 
 
 class Wallet:
-    private_key: RSAPrivateKey
+    secret_key: RSAPrivateKey
 
     def __init__(self, load_from_file=False):
-        if load_from_file:
-            if os.path.isfile(".skey"):
-                # we read the already generated keys
-                self.private_key = Wallet.load_priv_keys(".skey")
+        user_skey = f"{get_current_user()}.skey"
 
-            else:
-                self.private_key = rsa.generate_private_key(public_exponent=65537, key_size=512)
-                with open(".skey", "wb") as target_file:
-                    target_file.write(self.decode_private_key())
+        if load_from_file and Path(user_skey).is_file():
+            # we read the already existing secret key
+            self.secret_key = Wallet.load_priv_keys(user_skey)
         else:
-            self.private_key = rsa.generate_private_key(public_exponent=65537, key_size=512)
+            # or we create a new one
+            self.secret_key = rsa.generate_private_key(public_exponent=65537, key_size=512)
+
+        self.create_key_files()
+
+    def create_key_files(self):
+        """Create the <CURRENT_USER>.skey and <CURRENT_USER>.pkey files."""
+        user_skey, user_pkey = f"{get_current_user()}.skey", f"{get_current_user()}.pkey"
+
+        with open(user_skey, "wb") as skfile:
+            skfile.write(self.decode_secret_key())
+        with open(user_pkey, "wb") as pkfile:
+            pkfile.write(self.get_public_key().dump())
 
     def get_public_key(self) -> PubKey:
-        return PubKey(self.private_key.public_key())
+        return PubKey(self.secret_key.public_key())
 
     def decode_public_key(self) -> bytes:
-        return self.private_key.public_key().public_bytes(
+        return self.secret_key.public_key().public_bytes(
             encoding=serialization.Encoding.PEM,
             format=serialization.PublicFormat.SubjectPublicKeyInfo,
         )
 
-    def decode_private_key(self) -> bytes:
-        return self.private_key.private_bytes(
+    def decode_secret_key(self) -> bytes:
+        return self.secret_key.private_bytes(
             encoding=serialization.Encoding.PEM,
             format=serialization.PrivateFormat.PKCS8,
             encryption_algorithm=serialization.NoEncryption(),
         )
 
     def sign(self, transaction: Transaction) -> str:
-        return self.private_key.sign(
+        return self.secret_key.sign(
             transaction.hash().encode(),
             padding.PSS(mgf=padding.MGF1(hashes.SHA256()), salt_length=padding.PSS.MAX_LENGTH),
             hashes.SHA256(),
@@ -81,7 +90,7 @@ class Wallet:
     @staticmethod
     def load_from_file(filepath):
         w = Wallet()
-        w.private_key = Wallet.load_priv_keys(filepath)
+        w.secret_key = Wallet.load_priv_keys(filepath)
         return w
 
     @staticmethod
