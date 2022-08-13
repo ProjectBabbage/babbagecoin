@@ -12,6 +12,10 @@ class InvalidBlockHash(Exception):
     pass
 
 
+class InvalidBlockHeight(Exception):
+    pass
+
+
 class InvalidSignatureForTransaction(Exception):
     pass
 
