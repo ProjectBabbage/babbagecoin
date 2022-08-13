@@ -30,7 +30,7 @@ class Client:
         contact_name_to_pk = {}
         for filepath in os.listdir("./known_nodes"):
             absolute_filepath = f"{os.getcwd()}/known_nodes/{filepath}"
-            name, pk = filepath.split(".")[0], Wallet.load_pub_key(absolute_filepath)
+            name, pk = filepath.removeprefix("public.key."), Wallet.load_pub_key(absolute_filepath)
             contact_name_to_pk[name] = pk
         return contact_name_to_pk
 
