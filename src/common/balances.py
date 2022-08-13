@@ -5,7 +5,7 @@ balances = {}
 
 def touch_balance(account: PubKey):
     if account.hash() not in balances:
-        balances[account] = 0
+        balances[account.hash()] = 0
 
 
 def get_balance(account: PubKey):
@@ -14,7 +14,7 @@ def get_balance(account: PubKey):
 
 
 def valid_balance(account: PubKey):
-    account.dumps() == MINING_REWARD_ADDRESS or balances[account.hash()] >= 0
+    return account.dumps() == MINING_REWARD_ADDRESS or balances[account.hash()] >= 0
 
 
 def update_balances_from_transaction(stx: SignedTransaction, new: bool):
@@ -29,8 +29,8 @@ def update_balances_from_transaction(stx: SignedTransaction, new: bool):
 
 
 def update_balances_from_new_transaction(stx):
-    update_balances_from_transaction(stx, True)
+    return update_balances_from_transaction(stx, True)
 
 
 def update_balances_from_old_transaction(stx):
-    update_balances_from_transaction(stx, False)
+    return update_balances_from_transaction(stx, False)
