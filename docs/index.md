@@ -1,5 +1,3 @@
-# Babbage coin
-
 
 ![Visual representation](bbc.excalidraw.svg)
 
