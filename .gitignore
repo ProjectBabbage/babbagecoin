@@ -133,7 +133,7 @@ dmypy.json
 
 # containing the private keys
 private.key.*
-./public.key.*
+public.key.*
 
 # front
 plot/
