@@ -4,17 +4,17 @@ balances = {}
 
 
 def touch_balance(account: PubKey):
-    if account not in balances:
+    if account.hash() not in balances:
         balances[account] = 0
 
 
 def get_balance(account: PubKey):
     touch_balance(account)
-    return balances[account]
+    return balances[account.hash()]
 
 
 def valid_balance(account: PubKey):
-    account.dumps() == MINING_REWARD_ADDRESS or balances[account] >= 0
+    account.dumps() == MINING_REWARD_ADDRESS or balances[account.hash()] >= 0
 
 
 def update_balances_from_transaction(stx: SignedTransaction, new: bool):
@@ -22,9 +22,9 @@ def update_balances_from_transaction(stx: SignedTransaction, new: bool):
     touch_balance(tx.sender)
     if not new:
         tx.amount = -tx.amount
-    balances[tx.sender] -= tx.amount
+    balances[tx.sender.hash()] -= tx.amount
     touch_balance(tx.receiver)
-    balances[tx.receiver] += tx.amount
+    balances[tx.receiver.hash()] += tx.amount
     return valid_balance(tx.sender) and valid_balance(tx.receiver)
 
 
