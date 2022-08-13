@@ -14,7 +14,7 @@ reward_transaction = None
 mem_pool = set()
 validated_transactions = set()
 reward_transaction: Transaction = None
-balances = []
+balances = {}
 
 
 def update_block_transactions(block: Block):
@@ -26,9 +26,16 @@ def check_balance(account: PubKey):
     account.dumps() == MINING_REWARD_ADDRESS or balances[account] >= 0
 
 
+def touch_balance(account: PubKey):
+    if account not in balances:
+        balances[account] = 0
+
+
 def update_balances_from_transaction(stx: SignedTransaction):
     tx = stx.transaction
+    touch_balance(tx.sender)
     balances[tx.sender] -= tx.amount
+    touch_balance(tx.receiver)
     balances[tx.receiver] += tx.amount
     return check_balance(tx.sender) and check_balance(tx.receiver)
 
