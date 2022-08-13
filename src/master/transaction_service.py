@@ -8,13 +8,16 @@ from common.models import (
     SignedTransaction,
     Transaction,
 )
+from common.balances import (
+    update_balances_from_new_transaction,
+    update_balances_from_old_transaction,
+)
 from common.wallet import Wallet
 
 reward_transaction = None
 mem_pool = set()
 validated_transactions = set()
 reward_transaction: Transaction = None
-balances = {}
 
 
 def update_block_transactions(block: Block):
@@ -22,28 +25,11 @@ def update_block_transactions(block: Block):
     block.signed_transactions.extend(list(mem_pool))
 
 
-def check_balance(account: PubKey):
-    account.dumps() == MINING_REWARD_ADDRESS or balances[account] >= 0
-
-
-def touch_balance(account: PubKey):
-    if account not in balances:
-        balances[account] = 0
-
-
-def update_balances_from_transaction(stx: SignedTransaction):
-    tx = stx.transaction
-    touch_balance(tx.sender)
-    balances[tx.sender] -= tx.amount
-    touch_balance(tx.receiver)
-    balances[tx.receiver] += tx.amount
-    return check_balance(tx.sender) and check_balance(tx.receiver)
-
-
 def refresh_transactions_from_new_block(block: Block):
     global mem_pool
     global validated_transactions
     excess_transactions = set()
+    insufficient_funds = False
     for stx in block.signed_transactions:
         if stx in validated_transactions:
             excess_transactions.add(stx)
@@ -51,7 +37,7 @@ def refresh_transactions_from_new_block(block: Block):
             validated_transactions.add(stx)
         if stx in mem_pool:
             mem_pool.remove(stx)
-        insufficient_funds = update_balances_from_transaction(stx)
+        insufficient_funds |= update_balances_from_new_transaction(stx)
     return excess_transactions, insufficient_funds
 
 
@@ -62,6 +48,7 @@ def refresh_transactions_from_old_block(block: Block):
         validated_transactions.remove(stx)
         if stx.transaction.sender.dumps() != MINING_REWARD_ADDRESS:
             mem_pool.add(stx)
+        update_balances_from_old_transaction(stx)
 
 
 def forge_reward_transaction() -> SignedTransaction:

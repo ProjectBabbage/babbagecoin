@@ -134,16 +134,17 @@ def sane_from(start: Block, starting_height: int):
 
 
 def refresh_transactions_switch(start: Block, ancestor: Block, end: Block):
-    # take into account transactions of the old branch start
+    # Requires that both branches have no insufficient funds transactions
+
+    # Take into account transactions of the old branch start
     b = start
     while b.hash() != ancestor.hash():
         refresh_transactions_from_old_block(b)
         b = block_tbl[b.prev_hash]
-    # take into account transactions from the new branch end
+    # Take into account transactions from the new branch end
     b = end
     while b.hash() != ancestor.hash():
-        insufficient_funds = refresh_transactions_from_new_block(b)
-        assert not insufficient_funds
+        refresh_transactions_from_new_block(b)
         b = block_tbl[b.prev_hash]
 
 
