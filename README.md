@@ -35,13 +35,13 @@ The wallet will generate a private key for you, save it to private.key.<CURRENT_
 The wallet is managing only one private key at the time.
 
 ### Transactions
-Use the bbc.sh script (chmod +x it first):
+Use the `bbc.sh` script (`chmod +x` it first):
 
 `./bbc.sh tx MARTIAL 10 0.3` --> sending 10BBC with 0.5BBC fees to MARTIAL
 
-(`make tx` is a shortcut for the above command)
+_`make tx` is a shortcut for the above command_
 
 ### Balance
 `./bbc.sh balance` to get your wallet balance
 
-(`make balance` is a shortcut for the above command)
+_`make balance` is a shortcut for the above command_
