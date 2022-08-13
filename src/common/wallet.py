@@ -20,6 +20,9 @@ class Wallet:
     def save_to_files(self):
         """Create the private.key.<CURRENT_USER> and public.key.<CURRENT_USER> files."""
         user_private = f"private.key.{get_current_user()}"
+        if Path(user_private).is_file():
+            return
+
         user_public = f"public.key.{get_current_user()}"
         with open(user_private, "wb") as priv:
             priv.write(self.decode_private_key())
@@ -83,6 +86,8 @@ class Wallet:
         w = Wallet()
         if Path(filepath).is_file():
             w.private_key = Wallet.load_priv_keys(filepath)
+        else:
+            print("No existing private.key.* file, creating a new Wallet in memory.")
         return w
 
     @staticmethod
