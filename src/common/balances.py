@@ -25,7 +25,7 @@ def update_balances_from_transaction(stx: SignedTransaction, new: bool):
     balances[tx.sender.hash()] -= tx.amount
     touch_balance(tx.receiver)
     balances[tx.receiver.hash()] += tx.amount
-    return valid_balance(tx.sender) and valid_balance(tx.receiver)
+    return not (valid_balance(tx.sender) and valid_balance(tx.receiver))
 
 
 def update_balances_from_new_transaction(stx):
