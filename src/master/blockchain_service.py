@@ -63,11 +63,14 @@ def make_primary_between(start, end):
     """
     if start.hash() != end.hash():
         prev = block_tbl[end.prev_hash]
-        i = 0
+        i = -1
         for j, e in enumerate(prev.next_blocks):
             if e.hash() == end.hash():
                 i = j
                 break
+        if i == -1:
+            i = len(prev.next_blocks)
+            prev.next_blocks.append(end)
         temp = prev.next_blocks[0]
         prev.next_blocks[0] = end
         prev.next_blocks[i] = temp
@@ -79,6 +82,7 @@ def sane_from(start: Block, starting_height: int):
     Run verify_block on each block from start.
     Returns False if a unconsistency is detected:
     - InvalidBlockHash: the block hash doesn't match the required difficulty
+    - InvalidBlockHeight: the block height does not get incremented by 1 every time
     - BadRewardTransaction: the reward transaction as bad amount or bad address
     - RewardTransactionNotUnique: the reward transaction address appears after the first tx
     - InvalidSignature: the signature for a stx is incorrect
@@ -176,6 +180,7 @@ def update_blockchain(anchor: Block, leaf: Block):
     if anchor.prev_hash not in block_tbl:
         raise Exception("Does not connect to our blockchain")
     anchor_prev = block_tbl[anchor.prev_hash]
+    make_primary_between(anchor, leaf)
     if leaf.height > head.height and sane_from(anchor, anchor_prev.height + 1):
         update_block_tbl_from(anchor)
         anchor_prev.next_blocks.append(anchor)
@@ -188,8 +193,8 @@ def update_blockchain(anchor: Block, leaf: Block):
                 break
             b = b.next_blocks[0]
         if excess_transactions == set():
-            # we want to keep the invariant on next_blocks
-            make_primary_between(ancestor, anchor)
+            # enforce the head path invariant
+            make_primary_between(anchor_prev, anchor)
             # change head to be the new leaf
             head = leaf
             print(f"Changing head to {head.hash()}")

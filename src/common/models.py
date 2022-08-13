@@ -111,7 +111,7 @@ class Block:
     nonce: int = 0
 
     # The following data is not hashed
-    # Invariant: following the first element of next_blocks should lead to head
+    # Head path invariant: following the first element of next_blocks should lead to head
     next_blocks: List["Block"] = field(default_factory=list)
     _hash: Optional[str] = None
 
