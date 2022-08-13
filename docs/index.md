@@ -1,41 +1,34 @@
+Welcome to the Babbage Coin project ! This project is about describing the blockckain fundamentals, and making it is as easy to understand as possible. It started from scratch, and was initially built in a weekend.
 
+## Overview
+
+The core of the package is written in python, allowing us to put an emphasis on readability of the code. We added comments, chart, and tried to keep dependencies manageable to help you navigate through it.
+
+Design choices also skew towards the simplicity of the chain: it uses proof of work as its consensus algorithm and there is no virtual machine or scripting language associated. 
+
+The following graph describe the overall structure of the project.
 ![Visual representation](bbc.excalidraw.svg)
 
+ There are three main modules: the master, the miner, and the client. We now describe those in more detail, and conclude by the verification of blocks validity.
 
-## Welcome to GitHub Pages
+## Hashing and miner
+TODO:
+- hashing algorithm
+- what is hashed in a block
+- what is the miner trying to hash, signed transactions
 
-You can use the [editor on GitHub](https://github.com/ProjectBabbage/babbagecoin/edit/main/docs/index.md) to maintain and preview the content for your website in Markdown files.
+## Network and master
+TODO:
+- broadcast
+- update_blockchain
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+## Client
+TODO:
+- create new account
+- transfer
+- faucet
+- balance
+- block explorer / recent activity
 
-### Markdown
-
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
-
-```markdown
-Syntax highlighted code block
-
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-
-For more details see [Basic writing and formatting syntax](https://docs.github.com/en/github/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/ProjectBabbage/babbagecoin/settings/pages). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://support.github.com/contact) and we’ll help you sort it out.
+## Verification
+TODO: describe all the verification that is done
