@@ -134,6 +134,7 @@ dmypy.json
 # containing the private keys
 private.key.*
 public.key.*
+!known_nodes/public.key.*
 
 # front
 plot/
