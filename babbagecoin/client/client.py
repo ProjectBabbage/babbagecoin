@@ -22,14 +22,14 @@ class Client:
     contacts: dict[str:PubKey]
 
     def __init__(self, load_from_file=True):
-        self.wallet = Wallet(load_from_file=load_from_file)
+        self.wallet = Wallet()
         self.contacts = self.load_contacts()
 
     def load_contacts(self):
-        # load public keys from file in pub_keys/ and return a dict {hash_pk: PubKey}
+        # load public keys from file in known_nodes/ and return a dict {hash_pk: PubKey}
         contact_name_to_pk = {}
-        for filepath in os.listdir("./pub_keys"):
-            absolute_filepath = f"{os.getcwd()}/pub_keys/{filepath}"
+        for filepath in os.listdir("./known_nodes"):
+            absolute_filepath = f"{os.getcwd()}/known_nodes/{filepath}"
             name, pk = filepath.split(".")[0], Wallet.load_pub_key(absolute_filepath)
             contact_name_to_pk[name] = pk
         return contact_name_to_pk

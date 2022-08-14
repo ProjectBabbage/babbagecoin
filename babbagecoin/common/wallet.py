@@ -1,4 +1,4 @@
-import os
+from pathlib import Path
 
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import rsa, padding
@@ -8,23 +8,31 @@ from cryptography.exceptions import InvalidSignature
 
 from babbagecoin.common.models import MINING_REWARD_ADDRESS, PubKey, Transaction, SignedTransaction
 from babbagecoin.common.exceptions import InvalidSignatureForTransaction
+from babbagecoin.common.context import get_current_user
 
 
 class Wallet:
     private_key: RSAPrivateKey
 
-    def __init__(self, load_from_file=False):
-        if load_from_file:
-            if os.path.isfile(".skey"):
-                # we read the already generated keys
-                self.private_key = Wallet.load_priv_keys(".skey")
+    def __init__(self, load_from_file=True, save_to_file=True):
+        self.private_key = rsa.generate_private_key(public_exponent=65537, key_size=512)
 
-            else:
-                self.private_key = rsa.generate_private_key(public_exponent=65537, key_size=512)
-                with open(".skey", "wb") as target_file:
-                    target_file.write(self.decode_private_key())
-        else:
-            self.private_key = rsa.generate_private_key(public_exponent=65537, key_size=512)
+        user_privk_filepath = f"private.key.{get_current_user()}"
+        if load_from_file and Path(user_privk_filepath).is_file():
+            self.private_key = Wallet.load_priv_keys(user_privk_filepath)
+            print(f"Found {user_privk_filepath}, using it.")
+        if save_to_file and not Path(user_privk_filepath).is_file():
+            self.save_files()
+            print("Saving key files.")
+
+    def save_files(self):
+        """Create the private.key.<CURRENT_USER> and public.key.<CURRENT_USER> files."""
+        user_private = f"private.key.{get_current_user()}"
+        user_public = f"public.key.{get_current_user()}"
+        with open(user_private, "wb") as priv:
+            priv.write(self.decode_private_key())
+        with open(user_public, "wb") as pub:
+            pub.write(self.decode_public_key())
 
     def get_public_key(self) -> PubKey:
         return PubKey(self.private_key.public_key())
@@ -80,7 +88,7 @@ class Wallet:
 
     @staticmethod
     def load_from_file(filepath):
-        w = Wallet()
+        w = Wallet(load_from_file=False, save_to_file=False)
         w.private_key = Wallet.load_priv_keys(filepath)
         return w
 
@@ -88,3 +96,6 @@ class Wallet:
     def load_priv_keys(filepath):
         with open(filepath, "rb") as fkey:
             return load_pem_private_key(fkey.read(), password=None)
+
+
+wallet = Wallet()
