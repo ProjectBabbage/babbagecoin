@@ -131,9 +131,6 @@ dmypy.json
 # Inteliji / Pycharm
 .idea
 
-# vscode
-.vscode/settings.json
-
 # containing the private keys
 .keys
 .skey
