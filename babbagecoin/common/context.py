@@ -53,7 +53,6 @@ class NetworkContext:
                 self.myIp = "127.0.0.1"
                 self.known_nodes = [self.myIp]
                 self.sentry_dsn = None
-                print("here")
             else:
                 self.myIp = get_my_ip()
                 self.known_nodes = get_all_ips()

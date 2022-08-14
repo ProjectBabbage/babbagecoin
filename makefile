@@ -1,24 +1,28 @@
-## Running bbc
-launch:
+## RUNNING BBC IN CONTAINERS
+compose-up:
 	docker-compose --project-directory=. -f docker/docker-compose.yml up --build
 
-stop:
+compose-stop:
 	docker-compose --project-directory=. -f docker/docker-compose.yml down
 
+compose-two-nodes:
+	docker-compose --project-directory=. -f docker/docker-compose-2.yml up --build
+
+compose-four-nodes:
+	docker-compose --project-directory=. -f docker/docker-compose-4.yml up --build
+
+# OR DIRECTLY ON YOUR MACHINE
 master:
 	bash bbc.sh master
 
 miner:
 	bash bbc.sh miner
 
+
+# BUILD THE BASE IMAGE
 docker-image:
 	docker build . -t base_image_bbc
 
-two-nodes:
-	docker-compose --project-directory=. -f docker/docker-compose-2.yml up --build
-
-four-nodes:
-	docker-compose --project-directory=. -f docker/docker-compose-4.yml up --build
 
 ## Interacting with the node
 tx:
@@ -27,7 +31,11 @@ tx:
 balance:
 	bash bbc.sh balance
 
-## Dev jobs
+
+# DEV JOBS
+install:
+	poetry install && poetry shell
+
 lint:
 	flake8
 
@@ -36,9 +44,10 @@ lint:
 requirements:
 	poetry export --without-hashes --dev -o requirements.manual.txt
 
+# not used much, prefer 'test' (using the pytest framework) command over this one
 unittest:
 	export TESTING=true
-	python -m unittest discover --start-directory tests
+	python -m unittest discover --start-directory tests -v
 
 # using pytest-xdist to run each test in isolation in a boxed subprocess in paraller (-n 4 --boxed)
 test:
