@@ -54,6 +54,8 @@
             "module": "pytest",
             "args": [
                 "-v",
+                "--boxed",
+                "tests",
             ],
             "justMyCode": true
         },
