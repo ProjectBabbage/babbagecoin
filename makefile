@@ -40,9 +40,10 @@ unittest:
 	export TESTING=true
 	python -m unittest discover --start-directory tests
 
+# using pytest-xdist to run each test in isolation in a boxed subprocess in paraller (-n 4 --boxed)
 test:
 	export TESTING=true
-	pytest --cov=babbagecoin tests --cov-report term:skip-covered --cov-fail-under 50
+	pytest -n 4 --boxed --cov=babbagecoin tests --cov-report term:skip-covered --cov-fail-under 50
 
 package:
 	poetry build
