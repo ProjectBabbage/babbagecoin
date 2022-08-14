@@ -13,4 +13,4 @@ COPY pyproject.toml poetry.lock  ./
 RUN poetry install --no-dev
 
 # -u for unbuffered, so that python display each line of log asap
-ENTRYPOINT ["python", "-um", "babbagecoin"]
+ENTRYPOINT ["python", "-u", "-m", "babbagecoin"]
