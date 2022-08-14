@@ -11,6 +11,7 @@ from babbagecoin.master.blockchain_service import (
     get_head,
     block_tbl,
     build_working_block,
+    make_primary_between,
     update_blockchain,
     compute_balance,
 )
@@ -79,7 +80,7 @@ def receive_block_from_network():
                 headers={"Content-Type": "application/json"},
             )
             prev_b = BlockSchema.load(resp.json())
-            prev_b.next_blocks.append(b)
+            make_primary_between(prev_b, b)
             b = prev_b
         update_blockchain(b, leaf)
     return "ok"

@@ -9,6 +9,9 @@ from babbagecoin.common.models import (
 )
 from babbagecoin.common.wallet import Wallet
 from babbagecoin.master.blockchain_service import genesis
+from babbagecoin.common.block_service import set_difficulty, is_block_hash_valid
+
+set_difficulty(1000)
 
 
 def make_pubkey(user: str) -> PubKey:
@@ -43,17 +46,24 @@ def make_stx(sender: str, receiver: str, amount=5, fees=0.1):
 
 
 def make_block(prev_hash: str, height=1, stx=[], next_blocks=[]):
-    return Block(
+    block = Block(
         height=height,
         prev_hash=prev_hash,
         signed_transactions=stx,
         nonce=0,
         next_blocks=next_blocks,
     )
+    while not is_block_hash_valid(block):
+        block.nonce += 1
+
+    return block
 
 
-def make_reward_block(for_user: str):
+def make_block_with_reward(prev_hash: str, height=1, miner="USER1", stx=[], next_blocks=[]):
+    reward_tx = make_stx(MINING_REWARD_ADDRESS, miner)
+    return make_block(prev_hash, height, [reward_tx] + stx, next_blocks)
+
+
+def make_reward_block(for_user="USER1"):
     """A block with only the reward transaction."""
-    reward_tx = make_stx(MINING_REWARD_ADDRESS, for_user)
-    b = make_block(prev_hash=genesis.hash(), stx=[reward_tx])
-    return b
+    return make_block_with_reward(prev_hash=genesis.hash(), miner=for_user)

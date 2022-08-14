@@ -22,16 +22,18 @@ block_tbl[genesis.hash()] = genesis
 head: Block = genesis
 
 
-def update_block_tbl_from(block):
-    block_tbl[block.hash()] = block
-    for b in block.next_blocks:
-        update_block_tbl_from(b)
+def update_block_tbl_between(start, end):
+    # requires end path invariant
+    block_tbl[start.hash()] = start
+    if start != end:
+        update_block_tbl_between(start.next_blocks[0], end)
 
 
-def remove_block_tbl_from(block):
-    block_tbl.pop(block.hash())
-    for b in block.next_blocks:
-        remove_block_tbl_from(b)
+def remove_block_tbl_between(start, end):
+    block_tbl.pop(end.hash())
+    if start != end:
+        prev = block_tbl[end.prev_hash]
+        remove_block_tbl_between(start, prev)
 
 
 def find_common_ancestor_of(leaf1, leaf2):
@@ -49,32 +51,29 @@ def find_common_ancestor_of(leaf1, leaf2):
     return cursor2
 
 
-def make_primary_between(start, end):
+def make_primary_between(block, next_block):
     """
-      start
+      block
       ┌───┐   ┌───┐                       ┌───┐   ┌───┐  ┌───┐
     ──┤ s ├─┬─┤ y │                     ──┤ s ├─┬─┤ x ├──┤ e │
       └───┘ │ └───┘                       └───┘ │ └───┘  └───┘
             │               ─────────►          │
-            │         end                       │
+            │         next_block                       │
             │ ┌───┐  ┌───┐                      │ ┌───┐
             └─┤ x ├──┤ e │                      └─┤ y │
               └───┘  └───┘                        └───┘
     """
-    if start.hash() != end.hash():
-        prev = block_tbl[end.prev_hash]
-        i = -1
-        for j, e in enumerate(prev.next_blocks):
-            if e.hash() == end.hash():
-                i = j
-                break
-        if i == -1:
-            i = len(prev.next_blocks)
-            prev.next_blocks.append(end)
-        temp = prev.next_blocks[0]
-        prev.next_blocks[0] = end
-        prev.next_blocks[i] = temp
-        make_primary_between(start, prev)
+    i = -1
+    for j, e in enumerate(block.next_blocks):
+        if e.hash() == next_block.hash():
+            i = j
+            break
+    if i == -1:
+        i = len(block.next_blocks)
+        block.next_blocks.append(next_block)
+    temp = block.next_blocks[0]
+    block.next_blocks[0] = next_block
+    block.next_blocks[i] = temp
 
 
 def sane_from(start: Block, starting_height: int):
@@ -180,9 +179,8 @@ def update_blockchain(anchor: Block, leaf: Block):
     if anchor.prev_hash not in block_tbl:
         raise Exception("Does not connect to our blockchain")
     anchor_prev = block_tbl[anchor.prev_hash]
-    make_primary_between(anchor, leaf)
     if leaf.height > head.height and sane_from(anchor, anchor_prev.height + 1):
-        update_block_tbl_from(anchor)
+        update_block_tbl_between(anchor, leaf)
         anchor_prev.next_blocks.append(anchor)
         ancestor = find_common_ancestor_of(leaf, head)
         refresh_transactions_switch(head, ancestor, anchor_prev)
@@ -203,7 +201,7 @@ def update_blockchain(anchor: Block, leaf: Block):
             for stx in excess_transactions:
                 validated_transactions.add(stx)
             anchor_prev.next_blocks.pop()
-            remove_block_tbl_from(anchor)
+            remove_block_tbl_between(anchor, leaf)
             print("Discarding new blocks due to a transaction already validated")
     """
     Verification of a transaction already validated (b) ending up in rejecting the incoming blocks:
