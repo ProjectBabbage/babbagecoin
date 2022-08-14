@@ -63,17 +63,11 @@ def make_primary_between(block, next_block):
             └─┤ x ├──┤ e │                      └─┤ y │
               └───┘  └───┘                        └───┘
     """
-    i = -1
-    for j, e in enumerate(block.next_blocks):
-        if e.hash() == next_block.hash():
-            i = j
-            break
-    if i == -1:
-        i = len(block.next_blocks)
-        block.next_blocks.append(next_block)
-    temp = block.next_blocks[0]
-    block.next_blocks[0] = next_block
-    block.next_blocks[i] = temp
+
+    def no_next(b: Block):
+        return b.hash() != next_block.hash()
+
+    block.next_blocks = [next_block] + list(filter(no_next, block.next_blocks))
 
 
 def sane_from(start: Block, starting_height: int):
