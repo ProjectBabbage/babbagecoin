@@ -1,14 +1,14 @@
-from common.exceptions import (
+from babbagecoin.common.exceptions import (
     DuplicatedTransaction,
     InvalidBlockHash,
     InvalidSignatureForTransaction,
     RewardTransactionNotUnique,
     BadRewardTransaction,
 )
-from common.models import Block, MINING_REWARD_AMOUNT, MINING_REWARD_ADDRESS
-from common.block_service import is_block_hash_valid
-from common.wallet import Wallet
-from master.transaction_service import (
+from babbagecoin.common.models import Block, MINING_REWARD_AMOUNT, MINING_REWARD_ADDRESS
+from babbagecoin.common.block_service import is_block_hash_valid
+from babbagecoin.common.wallet import Wallet
+from babbagecoin.master.transaction_service import (
     refresh_transactions_from_old_block,
     refresh_transactions_from_new_block,
     get_reward_transaction,

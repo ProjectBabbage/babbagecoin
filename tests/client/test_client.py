@@ -1,5 +1,5 @@
 import pytest
-from client.client import Client
+from babbagecoin.client.client import Client
 from tests.factory.models import make_pubkey
 
 
@@ -18,7 +18,7 @@ def test_send_transaction(client, monkeypatch):
         nonlocal post_count
         post_count += 1
 
-    monkeypatch.setattr("client.client.requests.post", mock_post)
+    monkeypatch.setattr("babbagecoin.client.client.requests.post", mock_post)
     client.send_transaction("USER2", 10, 1)
 
     assert post_count == 1

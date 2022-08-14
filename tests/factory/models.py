@@ -1,5 +1,5 @@
 import uuid
-from common.models import (
+from babbagecoin.common.models import (
     PubKey,
     SignedTransaction,
     Transaction,
@@ -7,14 +7,16 @@ from common.models import (
     MINING_REWARD_AMOUNT,
     MINING_REWARD_ADDRESS,
 )
-from common.wallet import Wallet
-from master.blockchain_service import genesis
+from babbagecoin.common.wallet import Wallet
+from babbagecoin.master.blockchain_service import genesis
 
 
 def make_pubkey(user: str) -> PubKey:
     if user == MINING_REWARD_ADDRESS:
         return PubKey(MINING_REWARD_ADDRESS)
-    return Wallet.load_from_file(f"src/tests/fixtures/private_keys/{user}.txt").get_public_key()
+    return Wallet.load_from_file(
+        f"babbagecoin/tests/fixtures/private_keys/{user}.txt"
+    ).get_public_key()
 
 
 def make_tx(sender: str, receiver: str, amount=5, fees=0.1):
@@ -34,7 +36,9 @@ def make_stx(sender: str, receiver: str, amount=5, fees=0.1):
     tx = make_tx(sender, receiver, amount, fees)
     if sender == MINING_REWARD_ADDRESS:
         sender = receiver
-    signature = Wallet.load_from_file(f"src/tests/fixtures/private_keys/{sender}.txt").sign(tx)
+    signature = Wallet.load_from_file(f"babbagecoin/tests/fixtures/private_keys/{sender}.txt").sign(
+        tx
+    )
     return SignedTransaction(tx, signature)
 
 

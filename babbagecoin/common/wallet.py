@@ -6,8 +6,8 @@ from cryptography.hazmat.primitives.asymmetric.rsa import RSAPrivateKey
 from cryptography.hazmat.primitives.serialization import load_pem_private_key
 from cryptography.exceptions import InvalidSignature
 
-from common.models import MINING_REWARD_ADDRESS, PubKey, Transaction, SignedTransaction
-from common.exceptions import InvalidSignatureForTransaction
+from babbagecoin.common.models import MINING_REWARD_ADDRESS, PubKey, Transaction, SignedTransaction
+from babbagecoin.common.exceptions import InvalidSignatureForTransaction
 
 
 class Wallet:

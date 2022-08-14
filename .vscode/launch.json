@@ -8,7 +8,7 @@
             "name": "Debug Miner",
             "type": "python",
             "request": "launch",
-            "program": "src/app.py",
+            "module": "babbagecoin",
             "console": "integratedTerminal",
             "justMyCode": true,
             "args": [
@@ -21,7 +21,7 @@
             "request": "launch",
             "module": "flask",
             "env": {
-                "FLASK_APP": "src/app.py:master_app",
+                "FLASK_APP": "babbagecoin/__main__.py:master_app",
                 "FLASK_ENV": "development"
             },
             "args": [
@@ -37,13 +37,13 @@
             "request": "launch",
             "module": "unittest",
             "env": {
-                "FLASK_APP": "src/app.py:master_app",
+                "FLASK_APP": "babbagecoin/__main__.py:master_app",
                 "FLASK_ENV": "development"
             },
             "args": [
                 "discover",
                 "--start-directory",
-                "src"
+                "."
             ],
             "justMyCode": true
         },
