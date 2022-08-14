@@ -6,9 +6,15 @@ def get_env_variables():
     return dotenv_values(".env")
 
 
+def get_current_user():
+    if "CURRENT_USER" in get_env_variables():
+        return get_env_variables()["CURRENT_USER"]
+    else:
+        return "NO_CONFIG_USER"
+
+
 def get_my_ip():
-    current_user = get_env_variables()["CURRENT_USER"]
-    return get_env_variables()[f"IP_NODE_{current_user}"]
+    return get_env_variables()[f"IP_NODE_{get_current_user()}"]
 
 
 def get_sentry_dsn():

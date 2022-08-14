@@ -7,7 +7,6 @@ from sentry_sdk.integrations.flask import FlaskIntegration
 from flask import Flask, request
 
 from babbagecoin.common.schemas import BlockSchema, SignedTransactionSchema
-from babbagecoin.common.wallet import Wallet
 from babbagecoin.master.blockchain_service import (
     get_head,
     block_tbl,
@@ -26,7 +25,6 @@ from babbagecoin.master.transaction_service import (
 
 sentry_sdk.init(dsn=NetworkContext().sentry_dsn, integrations=[FlaskIntegration()])
 
-wallet = Wallet(load_from_file=True)
 app = Flask(__name__)
 
 

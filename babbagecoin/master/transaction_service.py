@@ -8,7 +8,7 @@ from babbagecoin.common.models import (
     SignedTransaction,
     Transaction,
 )
-from babbagecoin.common.wallet import Wallet
+from babbagecoin.common.wallet import wallet
 
 reward_transaction = None
 mem_pool = set()
@@ -45,7 +45,6 @@ def refresh_transactions_from_old_block(block: Block):
 
 
 def forge_reward_transaction() -> SignedTransaction:
-    wallet = Wallet(load_from_file=True)
     transaction = Transaction(
         uuid=str(uuid.uuid4()),
         sender=PubKey(MINING_REWARD_ADDRESS),
