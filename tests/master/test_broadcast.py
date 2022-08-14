@@ -1,11 +1,11 @@
 from unittest import TestCase
 from unittest.mock import patch
-from master.broadcast_service import broadcast_block, broadcast_transaction
+from babbagecoin.master.broadcast_service import broadcast_block, broadcast_transaction
 from tests.factory.models import make_block, make_stx
 
 
 class TestBroadcast(TestCase):
-    @patch("master.broadcast_service.context")
+    @patch("babbagecoin.master.broadcast_service.context")
     @patch("requests.post", return_value="")
     def test_broadcast_block(self, mock_post, mock_context):
 
@@ -22,7 +22,7 @@ class TestBroadcast(TestCase):
         # not broadcasted to myself, only to the other node
         mock_post.assert_called_once()
 
-    @patch("master.broadcast_service.context")
+    @patch("babbagecoin.master.broadcast_service.context")
     @patch("requests.post", return_value="")
     def test_broadcast_transaction(self, mock_post, mock_context):
         mock_context.myIp = "192.168.122.1"

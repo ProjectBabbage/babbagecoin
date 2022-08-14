@@ -4,10 +4,10 @@ import requests
 
 from typing import Optional
 
-from common.models import Block
-from common.schemas import BlockSchema
-from common.block_service import is_block_hash_valid
-from common.context import NetworkContext
+from babbagecoin.common.models import Block
+from babbagecoin.common.schemas import BlockSchema
+from babbagecoin.common.block_service import is_block_hash_valid
+from babbagecoin.common.context import NetworkContext
 
 context = NetworkContext()
 

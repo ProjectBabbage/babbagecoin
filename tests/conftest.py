@@ -3,7 +3,7 @@ This file contains pytest fixtures accessible from modules in the tests/ directo
 """
 
 import pytest
-from master.routes import app as master_app
+from babbagecoin.master.routes import app as master_app
 
 
 @pytest.fixture(scope="module")

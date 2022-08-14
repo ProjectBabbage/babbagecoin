@@ -1,7 +1,12 @@
 import sys
-from miner.miner import run as miner_run
-from master.routes import app as master_app
-from client.client import send_transaction, check_balance
+from babbagecoin.miner.miner import run as miner_run
+from babbagecoin.master.routes import app as master_app
+from babbagecoin.client.client import send_transaction, check_balance
+
+
+def fn():
+    print("lskdl")
+
 
 if __name__ == "__main__":
     command = sys.argv[1]

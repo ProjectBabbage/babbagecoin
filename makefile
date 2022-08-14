@@ -31,14 +31,21 @@ balance:
 lint:
 	flake8
 
+# IMPORTANT ! to do from time to time
+# for the github actions to be lightweight and not to needs the installation of poetry
 requirements:
 	poetry export --without-hashes --dev -o requirements.manual.txt
-# for the github actions to be lightweight and not to needs the installation of poetry
 
 unittest:
 	export TESTING=true
-	python -m unittest discover --start-directory src
+	python -m unittest discover --start-directory tests
 
 test:
 	export TESTING=true
-	pytest --cov=src src/tests --cov-report term:skip-covered --cov-fail-under 70
+	pytest --cov=babbagecoin tests --cov-report term:skip-covered --cov-fail-under 70
+
+package:
+	poetry build
+
+package-publish:
+	poetry publish

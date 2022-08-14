@@ -1,6 +1,6 @@
 import uuid
 
-from common.models import (
+from babbagecoin.common.models import (
     MINING_REWARD_AMOUNT,
     MINING_REWARD_ADDRESS,
     PubKey,
@@ -8,7 +8,7 @@ from common.models import (
     SignedTransaction,
     Transaction,
 )
-from common.wallet import Wallet
+from babbagecoin.common.wallet import Wallet
 
 reward_transaction = None
 mem_pool = set()

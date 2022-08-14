@@ -1,4 +1,4 @@
-from common.models import Block
+from babbagecoin.common.models import Block
 
 
 difficulty = 2000000
