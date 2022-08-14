@@ -34,7 +34,10 @@ def remove_block_tbl_from(block):
 
 
 def find_common_ancestor_of(leaf1, leaf2):
-    # requires leaf1.height > leaf2.height
+    if leaf1.height < leaf2.height:
+        temp = leaf2
+        leaf2 = leaf1
+        leaf1 = temp
     cursor1 = leaf1
     while cursor1.height > leaf2.height + 1:
         cursor1 = block_tbl[cursor1.prev_hash]
@@ -133,7 +136,7 @@ def refresh_transactions_switch(start: Block, ancestor: Block, end: Block):
 
 def update_blockchain(anchor: Block, leaf: Block):
     """
-                                 head
+    ancestor                      head
      ┌───┐   ┌───┐               ┌───┐
      │ a ├─┬─┤ b ├───────────────┤ c │
      └───┘ │ └───┘               └───┘

@@ -13,6 +13,7 @@ from babbagecoin.common.wallet import Wallet
 reward_transaction = None
 mem_pool = set()
 validated_transactions = set()
+reward_transaction: Transaction = None
 
 
 def update_block_transactions(block: Block):
