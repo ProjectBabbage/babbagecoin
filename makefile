@@ -42,7 +42,7 @@ unittest:
 
 test:
 	export TESTING=true
-	pytest --cov=babbagecoin tests --cov-report term:skip-covered --cov-fail-under 70
+	pytest --cov=babbagecoin tests --cov-report term:skip-covered --cov-fail-under 50
 
 package:
 	poetry build
