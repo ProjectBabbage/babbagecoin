@@ -16,8 +16,9 @@ sentry-sdk = {extras = ["flask"], version = "^1.5.8"}
 [tool.poetry.dev-dependencies]
 black = "^22.1.0"
 flake8 = "^4.0.1"
-pytest = "^7.1.1"
+pytest = "^7.1.2"
 pytest-cov = "^3.0.0"
+pytest-forked = "^1.4.0"
 pytest-xdist = "^2.5.0"
 
 [tool.black]
