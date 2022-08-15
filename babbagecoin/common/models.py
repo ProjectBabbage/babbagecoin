@@ -9,6 +9,9 @@ from cryptography.hazmat.primitives.serialization import load_pem_public_key
 MINING_REWARD_AMOUNT = 100
 MINING_REWARD_ADDRESS = "BABBAGE"
 
+SUCCESS = 0
+REVERTED = 1
+
 
 @dataclass
 class PubKey:
@@ -80,6 +83,7 @@ class Transaction:
 class SignedTransaction:
     transaction: Transaction
     signature: str
+    status: int = SUCCESS  # REVERTED when insufficient funds
 
     def hash(self):
         hasher = hashlib.sha256()

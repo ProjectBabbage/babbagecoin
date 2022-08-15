@@ -72,7 +72,7 @@ def make_primary_between(block, next_block):
 def sane_from(start: Block, starting_height: int):
     """
     Run verify_block on each block from start.
-    Returns False if a unconsistency is detected:
+    Returns False if an inconsistency is detected:
     - InvalidBlockHash: the block hash doesn't match the required difficulty
     - InvalidBlockHeight: the block height does not get incremented by 1 every time
     - BadRewardTransaction: the reward transaction as bad amount or bad address
@@ -174,7 +174,6 @@ def update_blockchain(anchor: Block, leaf: Block):
     anchor_prev = block_tbl[anchor.prev_hash]
     if leaf.height > head.height and sane_from(anchor, anchor_prev.height + 1):
         update_block_tbl_between(anchor, leaf)
-        anchor_prev.next_blocks.append(anchor)
         ancestor = find_common_ancestor_of(leaf, head)
         refresh_transactions_switch(head, ancestor, anchor_prev)
         b = anchor
@@ -193,7 +192,6 @@ def update_blockchain(anchor: Block, leaf: Block):
             refresh_transactions_switch(b, ancestor, head)
             for stx in excess_transactions:
                 validated_transactions.add(stx)
-            anchor_prev.next_blocks.pop()
             remove_block_tbl_between(anchor, leaf)
             print("Discarding new blocks due to a transaction already validated")
     """
