@@ -1,4 +1,4 @@
-from babbagecoin.common.models import Block, SignedTransaction, SUCCESS, REVERTED
+from babbagecoin.common.models import SignedTransaction, SUCCESS, REVERTED
 
 balances = {}
 
@@ -13,11 +13,10 @@ def get_balance_of_address(addr: str):
     return balances[addr]
 
 
-def apply_transaction(block: Block, stx: SignedTransaction):
+def apply_transaction(miner: str, stx: SignedTransaction):
     tx = stx.transaction
     sender = tx.sender.hash()
     receiver = tx.receiver.hash()
-    miner = block.signed_transactions[0].transaction.receiver.hash()
     touch_balance(sender)
     touch_balance(receiver)
     touch_balance(miner)
@@ -31,11 +30,10 @@ def apply_transaction(block: Block, stx: SignedTransaction):
         stx.status = REVERTED
 
 
-def cancel_transaction(block: Block, stx: SignedTransaction):
+def cancel_transaction(miner: str, stx: SignedTransaction):
     tx = stx.transaction
     sender = tx.sender.hash()
     receiver = tx.receiver.hash()
-    miner = block.signed_transactions[0].transaction.receiver.hash()
     if stx.status == SUCCESS:
         balances[sender] += tx.amount + tx.fees
         balances[receiver] -= tx.amount

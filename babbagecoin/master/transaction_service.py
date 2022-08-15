@@ -26,12 +26,13 @@ def refresh_transactions_from_new_block(block: Block):
     global mem_pool
     global validated_transactions
     excess_transactions = set()
+    miner = block.signed_transactions[0].transaction.receiver.hash()
     for stx in block.signed_transactions:
         if stx in validated_transactions:
             excess_transactions.add(stx)
         else:
             validated_transactions.add(stx)
-            apply_transaction(block, stx)
+            apply_transaction(miner, stx)
         if stx in mem_pool:
             mem_pool.remove(stx)
     return excess_transactions
@@ -40,9 +41,10 @@ def refresh_transactions_from_new_block(block: Block):
 def refresh_transactions_from_old_block(block: Block):
     global mem_pool
     global validated_transactions
+    miner = block.signed_transactions[0].transaction.receiver.hash()
     for stx in block.signed_transactions:
         validated_transactions.remove(stx)
-        cancel_transaction(block, stx)
+        cancel_transaction(miner, stx)
         if stx.transaction.sender.dumps() != MINING_REWARD_ADDRESS:
             mem_pool.add(stx)
 
