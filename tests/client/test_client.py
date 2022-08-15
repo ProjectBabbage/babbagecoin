@@ -1,12 +1,10 @@
 import pytest
 from babbagecoin.client.client import Client
-from tests.factory.models import make_pubkey
+from tests.helpers.models import make_pubkey
 
 
 @pytest.fixture()
 def client(monkeypatch):
-    pk_user2 = make_pubkey("USER2")
-    monkeypatch.setattr(Client, "load_contacts", lambda s: {"USER2": pk_user2})
     c = Client(False)
     yield c
 

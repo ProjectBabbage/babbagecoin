@@ -1,7 +1,8 @@
 from unittest import TestCase
 from unittest.mock import patch
+from babbagecoin.master.blockchain_service import genesis
 from babbagecoin.master.broadcast_service import broadcast_block, broadcast_transaction
-from tests.factory.models import make_block, make_stx
+from tests.helpers.users import user1, user2
 
 
 class TestBroadcast(TestCase):
@@ -14,8 +15,8 @@ class TestBroadcast(TestCase):
         # two nodes tests
         mock_context.known_nodes = ["192.168.122.1", "192.168.122.2"]
 
-        stx = make_stx("USER1", "USER2")
-        b = make_block(prev_hash="prev_hash", stx=[stx])
+        stx = user1.new_transaction(user2)
+        b = user1.mine_new_block_after(genesis, stxs=[stx])
 
         broadcast_block(b)
 
@@ -29,6 +30,6 @@ class TestBroadcast(TestCase):
         mock_context.myUrl = "http://192.168.122.1:5000"
         # 3 nodes
         mock_context.known_nodes = ["192.168.122.1", "192.168.122.2", "192.168.122.3"]
-        stx = make_stx("USER1", "USER2")
+        stx = user1.new_transaction(user2)
         broadcast_transaction(stx)
         assert mock_post.call_count == 2

@@ -19,29 +19,16 @@ context = NetworkContext()
 
 class Client:
     wallet: Wallet
-    contacts: dict[str, PubKey]
 
     def __init__(self, load_from_file=True):
         self.wallet = Wallet()
-        self.contacts = self.load_contacts()
-
-    def load_contacts(self):
-        # load public keys from file in known_nodes/ and return a dict {hash_pk: PubKey}
-        contact_name_to_pk = {}
-        for filepath in os.listdir("./known_nodes"):
-            absolute_filepath = f"{os.getcwd()}/known_nodes/{filepath}"
-            name, pk = filepath.split(".")[0], Wallet.load_pub_key(absolute_filepath)
-            contact_name_to_pk[name] = pk
-        return contact_name_to_pk
 
     def send_transaction(self, receiver: str, amount: float, fees: float):
         print(f"Sending {amount} to {receiver} with fees {fees}")
-        if receiver not in self.contacts:
-            raise Exception(f"Not in contacts list: {receiver}")
         tx = Transaction(
             uuid=str(uuid.uuid4()),
             sender=self.wallet.get_public_key(),
-            receiver=self.contacts[receiver],
+            receiver=receiver,
             amount=float(amount),
             fees=float(fees),
         )

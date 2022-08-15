@@ -50,7 +50,7 @@ class PubKey:
 class Transaction:
     uuid: str
     sender: PubKey
-    receiver: PubKey
+    receiver: str
     amount: float
     fees: float = 0
     status: int = SUCCESS  # REVERTED when insufficient funds
@@ -61,7 +61,7 @@ class Transaction:
         hasher = hashlib.sha256()
         hasher.update(self.uuid.encode())
         hasher.update(self.sender.dump())
-        hasher.update(self.receiver.dump())
+        hasher.update(self.receiver)
         hasher.update(str(self.amount).encode())
         hasher.update(str(self.fees).encode())
         return hasher.hexdigest()
