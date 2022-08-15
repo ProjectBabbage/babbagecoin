@@ -9,6 +9,7 @@ from babbagecoin.common.models import (
     Transaction,
 )
 from babbagecoin.common.wallet import wallet
+from babbagecoin.common.balance import apply_transaction, cancel_transaction
 
 reward_transaction = None
 mem_pool = set()
@@ -30,6 +31,7 @@ def refresh_transactions_from_new_block(block: Block):
             excess_transactions.add(stx)
         else:
             validated_transactions.add(stx)
+            apply_transaction(block, stx)
         if stx in mem_pool:
             mem_pool.remove(stx)
     return excess_transactions
@@ -40,6 +42,7 @@ def refresh_transactions_from_old_block(block: Block):
     global validated_transactions
     for stx in block.signed_transactions:
         validated_transactions.remove(stx)
+        cancel_transaction(block, stx)
         if stx.transaction.sender.dumps() != MINING_REWARD_ADDRESS:
             mem_pool.add(stx)
 

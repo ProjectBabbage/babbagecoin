@@ -262,30 +262,3 @@ def build_working_block() -> Block:
         signed_transactions=[rewardTransaction],
     )
     return new_block
-
-
-def delta_balance_block(address, block):
-    delta = 0
-    miner = block.signed_transactions[0].transaction.receiver
-    for stx in block.signed_transactions:
-        tx = stx.transaction
-        if str(tx.receiver) == address:
-            delta += tx.amount
-        if str(tx.sender) == address:
-            delta -= tx.amount + tx.fees
-        if str(miner) == address:
-            delta += tx.fees
-    return delta
-
-
-def compute_balance(address: str):
-    if not genesis.next_blocks:
-        return 0
-    b = genesis.next_blocks[0]
-    amount = 0
-
-    while b.next_blocks:
-        amount += delta_balance_block(address, b)
-        b = b.next_blocks[0]
-
-    return amount
