@@ -49,10 +49,12 @@ unittest:
 	export TESTING=true
 	python -m unittest discover --start-directory tests -v
 
-# using pytest-xdist to run each test in isolation in a boxed subprocess in paraller (-n 4 --boxed)
+# using pytest-forked to run each test in isolation in a forked subprocess (--forked)
+# using pytest-xdist to run tests in parallel in four processes (-n 4)
 test:
 	export TESTING=true
-	pytest -n 4 --boxed --cov=babbagecoin tests --cov-report term:skip-covered --cov-fail-under 50
+	pytest -n 4 --forked --cov=babbagecoin tests --cov-report term:skip-covered --cov-fail-under 50
+
 
 package:
 	poetry build

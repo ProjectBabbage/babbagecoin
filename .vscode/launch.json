@@ -32,7 +32,7 @@
             "justMyCode": true
         },
         {
-            "name": "Debug unittest",
+            "name": "Debug unittest (to remove)",
             "type": "python",
             "request": "launch",
             "module": "unittest",
@@ -54,13 +54,13 @@
             "module": "pytest",
             "args": [
                 "-v",
-                "--boxed",
+                "--forked",
                 "tests",
             ],
             "justMyCode": true
         },
         {
-            "name": "Debug specific tests",
+            "name": "Debug specific test",
             "type": "python",
             "request": "launch",
             "module": "pytest",
