@@ -1,9 +1,11 @@
+from babbagecoin.common.models import MINING_REWARD_ADDRESS
 from babbagecoin.common.models import SignedTransaction, SUCCESS, REVERTED
 
 balances = {}
 
 
 def touch_balance(addr: str):
+    global balances
     if addr not in balances:
         balances[addr] = 0
 
@@ -14,6 +16,7 @@ def get_balance_of_address(addr: str):
 
 
 def apply_transaction(miner: str, stx: SignedTransaction):
+    global balances
     tx = stx.transaction
     sender = tx.sender.hash()
     receiver = tx.receiver.hash()
@@ -21,7 +24,7 @@ def apply_transaction(miner: str, stx: SignedTransaction):
     touch_balance(receiver)
     touch_balance(miner)
     new_sender_balance = balances[sender] - tx.amount - tx.fees
-    if new_sender_balance >= 0:
+    if new_sender_balance >= 0 or tx.sender.dumps() == MINING_REWARD_ADDRESS:
         balances[sender] = new_sender_balance
         balances[receiver] += tx.amount
         balances[miner] += tx.fees
@@ -31,6 +34,7 @@ def apply_transaction(miner: str, stx: SignedTransaction):
 
 
 def cancel_transaction(miner: str, stx: SignedTransaction):
+    global balances
     tx = stx.transaction
     sender = tx.sender.hash()
     receiver = tx.receiver.hash()
