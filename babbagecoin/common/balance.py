@@ -28,9 +28,9 @@ def apply_transaction(miner: str, stx: SignedTransaction):
         balances[sender] = new_sender_balance
         balances[receiver] += tx.amount
         balances[miner] += tx.fees
-        stx.status = SUCCESS
+        tx.status = SUCCESS
     else:
-        stx.status = REVERTED
+        tx.status = REVERTED
 
 
 def cancel_transaction(miner: str, stx: SignedTransaction):
@@ -38,9 +38,9 @@ def cancel_transaction(miner: str, stx: SignedTransaction):
     tx = stx.transaction
     sender = tx.sender.hash()
     receiver = tx.receiver.hash()
-    if stx.status == SUCCESS:
+    if tx.status == SUCCESS:
         balances[sender] += tx.amount + tx.fees
         balances[receiver] -= tx.amount
         balances[miner] -= tx.fees
     else:
-        assert stx.status == REVERTED
+        assert tx.status == REVERTED
