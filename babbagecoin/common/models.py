@@ -75,7 +75,14 @@ class Transaction:
         status_str = ""
         if self.status == REVERTED:
             status_str = "<b>REVERTED</b> "
-        return f"{status_str}uuid: {uuid}, sender: {sender}, receiver: {receiver}, amount: {amount}, fees: {fees}"
+        return (
+            f"{status_str}"
+            f"uuid: {uuid} "
+            f"sender: {sender} "
+            f"receiver: {receiver} "
+            f"amount: {amount} "
+            f"fees: {fees}"
+        )
 
     def __repr__(self) -> str:
         return f"Transaction({str(self)})"
