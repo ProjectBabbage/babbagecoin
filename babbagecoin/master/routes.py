@@ -13,9 +13,9 @@ from babbagecoin.master.blockchain_service import (
     build_working_block,
     make_primary_between,
     update_blockchain,
-    compute_balance,
 )
 from babbagecoin.common.context import NetworkContext
+from babbagecoin.common.balance import get_balance_of_address
 from babbagecoin.master.broadcast_service import broadcast_block, broadcast_transaction
 from babbagecoin.master.transaction_service import (
     update_block_transactions,
@@ -103,5 +103,5 @@ def add_transaction():
 
 @app.get("/addresses/<address>/balance")
 def get_balance(address: str):
-    balance = compute_balance(address)
+    balance = get_balance_of_address(address)
     return json.dumps({"balance": balance, "address": address})

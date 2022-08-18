@@ -9,6 +9,9 @@ from cryptography.hazmat.primitives.serialization import load_pem_public_key
 MINING_REWARD_AMOUNT = 100
 MINING_REWARD_ADDRESS = "BABBAGE"
 
+SUCCESS = 0
+REVERTED = 1
+
 
 @dataclass
 class PubKey:
@@ -50,6 +53,7 @@ class Transaction:
     receiver: PubKey
     amount: float
     fees: float = 0
+    status: int = SUCCESS  # REVERTED when insufficient funds
 
     def hash(self):
         if self.sender.rsa_pub_key == MINING_REWARD_ADDRESS:
@@ -62,14 +66,22 @@ class Transaction:
         hasher.update(str(self.fees).encode())
         return hasher.hexdigest()
 
-    def __str__(self):
+    def html(self):
         uuid = self.uuid[:4]
         sender = str(self.sender)[:8]
         receiver = str(self.receiver)[:8]
         amount = str(self.amount)
         fees = str(self.fees)
+        status_str = ""
+        if self.status == REVERTED:
+            status_str = "<b>REVERTED</b> "
         return (
-            f"uuid: {uuid}, sender: {sender}, receiver: {receiver}, amount: {amount}, fees: {fees}"
+            f"{status_str}"
+            f"uuid: {uuid} "
+            f"sender: {sender} "
+            f"receiver: {receiver} "
+            f"amount: {amount} "
+            f"fees: {fees}"
         )
 
     def __repr__(self) -> str:
@@ -99,7 +111,7 @@ class SignedTransaction:
         return f"stx({self.transaction})"
 
     def html(self):
-        return f"{self.transaction}"
+        return self.transaction.html()
 
 
 @dataclass

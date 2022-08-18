@@ -72,7 +72,7 @@ def make_primary_between(block, next_block):
 def sane_from(start: Block, starting_height: int):
     """
     Run verify_block on each block from start.
-    Returns False if a unconsistency is detected:
+    Returns False if an inconsistency is detected:
     - InvalidBlockHash: the block hash doesn't match the required difficulty
     - InvalidBlockHeight: the block height does not get incremented by 1 every time
     - BadRewardTransaction: the reward transaction as bad amount or bad address
@@ -174,7 +174,6 @@ def update_blockchain(anchor: Block, leaf: Block):
     anchor_prev = block_tbl[anchor.prev_hash]
     if leaf.height > head.height and sane_from(anchor, anchor_prev.height + 1):
         update_block_tbl_between(anchor, leaf)
-        anchor_prev.next_blocks.append(anchor)
         ancestor = find_common_ancestor_of(leaf, head)
         refresh_transactions_switch(head, ancestor, anchor_prev)
         b = anchor
@@ -193,7 +192,6 @@ def update_blockchain(anchor: Block, leaf: Block):
             refresh_transactions_switch(b, ancestor, head)
             for stx in excess_transactions:
                 validated_transactions.add(stx)
-            anchor_prev.next_blocks.pop()
             remove_block_tbl_between(anchor, leaf)
             print("Discarding new blocks due to a transaction already validated")
     """
@@ -264,30 +262,3 @@ def build_working_block() -> Block:
         signed_transactions=[rewardTransaction],
     )
     return new_block
-
-
-def delta_balance_block(address, block):
-    delta = 0
-    miner = block.signed_transactions[0].transaction.receiver
-    for stx in block.signed_transactions:
-        tx = stx.transaction
-        if str(tx.receiver) == address:
-            delta += tx.amount
-        if str(tx.sender) == address:
-            delta -= tx.amount + tx.fees
-        if str(miner) == address:
-            delta += tx.fees
-    return delta
-
-
-def compute_balance(address: str):
-    if not genesis.next_blocks:
-        return 0
-    b = genesis.next_blocks[0]
-    amount = 0
-
-    while b.next_blocks:
-        amount += delta_balance_block(address, b)
-        b = b.next_blocks[0]
-
-    return amount
