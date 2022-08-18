@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "babbagecoin"
-version = "0.1.1"
-description = "Second edition of project Babbage, create a blockchain from scratch (in a weekend)"
+version = "0.2.1"
+description = "Second edition of Project Babbage, create a blockchain from scratch."
 authors = ["Quentin Garchery <garchery.quentin@gmail.com>", "Martial Garchery <martial.garchery@gmail.com>", "Yohann Le Faou <yohannlefa@gmail.com>", "Julien Raspaud <julien.raspaud@gmail.com>"]
 
 [tool.poetry.dependencies]

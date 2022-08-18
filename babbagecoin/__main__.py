@@ -4,10 +4,6 @@ from babbagecoin.master.routes import app as master_app
 from babbagecoin.client.client import send_transaction, check_balance
 
 
-def fn():
-    print("lskdl")
-
-
 if __name__ == "__main__":
     command = sys.argv[1]
     if command == "master":
