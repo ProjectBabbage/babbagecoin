@@ -24,10 +24,10 @@ jobs:
       with:
         python-version: '3.9'
     - name: Install Poetry
-      run: pip install --user poetry
+      run: curl -sSL https://install.python-poetry.org | python -
     - name: Install dependencies
       run: poetry install
       env:
         POETRY_VIRTUALENVS_CREATE: false
     - name: Publish package
-      run: poetry publish -u ${{secrets.PYPI_USERNAME}} -p ${{secrets.PYPI_PASSWORD}} --build
+      run: poetry publish -u "${{secrets.PYPI_USERNAME}}" -p "${{secrets.PYPI_PASSWORD}}" --build
