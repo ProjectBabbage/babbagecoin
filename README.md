@@ -1,13 +1,28 @@
 # Babbagecoin
 
-The project babbage proof of work blockchain.
+### A understandable proof of work blockchain.
 
-**Visit the [github page](https://projectbabbage.github.io/babbagecoin/) for a nice overview of the project !**
+**Visit our [web page](https://projectbabbage.github.io/babbagecoin/) for a nice general overview of the project !**
+
+## Quickly run a node !
+
+
+```bash
+pip install --user babbagecoin
+```
+
+```bash
+python -m babbagecoin master
+# then in another terminal:
+python -m babbagecoin miner
+```
+
+# For development
 
 ## Requirements
 
-Install docker, docker-compose and python3.8 or above.
-You also need poetry.
+Install `docker`, `docker-compose` and `python3.8` or above.
+You also need `poetry`.
 
 Run `poetry install` then `poetry shell`
 
@@ -21,7 +36,7 @@ Stop the node properly:
 
 `make stop` --> to stop all containers if you didn't stopped them properly (if you did two Ctrl+C in a row)
 
-Run locally the master or miner:
+Or you can run separately the master or miner:
 
 `make (master | miner)`
 
@@ -29,7 +44,9 @@ There are also VSCode actions for debugging each one of them.
 
 ## Interact with the blockchain
 
-Configure your blockchain by creating a .env file on the same model as what's in `.env.example`.
+!! Important
+
+Configure your blockchain by creating a `.env` file on the same model as what's in `.env.example`.
 
 The wallet will generate a private key for you, save it to private.key.<CURRENT_USER>, and reuse it afterward. A public key is derived from this private key. The hash of the public key is your address, for example e93417c7 (first 8 characters).
 The wallet is managing only one private key at the time.
