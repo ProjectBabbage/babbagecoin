@@ -2,7 +2,7 @@ import os
 import requests
 import uuid
 from argparse import ArgumentParser
-from babbagecoin.common.models import Transaction, SignedTransaction
+from babbagecoin.common.models import Transaction, SignedTransaction, PubKey
 from babbagecoin.common.wallet import Wallet
 from babbagecoin.common.schemas import SignedTransactionSchema
 from babbagecoin.common.context import NetworkContext
@@ -19,8 +19,7 @@ context = NetworkContext()
 
 class Client:
     wallet: Wallet
-    # dict type-checking compatible only with python > 3.8:
-    # contacts: dict[str, PubKey]
+    contacts: dict[str, PubKey]
 
     def __init__(self, load_from_file=True):
         self.wallet = Wallet()

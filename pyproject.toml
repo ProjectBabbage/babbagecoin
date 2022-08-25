@@ -7,7 +7,7 @@ readme = "README.md"
 authors = ["Quentin Garchery <garchery.quentin@gmail.com>", "Martial Garchery <martial.garchery@gmail.com>", "Yohann Le Faou <yohannlefa@gmail.com>", "Julien Raspaud <julien.raspaud@gmail.com>"]
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.9"
 Flask = "^2.0.3"
 requests = "^2.27.1"
 marshmallow = "^3.14.1"

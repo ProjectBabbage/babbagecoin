@@ -5,10 +5,10 @@ compose-up:
 compose-stop:
 	docker-compose --project-directory=. -f docker/docker-compose.yml down
 
-compose-two-nodes:
+compose-two-miners:
 	docker-compose --project-directory=. -f docker/docker-compose-2.yml up --build
 
-compose-four-nodes:
+compose-four-miners:
 	docker-compose --project-directory=. -f docker/docker-compose-4.yml up --build
 
 # OR DIRECTLY ON YOUR MACHINE
@@ -38,11 +38,6 @@ install:
 
 lint:
 	flake8
-
-# IMPORTANT ! to do from time to time
-# for the github actions to be lightweight and not to needs the installation of poetry
-requirements:
-	poetry export --without-hashes --dev -o requirements.manual.txt
 
 # not used much, prefer 'test' (using the pytest framework) command over this one
 unittest:

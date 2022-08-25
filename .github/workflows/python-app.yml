@@ -18,17 +18,16 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - name: Check presence of requirements.manual.txt (Run `make requirements` before committing)
-      run: |
-        if ! [ -f requirements.manual.txt ]; then exit 1; fi
-    - name: Set up Python 3.10
+    - name: Set up Python
       uses: actions/setup-python@v3
       with:
-        python-version: "3.10"
+        python-version: '3.10'
+    - name: Install Poetry
+      run: curl -sSL https://install.python-poetry.org | python -
     - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.manual.txt
+      run: poetry install
+      env:
+        POETRY_VIRTUALENVS_CREATE: false
     - name: Linting
       run: |
         make lint
