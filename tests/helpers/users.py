@@ -20,7 +20,7 @@ class User:
         return get_balance_of_address(self.pubkey().hash())
 
     def new_transaction(self, receiver, amount=5, fees=0):
-        return make_stx(self.wallet(), receiver.address(), amount, fees)
+        return make_stx(self.wallet, receiver.address(), amount, fees)
 
     def mine_new_block_after(self, block: Block, height=-1, stxs=[], next_blocks=[]) -> Block:
         if height == -1:

@@ -61,7 +61,7 @@ class Transaction:
         hasher = hashlib.sha256()
         hasher.update(self.uuid.encode())
         hasher.update(self.sender.dump())
-        hasher.update(self.receiver)
+        hasher.update(self.receiver.encode())
         hasher.update(str(self.amount).encode())
         hasher.update(str(self.fees).encode())
         return hasher.hexdigest()

@@ -26,7 +26,7 @@ def refresh_transactions_from_new_block(block: Block):
     global mem_pool
     global validated_transactions
     excess_transactions = set()
-    miner = block.signed_transactions[0].transaction.receiver.hash()
+    miner = block.signed_transactions[0].transaction.receiver
     for stx in block.signed_transactions:
         if stx in validated_transactions:
             excess_transactions.add(stx)
@@ -41,7 +41,7 @@ def refresh_transactions_from_new_block(block: Block):
 def refresh_transactions_from_old_block(block: Block):
     global mem_pool
     global validated_transactions
-    miner = block.signed_transactions[0].transaction.receiver.hash()
+    miner = block.signed_transactions[0].transaction.receiver
     for stx in block.signed_transactions:
         validated_transactions.remove(stx)
         cancel_transaction(miner, stx)
@@ -53,7 +53,7 @@ def forge_reward_transaction() -> SignedTransaction:
     transaction = Transaction(
         uuid=str(uuid.uuid4()),
         sender=PubKey(MINING_REWARD_ADDRESS),
-        receiver=wallet.get_public_key(),
+        receiver=wallet.get_public_key().hash(),
         amount=MINING_REWARD_AMOUNT,
     )
     return SignedTransaction(

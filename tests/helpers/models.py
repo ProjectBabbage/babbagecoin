@@ -11,6 +11,7 @@ from babbagecoin.common.wallet import Wallet
 from babbagecoin.master.blockchain_service import make_primary_between
 from babbagecoin.common.block_service import set_difficulty, is_block_hash_valid
 
+# Lower difficulty for tests.
 set_difficulty(1000)
 
 
@@ -31,7 +32,7 @@ def make_stx(sender_wallet: Wallet, receiver: str, amount=5, fees=0):
 
 
 def make_reward_stx(receiver: str):
-    tx = make_tx(PubKey(MINING_REWARD_ADDRESS), receiver, MINING_REWARD_AMOUNT)
+    tx = make_tx(PubKey(MINING_REWARD_ADDRESS), receiver, MINING_REWARD_AMOUNT, 0)
     return SignedTransaction(tx, "")
 
 

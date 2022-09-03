@@ -1,6 +1,6 @@
 from babbagecoin.common.schemas import BlockSchema
 from babbagecoin.master.blockchain_service import genesis, block_tbl
-from tests.helpers.models import user1
+from tests.helpers.users import user1
 
 
 # test_client is a pytest fixture (defined in conftest.py)
