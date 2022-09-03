@@ -27,9 +27,6 @@ export default {
         cursor: pointer;
         background-color: grey;
     }
-    // &:focus {
-    //     outline: 4px auto -webkit-focus-ring-color;
-    // }
     &:active {
         background-color: orange;
 

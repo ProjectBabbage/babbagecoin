@@ -4,5 +4,13 @@ import vue from '@vitejs/plugin-vue'
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [vue()],
-  base: 'dist/'
+  base: '/dist/',
+  server: {
+    proxy: {
+      '^/master/.*': {
+        target: 'http://localhost:5000',
+        rewrite: (path) =>  path.replace(/^\/master/, ''),
+      },
+    }
+  }
 })

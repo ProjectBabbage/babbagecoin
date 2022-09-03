@@ -14,7 +14,9 @@ export default {
   components: {Button, Input},
   methods: {
     makeTransaction() {
-      this.axios.get("http://localhost:5000/blocks/hashdict").then(response => console.log(response))
+      const master_url = import.meta.env.VITE_MASTER_BASE_URL;
+      const url = `${master_url}blocks/hashdict`;
+      this.axios.get(url).then(response => console.log(response.data))
     }
   }
 }
