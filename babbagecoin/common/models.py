@@ -85,7 +85,7 @@ class Transaction:
         )
 
     def __repr__(self) -> str:
-        return f"Transaction({str(self)})"
+        return f"Transaction({self.html()})"
 
 
 @dataclass
