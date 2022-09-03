@@ -1,5 +1,4 @@
 from babbagecoin.common.exceptions import (
-    DuplicatedTransaction,
     InvalidBlockHash,
     InvalidBlockHeight,
     InvalidSignatureForTransaction,
@@ -78,9 +77,7 @@ def sane_from(start: Block, starting_height: int):
     - BadRewardTransaction: the reward transaction as bad amount or bad address
     - RewardTransactionNotUnique: the reward transaction address appears after the first tx
     - InvalidSignature: the signature for a stx is incorrect
-    - DuplicatedTransaction: the same transaction appeared twice in the blocks
     """
-    seen_txs = set()
 
     def verify_block(block: Block, expected_height: int):
         if block.height != expected_height:
@@ -100,10 +97,6 @@ def sane_from(start: Block, starting_height: int):
 
             Wallet.verify_signature(stx)  # can raise an InvalidSignatureForTransaction
 
-            if stx in seen_txs:
-                raise DuplicatedTransaction(f"DUPLICATED TRANSACTION {stx}")
-            seen_txs.add(stx)
-
     try:
         b = start
         expected_height = starting_height
@@ -119,7 +112,6 @@ def sane_from(start: Block, starting_height: int):
         BadRewardTransaction,
         RewardTransactionNotUnique,
         InvalidSignatureForTransaction,
-        DuplicatedTransaction,
     ) as e:
         print(e)
         return False
