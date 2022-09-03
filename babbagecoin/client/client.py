@@ -1,8 +1,7 @@
-import os
 import requests
 import uuid
 from argparse import ArgumentParser
-from babbagecoin.common.models import Transaction, SignedTransaction, PubKey
+from babbagecoin.common.models import Transaction, SignedTransaction
 from babbagecoin.common.wallet import Wallet
 from babbagecoin.common.schemas import SignedTransactionSchema
 from babbagecoin.common.context import NetworkContext

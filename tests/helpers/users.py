@@ -7,6 +7,9 @@ from babbagecoin.common.balance import get_balance_of_address
 class User:
     wallet: Wallet
 
+    def __init__(self, user: str):
+        self.wallet = Wallet.load_from_file(f"tests/fixtures/private_keys/{user}.txt")
+
     def pubkey(self) -> PubKey:
         return self.wallet.get_public_key()
 
@@ -23,9 +26,6 @@ class User:
         if height == -1:
             height = block.height + 1
         return make_block_with_reward(block, self.address(), height, stxs, next_blocks)
-
-    def __init__(self, user: str):
-        self.wallet = Wallet.load_from_file(f"tests/fixtures/private_keys/{user}.txt")
 
 
 user1 = User("USER1")

@@ -1,6 +1,5 @@
 import pytest
 from babbagecoin.client.client import Client
-from tests.helpers.models import make_pubkey
 
 
 @pytest.fixture()
