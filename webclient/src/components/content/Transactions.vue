@@ -14,7 +14,7 @@ export default {
   components: {Button, Input},
   methods: {
     makeTransaction() {
-      this.axios.get("http://localhost:5000/").then(response => console.log(response))
+      this.axios.get("http://localhost:5000/blocks/hashdict").then(response => console.log(response))
     }
   }
 }
