@@ -19,7 +19,7 @@ def apply_transaction(miner: str, stx: SignedTransaction):
     global balances
     tx = stx.transaction
     sender = tx.sender.hash()
-    receiver = tx.receiver.hash()
+    receiver = tx.receiver
     touch_balance(sender)
     touch_balance(receiver)
     touch_balance(miner)
@@ -37,7 +37,7 @@ def cancel_transaction(miner: str, stx: SignedTransaction):
     global balances
     tx = stx.transaction
     sender = tx.sender.hash()
-    receiver = tx.receiver.hash()
+    receiver = tx.receiver
     if tx.status == SUCCESS:
         balances[sender] += tx.amount + tx.fees
         balances[receiver] -= tx.amount

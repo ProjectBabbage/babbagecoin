@@ -1,6 +1,6 @@
 from babbagecoin.common.schemas import BlockSchema
-from babbagecoin.master.blockchain_service import block_tbl
-from tests.factory.models import make_reward_block
+from babbagecoin.master.blockchain_service import genesis, block_tbl
+from tests.helpers.users import user1
 
 
 # test_client is a pytest fixture (defined in conftest.py)
@@ -16,7 +16,7 @@ def test_receive_mined_block_from_miner(test_client, monkeypatch):
     # block is mined instantly:
     monkeypatch.setattr("babbagecoin.master.blockchain_service.is_block_hash_valid", lambda b: True)
 
-    b = make_reward_block(for_user="USER1")
+    b = user1.mine_new_block_after(genesis)
     response = test_client.post("/blocks/minedblock", json=BlockSchema.dump(b))
 
     assert response.data == b"ok"

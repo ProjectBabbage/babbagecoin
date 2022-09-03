@@ -15,8 +15,8 @@ class PubKeyField(fields.Field):
 
 class _TransactionSchema(Schema):
     uuid = fields.String()
-    receiver = PubKeyField()
     sender = PubKeyField()
+    receiver = fields.String()
     amount = fields.Float()
     fees = fields.Float()
 
