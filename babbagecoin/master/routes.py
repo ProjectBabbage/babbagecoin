@@ -26,7 +26,7 @@ from babbagecoin.master.transaction_service import (
 
 sentry_sdk.init(dsn=NetworkContext().sentry_dsn, integrations=[FlaskIntegration()])
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder="../webclient/")
 
 
 @app.get("/")
@@ -37,6 +37,16 @@ def print_chain():
         s += b.html()
         b = block_tbl[b.prev_hash]
     return s
+
+
+@app.get("/greetings")
+def hello():
+    return {"message": "greetings"}
+
+
+@app.get("/webclient")
+def get_client_html():
+    return app.send_static_file("index.html")
 
 
 @app.get("/blocks/working_block")

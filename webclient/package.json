@@ -1,0 +1,21 @@
+{
+  "name": "webclient",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "rm -rf ../babbagecoin/webclient && vite build && mv dist/ ../babbagecoin/webclient/",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "axios": "^0.27.2",
+    "vue": "^3.2.37",
+    "vue-axios": "^3.4.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^3.0.3",
+    "sass": "^1.54.8",
+    "vite": "^3.0.7"
+  }
+}
