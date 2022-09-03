@@ -153,6 +153,7 @@ node_modules
 dist
 dist-ssr
 *.local
+babbagecoin/webclient
 
 !webclient/.env
 !webclient/.env.production

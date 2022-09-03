@@ -1,10 +1,11 @@
 [tool.poetry]
 name = "babbagecoin"
-version = "0.2.3"
+version = "0.3.3"
 description = "Second edition of Project Babbage, create a blockchain from scratch."
 homepage = "https://github.com/ProjectBabbage/babbagecoin"
 readme = "README.md"
 authors = ["Quentin Garchery <garchery.quentin@gmail.com>", "Martial Garchery <martial.garchery@gmail.com>", "Yohann Le Faou <yohannlefa@gmail.com>", "Julien Raspaud <julien.raspaud@gmail.com>"]
+include = ["babbagecoin/webclient/*", "babbagecoin/webclient/assets/*"]
 
 [tool.poetry.dependencies]
 python = "^3.9"

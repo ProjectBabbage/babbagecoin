@@ -15,7 +15,7 @@ export default {
   methods: {
     makeTransaction() {
       const master_url = import.meta.env.VITE_MASTER_BASE_URL;
-      const url = `${master_url}blocks/hashdict`;
+      const url = `${master_url}greetings`;
       this.axios.get(url).then(response => console.log(response.data))
     }
   }
