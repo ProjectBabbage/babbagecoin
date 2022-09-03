@@ -1,7 +1,9 @@
 
 <template>
-<component id="content" :is="currentBox">
-</component>
+<div id="content">
+    <component :is="currentBox">
+    </component>
+</div>
 </template>
 
 <script>
@@ -22,5 +24,6 @@ export default {
 <style scoped>
 #content {
     border: 2px solid black;
+    padding: 10px;
 }
 </style>

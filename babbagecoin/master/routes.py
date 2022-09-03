@@ -4,7 +4,7 @@ import sentry_sdk
 from sentry_sdk.integrations.flask import FlaskIntegration
 
 
-from flask import Flask, request
+from flask import Flask, request, current_app
 
 from babbagecoin.common.schemas import BlockSchema, SignedTransactionSchema
 from babbagecoin.master.blockchain_service import (
@@ -26,7 +26,10 @@ from babbagecoin.master.transaction_service import (
 
 sentry_sdk.init(dsn=NetworkContext().sentry_dsn, integrations=[FlaskIntegration()])
 
-app = Flask(__name__)
+print(__name__)
+app = Flask(__name__, static_folder="")
+print("---")
+print(app.root_path)
 
 
 @app.get("/")
@@ -37,6 +40,11 @@ def print_chain():
         s += b.html()
         b = block_tbl[b.prev_hash]
     return s
+
+
+@app.get("/client")
+def get_client_html():
+    return app.send_static_file("static/index.html")
 
 
 @app.get("/blocks/working_block")

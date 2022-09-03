@@ -1,7 +1,9 @@
 <template>
+<div>
   <h1>Babbagecoin</h1>
   <Menu id="menu" :currentBox="currentBox" @menuBoxClicked="changeCurrentBox"/>
   <Content :currentBox="currentBox" />
+</div>
 </template>
 
 <script>

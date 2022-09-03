@@ -1,12 +1,12 @@
 <template>
-    <div class="menubox">
+    <div class="box">
         {{title}}
     </div>
 </template>
 
 <script>
 export default {
-    name: 'MenuBox',
+    name: 'Box',
     props: {
         title: String,
     }    
@@ -14,11 +14,15 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.menubox {
+.box {
     border: 2px solid black;
     padding: 10px;
-    min-width: 100px;
-    font-size: 1.3em;
+    min-width: 150px;
+    font-size: 1.2em;
     font-weight: 500;
+
+    &:hover {
+        cursor: pointer;
+    }
 }
 </style>
