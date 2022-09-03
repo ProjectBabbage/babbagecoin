@@ -1,7 +1,3 @@
-class DuplicatedTransaction(Exception):
-    pass
-
-
 class RewardTransactionNotUnique(Exception):
     pass
 

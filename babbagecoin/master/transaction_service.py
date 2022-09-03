@@ -43,7 +43,8 @@ def refresh_transactions_from_old_block(block: Block):
     global validated_transactions
     miner = block.signed_transactions[0].transaction.receiver
     for stx in block.signed_transactions:
-        validated_transactions.remove(stx)
+        if stx in validated_transactions:
+            validated_transactions.remove(stx)
         cancel_transaction(miner, stx)
         if stx.transaction.sender.dumps() != MINING_REWARD_ADDRESS:
             mem_pool.add(stx)

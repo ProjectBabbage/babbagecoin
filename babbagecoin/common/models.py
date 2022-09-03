@@ -56,8 +56,6 @@ class Transaction:
     status: int = SUCCESS  # REVERTED when insufficient funds
 
     def hash(self):
-        if self.sender.rsa_pub_key == MINING_REWARD_ADDRESS:
-            return MINING_REWARD_ADDRESS
         hasher = hashlib.sha256()
         hasher.update(self.uuid.encode())
         hasher.update(self.sender.dump())
