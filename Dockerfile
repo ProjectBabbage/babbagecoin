@@ -1,7 +1,7 @@
-FROM python:3.9-buster
+FROM python:3.9-bullseye
 
 # Setup poetry
-RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
+RUN pip install poetry
 ENV PATH="${PATH}:/root/.poetry/bin"
 # Unbuffered so that python displays each line of log ASAP
 ENV PYTHONUNBUFFERED 1
@@ -12,6 +12,6 @@ WORKDIR /babbagecoin/
 # copy only what `poetry install` needs, src code will be mapped as a volume
 COPY pyproject.toml poetry.lock  ./
 
-RUN poetry install --no-dev
+RUN poetry install --only main
 
 ENTRYPOINT ["python", "-m", "babbagecoin"]
