@@ -80,7 +80,7 @@ def request_faucet():
     print(request.json)
     client = Client()
     if get_balance_of_address(address) < 1000:
-        client.send_transaction(receiver=address, amount=amount, fees=0)
+        client.send_transaction(receiver=address, amount=amount, fees=0.1)
         return {"amount_requested": amount, "to_address": address}
     else:
         return {"message": "You have a sufficient amount of BBC on your account :)"}

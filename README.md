@@ -21,8 +21,7 @@ python -m babbagecoin miner
 
 ## Requirements
 
-Install `docker`, `docker-compose` and `python3.9` or above.
-You also need `poetry`.
+Install `docker` and `docker-compose`, `python3` (>=3.9) and `poetry`.
 
 Run `poetry install` then `poetry shell`
 
@@ -40,7 +39,7 @@ Or you can run separately the master or miner:
 
 `make (master | miner)`
 
-There are also VSCode actions for debugging each one of them.
+There are also VSCode actions for debugging each one of them (even the tests, run in terminal with `make test`)
 
 ## Interact with the blockchain
 
@@ -64,3 +63,4 @@ _`make tx` is a shortcut for the above command_
 `./bbc.sh balance` to get your wallet balance
 
 _`make balance` is a shortcut for the above command_
+

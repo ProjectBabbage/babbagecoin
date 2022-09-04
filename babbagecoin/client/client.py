@@ -48,7 +48,7 @@ class Client:
 
     def get_balance(self):
         try:
-            addr = str(self.wallet.public_key)
+            addr = self.wallet.public_key().hash()
             res = requests.get(
                 f"{context.myUrl}/addresses/{addr}/balance",
                 headers={"Content-Type": "application/json"},

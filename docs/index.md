@@ -1,4 +1,4 @@
-Welcome to the Babbage Coin project ! This project is about describing the blockckain fundamentals in the simplest way possible.
+Welcome to the Babbagecoin project ! This project is about describing the blockckain fundamentals in the simplest way possible.
 
 *Following the Projet Babbage philosophy, it started from scratch, and was initially built in a weekend.*
 
@@ -50,7 +50,7 @@ The front end also has a **block explorer** functionality allowing you to look a
 
 The master verifies new blocks it adds to the blockchain. The protocol protects itself against various attacks and counterfeiting.
 
-Here are the different verification done on the incoming blocks.
+Here are the different verifications done on the incoming blocks.
 - A new block is checked to respect the set difficulty. Without this check, an attacker could send a new block without providing a proof of work, easily earning the mining rewards.
 - A new block is checked to have exactly one reward transaction, and that this reward transaction's amount to be equal to the fixed amount per block. This is done to prevent miners from gaining more than what is set by the protocol.
 - A new block is checked to not have transactions already validated. This is done to prevent a transaction to be replayed (potentially over and over).
