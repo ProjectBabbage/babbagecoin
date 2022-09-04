@@ -8,6 +8,10 @@ class InvalidBlockHash(Exception):
     pass
 
 
+class MissingRewardTransaction(Exception):
+    pass
+
+
 class InvalidBlockHeight(Exception):
     pass
 

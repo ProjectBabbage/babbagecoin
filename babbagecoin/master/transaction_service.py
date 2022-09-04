@@ -73,3 +73,11 @@ def update_reward_transaction():
 
 def get_reward_transaction():
     return reward_transaction
+
+
+def get_mem_pool():
+    return mem_pool
+
+
+def get_validated_transactions():
+    return validated_transactions

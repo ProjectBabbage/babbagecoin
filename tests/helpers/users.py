@@ -1,7 +1,7 @@
 from tests.helpers.models import make_stx, make_block_with_reward
 from babbagecoin.common.wallet import Wallet
 from babbagecoin.common.models import PubKey, Block
-from babbagecoin.common.balance import get_balance_of_address
+from babbagecoin.common.balance import get_balance_of_address, balances
 
 
 class User:
@@ -18,6 +18,9 @@ class User:
 
     def balance(self) -> int:
         return get_balance_of_address(self.pubkey().hash())
+
+    def cheat_balance(self, amount: int):
+        balances[self.address()] = amount
 
     def new_transaction(self, receiver, amount=5, fees=0):
         return make_stx(self.wallet, receiver.address(), amount, fees)

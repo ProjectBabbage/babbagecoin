@@ -2,6 +2,7 @@ from babbagecoin.common.exceptions import (
     InvalidBlockHash,
     InvalidBlockHeight,
     InvalidSignatureForTransaction,
+    MissingRewardTransaction,
     RewardTransactionNotUnique,
     BadRewardTransaction,
 )
@@ -86,13 +87,15 @@ def sane_from(start: Block, starting_height: int):
             )
         if not is_block_hash_valid(block):
             raise InvalidBlockHash(f"INVALID BLOCK HASH {block.hash()}")
-        for i, stx in enumerate(block.signed_transactions):
-            if i == 0 and (
-                stx.transaction.sender.dumps() != MINING_REWARD_ADDRESS
-                or stx.transaction.amount != MINING_REWARD_AMOUNT
-            ):
-                raise BadRewardTransaction(f"BAD REWARD TRANSACTION {stx}")
-            if i != 0 and stx.transaction.sender.dumps() == MINING_REWARD_ADDRESS:
+        if len(block.signed_transactions) == 0:
+            raise MissingRewardTransaction()
+        reward_tx = block.signed_transactions[0].transaction
+        if reward_tx.sender.dumps() != MINING_REWARD_ADDRESS:
+            raise MissingRewardTransaction()
+        if reward_tx.amount != MINING_REWARD_AMOUNT:
+            raise BadRewardTransaction(f"BAD REWARD TRANSACTION {reward_tx}")
+        for i, stx in enumerate(block.signed_transactions[1:]):
+            if stx.transaction.sender.dumps() == MINING_REWARD_ADDRESS:
                 raise RewardTransactionNotUnique(f"REWARD TRANSACTION NOT UNIQUE {stx}")
 
             Wallet.verify_signature(stx)  # can raise an InvalidSignatureForTransaction
@@ -110,6 +113,7 @@ def sane_from(start: Block, starting_height: int):
         InvalidBlockHash,
         InvalidBlockHeight,
         BadRewardTransaction,
+        MissingRewardTransaction,
         RewardTransactionNotUnique,
         InvalidSignatureForTransaction,
     ) as e:
