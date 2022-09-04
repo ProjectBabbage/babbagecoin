@@ -2,6 +2,7 @@
   <div id="wallet">
     <div id="wallet-menu">
       <Button @click="newWallet" title="New One" />
+      <label for="file-upload" class="custom-file-upload">Import</label>
       <input type="file" accept=".txt" id="file-upload" name="importfile" @change="readPrivateKey">
     </div>
     <div id="wallet-content" v-if="private_key && address">
@@ -84,19 +85,27 @@ export default {
   justify-content: center;
 
   input[type="file"] {
-    padding: 5px;
-    background: black;
-    color: white;
+    display: none;
   }
   .custom-file-upload {
-      border: 1px solid #ccc;
-      display: inline-block;
-      padding: 6px 12px;
-      cursor: pointer;
-  }
-}
+    margin: 10px;
+    padding: 2px;
+    border: 2px solid black;
+    background-color: black;
+    color: white;
+    border-radius: 5px;    
+    font-weight: 600;
+    box-shadow: 10px 5px 5px green($color: #000000);
 
-#wallet-content {
-  overflow: scroll;
+    &:hover {
+        cursor: pointer;
+        background-color: grey;
+    }
+    &:active {
+        background-color: orange;
+
+    }
+    cursor: pointer;
+  }
 }
 </style>

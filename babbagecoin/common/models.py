@@ -34,7 +34,7 @@ class PubKey:
         encoded_key = self.dump()
         hasher = hashlib.sha256()
         hasher.update(encoded_key)
-        return hasher.hexdigest()
+        return hasher.hexdigest()[:8]
 
     def __str__(self):
         return self.hash()
@@ -88,8 +88,8 @@ class Transaction:
 
     def html(self):
         uuid = self.uuid[:4]
-        sender = str(self.sender)[:8]
-        receiver = str(self.receiver)[:8]
+        sender = str(self.sender)
+        receiver = str(self.receiver)
         amount = str(self.amount)
         fees = str(self.fees)
         status_str = ""
