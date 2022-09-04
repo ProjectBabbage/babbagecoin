@@ -80,11 +80,6 @@ def import_wallet():
     return {"public_key": PubKeySchema.dumps(public_key), "address": address}
 
 
-@app.get("/webclient/wallet/balance")
-def get_wallet_balance():
-    return {"balance": 0}
-
-
 @app.post("/webclient/faucet/request")
 def request_faucet():
     return {"amount_requested": 100, "receiver": "oqpsodiqmlk"}

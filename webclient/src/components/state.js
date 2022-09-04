@@ -3,4 +3,5 @@ export default {
     private_key: null,
     public_key: null,
     address: null,
+    balance: null,
 }

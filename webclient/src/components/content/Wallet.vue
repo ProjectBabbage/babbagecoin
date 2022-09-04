@@ -6,6 +6,7 @@
     </div>
     <div id="wallet-content" v-if="private_key && address">
       <p>Your address: {{address}} </p>
+      <p>Your balance: {{balance}} </p>
     </div>
   </div>
 </template>
@@ -22,6 +23,16 @@ export default {
       private_key: State.private_key,
       public_key: State.public_key,
       address: State.address,
+      balance: State.balance,
+    }
+  },
+  watch: {
+    address(newAddress, oldAddress) {
+      if(newAddress && !oldAddress){
+        this.axios
+            .get(`${State.master_url}addresses/${newAddress}/balance`)
+            .then(response => this.balance = State.balance = response.data.balance);
+      }
     }
   },
   methods: {
