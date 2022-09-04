@@ -1,8 +1,8 @@
 <template>
 <div id="menu">
-        <Box :class="{shadowed: currentBox=='wallet'}" @click="$emit('menuBoxClicked', 'wallet')" title="Wallet" />
-        <Box :class="{shadowed: currentBox=='faucet'}" @click="$emit('menuBoxClicked', 'faucet')" title="Faucet" />
-        <Box :class="{shadowed: currentBox=='transactions'}" @click="$emit('menuBoxClicked', 'transactions')" title="Transactions" />
+        <Box :class="{shadowed: currentBox=='wallet'}" @click="$emit('menuBoxClicked', 'wallet')" title="Wallet" subtitle="Where to put some"/>
+        <Box :class="{shadowed: currentBox=='faucet'}" @click="$emit('menuBoxClicked', 'faucet')" title="Faucet" subtitle="Ask for some :)"/>
+        <Box :class="{shadowed: currentBox=='transactions'}" @click="$emit('menuBoxClicked', 'transactions')" title="Transactions" subtitle="Send some"/>
 </div>
 </template>
 

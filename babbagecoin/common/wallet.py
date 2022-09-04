@@ -2,14 +2,13 @@ from pathlib import Path
 
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import rsa, padding
-from cryptography.hazmat.primitives.serialization import load_pem_private_key
 from cryptography.exceptions import InvalidSignature
 
 from babbagecoin.common.schemas import PrivateKeySchema, PubKeySchema
 from babbagecoin.common.models import (
     MINING_REWARD_ADDRESS,
-    PubKey,
     PrivateKey,
+    PubKey,
     Transaction,
     SignedTransaction,
 )
@@ -19,11 +18,9 @@ from babbagecoin.common.context import get_current_user
 
 class Wallet:
     private_key: PrivateKey
-    public_key: PubKey
 
     def __init__(self, load_from_file=True, save_to_file=True):
         self.private_key = PrivateKey(rsa.generate_private_key(public_exponent=65537, key_size=512))
-        self.public_key = self.private_key.derive_public_key()
 
         user_privk_filepath = f"private.key.{get_current_user()}.txt"
         if load_from_file and Path(user_privk_filepath).is_file():
@@ -33,6 +30,9 @@ class Wallet:
             self.save_files()
             print("Saving key files.")
 
+    def public_key(self) -> PubKey:
+        return self.private_key.derive_public_key()
+
     def save_files(self):
         """Create the private.key.<CURRENT_USER>.txt and public.key.<CURRENT_USER>.txt files."""
         user_private = f"private.key.{get_current_user()}.txt"
@@ -40,7 +40,7 @@ class Wallet:
         with open(user_private, "w") as priv:
             priv.write(PrivateKeySchema.dumps(self.private_key))
         with open(user_public, "w") as pub:
-            pub.write(PubKeySchema.dumps(self.public_key))
+            pub.write(PubKeySchema.dumps(self.public_key()))
 
     def sign(self, transaction: Transaction) -> str:
         return self.private_key.rsa_private_key.sign(
@@ -74,15 +74,9 @@ class Wallet:
                 )
 
     @staticmethod
-    def load_pub_key(filepath) -> PubKey:
-        with open(filepath, "r") as bf:
-            return PubKeySchema.load(bf.read())
-
-    @staticmethod
     def load_from_file(filepath) -> "Wallet":
         w = Wallet(load_from_file=False, save_to_file=False)
         w.private_key = Wallet.load_priv_keys(filepath)
-        w.public_key = w.private_key.derive_public_key()
         return w
 
     @staticmethod

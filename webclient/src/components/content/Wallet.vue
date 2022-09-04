@@ -30,21 +30,32 @@ export default {
   watch: {
     address(newAddress, oldAddress) {
       if(newAddress && !oldAddress){
-        this.axios
-            .get(`${State.master_url}addresses/${newAddress}/balance`)
-            .then(response => this.balance = State.balance = response.data.balance);
+        this.retrieveBalance(newAddress);
       }
     }
   },
   methods: {
+    retrieveBalance(address){
+        this.axios
+            .get(`${State.master_url}addresses/${address}/balance`)
+            .then(response => this.balance = State.balance = response.data.balance);
+    },
     newWallet(){
+      this.resetWallet();
       const url = `${State.master_url}webclient/wallet/new`
       this.axios.get(url).then((response) => {
         const { public_key, private_key, address } = response.data;
         this.public_key = State.public_key = public_key;
         this.private_key = State.private_key =  private_key;
         this.address = State.address = address;
+        
       });
+    },
+    resetWallet(){
+      this.public_key = State.private_key = 0;
+      this.private_key = State.private_key = 0;
+      this.address = State.address = 0;
+      this.balance = 0;
     },
     readPrivateKey(event){
       // load private.key file from device

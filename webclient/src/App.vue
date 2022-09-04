@@ -1,6 +1,8 @@
 <template>
 <div>
   <h1>Babbagecoin</h1>
+  <h3> Interact with the blockchain </h3>
+  <br>
   <Menu id="menu" :currentBox="currentBox" @menuBoxClicked="changeCurrentBox"/>
   <Content :currentBox="currentBox" />
 </div>

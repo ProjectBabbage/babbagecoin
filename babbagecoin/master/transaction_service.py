@@ -54,7 +54,7 @@ def forge_reward_transaction() -> SignedTransaction:
     transaction = Transaction(
         uuid=str(uuid.uuid4()),
         sender=PubKey(MINING_REWARD_ADDRESS),
-        receiver=wallet.public_key.hash(),
+        receiver=wallet.public_key().hash(),
         amount=MINING_REWARD_AMOUNT,
     )
     return SignedTransaction(
