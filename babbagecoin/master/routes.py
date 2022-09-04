@@ -57,13 +57,6 @@ def get_client_html():
 
 @app.get("/webclient/wallet/new")
 def create_new_wallet():
-    """
-    returns {
-        "private_key": <hexadecimal>,
-        "public_key": <hexadecimal>,
-        "address": <hexadecimal>,
-    }
-    """
     new_wallet = Wallet(load_from_file=False, save_to_file=False)
     return {
         "private_key": PrivateKeySchema.dumps(new_wallet.private_key),
@@ -87,7 +80,7 @@ def request_faucet():
     print(request.json)
     client = Client()
     if get_balance_of_address(address) < 1000:
-        client.send_transaction(receiver=address, amount=amount, fees=0)
+        client.send_transaction(receiver=address, amount=amount, fees=0.1)
         return {"amount_requested": amount, "to_address": address}
     else:
         return {"message": "You have a sufficient amount of BBC on your account :)"}

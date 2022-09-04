@@ -1,4 +1,4 @@
-Welcome to the Babbage Coin project ! This project is about describing the blockckain fundamentals in the simplest way possible.
+Welcome to the Babbagecoin project ! This project is about describing the blockckain fundamentals in the simplest way possible.
 
 *Following Projet Babbage philosophy, it started from scratch, and was initially built in a weekend.*
 
@@ -67,4 +67,5 @@ This was meant as a short introduction to the concepts used in this project. To 
 - start reading the code, tweak parameters as you wish.
 
 Happy learning !
+
 
