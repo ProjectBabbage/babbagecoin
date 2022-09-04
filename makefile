@@ -52,7 +52,8 @@ test:
 
 
 package:
+	cd webclient && npm run build
 	poetry build
 
-package-publish:
-	poetry publish
+publish:
+	poetry publish -u '$(user)' -p '$(password)'

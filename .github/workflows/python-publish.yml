@@ -29,5 +29,13 @@ jobs:
       run: poetry install
       env:
         POETRY_VIRTUALENVS_CREATE: false
+    - name: Setup node for building webclient static files
+      uses: actions/setup-node@v3
+      with:
+        node-version: 16
+    - name: Install node dependencies
+      run: cd webclient && npm ci
     - name: Publish package
-      run: poetry publish -u "${{secrets.PYPI_USERNAME}}" -p "${{secrets.PYPI_PASSWORD}}" --build
+      run: |
+        make package
+        make publish user="${{secrets.PYPI_USERNAME}}" password="${{secrets.PYPI_PASSWORD}}"

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "babbagecoin"
-version = "0.3.3"
+version = "0.4.2"
 description = "Second edition of Project Babbage, create a blockchain from scratch."
 homepage = "https://github.com/ProjectBabbage/babbagecoin"
 readme = "README.md"
