@@ -1,6 +1,6 @@
 Welcome to the Babbage Coin project ! This project is about describing the blockckain fundamentals in the simplest way possible.
 
-*Following the Projet Babbage philosophy, it started from scratch, and was initially built in a weekend.*
+*Following Projet Babbage philosophy, it started from scratch, and was initially built in a weekend.*
 
 ## Overview
 
@@ -9,6 +9,7 @@ The core of the package is written in python, allowing us to put an emphasis on 
 Design choices also skew towards the simplicity of the chain: it uses proof of work as its consensus algorithm and there is no virtual machine or scripting language associated.
 
 The following diagram describes the overall structure of the project:
+
 ![Code structure](structure.excalidraw.svg)
 
 There are three main modules: **miner**, **master**, and **client**. We now describe those in more detail, and conclude by the **verification** of blocks validity.
@@ -16,7 +17,7 @@ There are three main modules: **miner**, **master**, and **client**. We now desc
 
 ## Miner
 
-Hash functions produce an ouput that looks random, and their utility comes from the assumption that it is impossible to predict what the input was. Assuming that this is the case, the best strategy to find an input that produces a particular output is by brute force: try successively different inputs. Selecting a subset of outputs that is `d` times smaller than the subset of all possible outputs, there is a one in `d` times chance to be in the chosen subset.The parameter `d` is called the difficulty, and we say that an input respects the difficulty when its hash is in the chosen subset. In pratice, and in Babbage Coin, the output range is the set of all positive integers smaller than a constant `n`. We choose the subset of integers smaller than `n/d`, giving us subset of difficulty `d`. This way we can easily check if an output is in this set.
+Hash functions produce an ouput that looks random, and their utility comes from the assumption that it is impossible to predict what the input was. Assuming that this is the case, the best strategy to find an input that produces a particular output is by brute force: try successively different inputs. Selecting a subset of outputs that is `d` times smaller than the subset of all possible outputs, a given output has one in `d` times chance to be in the chosen subset. The parameter `d` is called the difficulty, and we say that an input respects the difficulty when its hash is in the chosen subset. In pratice, and in Babbage Coin, the output range is the set of all positive integers smaller than a constant `n`. We choose the subset of integers smaller than `n/d`, giving us subset of difficulty `d`. This way we can easily check if an output is in this set.
 
 A block contains a list of transactions and a nonce. The nonce is simply an integer that is hashed as part of the block. The goal of the miner, for a given list of transactions, is to find a nonce such that the hash of the whole block respects the difficulty. When a miner finds such a nonce, we say that he mined a new block.
 
@@ -42,7 +43,7 @@ Sometimes, two (or more) branches of the chain are live, and different miners ar
 
 ## Client
 
-The client allows you to easily interact with the chain. It is available as a command line tool. Through it, you can **create a new account**. The client generates a new wallet with a new public/private key pair. It is also possible to **transfer BBC from your account to another**. Under the hood, the client sends a new transaction to the master, who broadcasts it to every know nodes. Additionally, the client allows you to **query any balance** by sending the request to the master.
+The client allows you to easily interact with the chain. It is available as a command line tool. Through it, you can **create a new account**. The client generates a new wallet with a new public/private key pair. It is also possible to **transfer BBC from your account to another**. Under the hood, the client sends a new transaction to the master, who broadcasts it to every known nodes. Additionally, the client allows you to **query any balance** by sending the request to the master.
 
 The front end also has a **block explorer** functionality allowing you to look at the whole blockchain, and a **faucet** functionality to request free BBC.
 
@@ -51,10 +52,19 @@ The front end also has a **block explorer** functionality allowing you to look a
 The master verifies new blocks it adds to the blockchain. The protocol protects itself against various attacks and counterfeiting.
 
 Here are the different verification done on the incoming blocks.
-- A new block is checked to respect the set difficulty. Without this check, an attacker could send a new block without providing a proof of work, easily earning the mining rewards.
-- A new block is checked to have exactly one reward transaction, and that this reward transaction's amount to be equal to the fixed amount per block. This is done to prevent miners from gaining more than what is set by the protocol.
-- A new block is checked to not have transactions already validated. This is done to prevent a transaction to be replayed (potentially over and over).
-- A new block should contain a hash to a previous block. This is done to ensure that blocks cannot be added in between other blocks after the fact.
-- A new block should have an height one higher than its previous block. Height is used as an easy way to discrimate blocks that should be discarded. Without this check, an attacker could mine a block with high height, and no other fair miner could add to the blockchain.
-- Transactions from a new block should have a correct signature. The signature of the transaction is checked against the public key of the sender of the transaction. This is done to prevent an attacker from forging a transaction from an account other than is own.
+- A new block is checked to respect the set **difficulty**. Without this check, an attacker could send a new block without providing a proof of work, easily earning the mining rewards.
+- A new block is checked to have exactly one **reward transaction**, and that this reward transaction's amount to be equal to the fixed amount per block. This is done to prevent miners from gaining more than what is set by the protocol.
+- A new block is checked to not have **transactions already validated**. This is done to prevent a transaction to be replayed (potentially over and over).
+- A new block should contain a **hash to a previous block**. This is done to ensure that blocks cannot be added in between other blocks after the fact.
+- A new block should have an **height** one higher than its previous block. Height is used as an easy way to discrimate blocks that should be discarded. Without this check, an attacker could mine a block with high height, and no other fair miner could add to the blockchain.
+- Transactions from a new block should have a **correct signature**. The signature of the transaction is checked against the public key of the sender of the transaction. This is done to prevent an attacker from forging a transaction from an account other than is own.
+
+## Going further
+
+This was meant as a short introduction to the concepts used in this project. To go further, you can:
+- interact with the blockchain itself on the front end
+- build the project (either from source or from the python package), run a local node and interact with it on the CLI
+- start reading the code, tweak parameters as you wish.
+
+Happy learning !
 

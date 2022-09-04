@@ -131,6 +131,9 @@ dmypy.json
 # Inteliji / Pycharm
 .idea
 
+# Vim
+.vim
+
 # containing the private keys
 private.key.*
 public.key.*
