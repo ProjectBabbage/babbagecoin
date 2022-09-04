@@ -11,7 +11,7 @@ class User:
         self.wallet = Wallet.load_from_file(f"tests/fixtures/private_keys/{user}.txt")
 
     def pubkey(self) -> PubKey:
-        return self.wallet.get_public_key()
+        return self.wallet.public_key
 
     def address(self) -> str:
         return self.pubkey().hash()

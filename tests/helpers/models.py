@@ -26,7 +26,7 @@ def make_tx(sender: PubKey, receiver: str, amount, fees):
 
 
 def make_stx(sender_wallet: Wallet, receiver: str, amount=5, fees=0):
-    tx = make_tx(sender_wallet.get_public_key(), receiver, amount, fees)
+    tx = make_tx(sender_wallet.public_key, receiver, amount, fees)
     signature = sender_wallet.sign(tx)
     return SignedTransaction(tx, signature)
 

@@ -26,7 +26,7 @@ class Client:
         print(f"Sending {amount} to {receiver} with fees {fees}")
         tx = Transaction(
             uuid=str(uuid.uuid4()),
-            sender=self.wallet.get_public_key(),
+            sender=self.wallet.public_key,
             receiver=receiver,
             amount=float(amount),
             fees=float(fees),
@@ -44,7 +44,7 @@ class Client:
 
     def get_balance(self):
         try:
-            addr = str(self.wallet.get_public_key())
+            addr = str(self.wallet.public_key)
             res = requests.get(
                 f"{context.myUrl}/addresses/{addr}/balance",
                 headers={"Content-Type": "application/json"},

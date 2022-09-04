@@ -1,7 +1,7 @@
 <template>
     <div>
-        <label>{{label}}</label>
-        <input :placeholder="placeholder" />
+        <label for="label">{{label}}</label>
+        <input :name="label" :placeholder="placeholder" />
     </div>
 </template>
 

@@ -2,9 +2,9 @@ import hashlib
 
 from dataclasses import dataclass, field
 from typing import List, Optional
-from cryptography.hazmat.backends.openssl.rsa import RSAPublicKey
+from cryptography.hazmat.backends.openssl.rsa import RSAPublicKey, RSAPrivateKey
 from cryptography.hazmat.primitives import serialization
-from cryptography.hazmat.primitives.serialization import load_pem_public_key
+from cryptography.hazmat.primitives.serialization import load_pem_public_key, load_pem_private_key
 
 MINING_REWARD_AMOUNT = 100
 MINING_REWARD_ADDRESS = "BABBAGE"
@@ -25,7 +25,7 @@ class PubKey:
             format=serialization.PublicFormat.SubjectPublicKeyInfo,
         )
 
-    def dumps(self):
+    def dumps(self) -> str:
         return self.dump().decode()
 
     def hash(self) -> str:
@@ -44,6 +44,28 @@ class PubKey:
         if rsa_pk.decode() == MINING_REWARD_ADDRESS:
             return PubKey(MINING_REWARD_ADDRESS)
         return PubKey(load_pem_public_key(rsa_pk))
+
+
+@dataclass
+class PrivateKey:
+    rsa_private_key: RSAPrivateKey
+
+    def dump(self) -> bytes:
+        return self.rsa_private_key.private_bytes(
+            encoding=serialization.Encoding.PEM,
+            format=serialization.PrivateFormat.PKCS8,
+            encryption_algorithm=serialization.NoEncryption(),
+        )
+
+    def dumps(self) -> str:
+        return self.dump().decode()
+
+    def derive_public_key(self) -> PubKey:
+        return PubKey(self.rsa_private_key.public_key())
+
+    @staticmethod
+    def load_from_bytes(rsa_private_key: bytes):
+        return PrivateKey(load_pem_private_key(rsa_private_key, password=None))
 
 
 @dataclass

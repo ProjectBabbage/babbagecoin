@@ -6,7 +6,13 @@ from sentry_sdk.integrations.flask import FlaskIntegration
 
 from flask import Flask, request
 
-from babbagecoin.common.schemas import BlockSchema, SignedTransactionSchema
+from babbagecoin.common.schemas import (
+    PubKeySchema,
+    PrivateKeySchema,
+    BlockSchema,
+    SignedTransactionSchema,
+)
+from babbagecoin.common.wallet import Wallet, PrivateKey
 from babbagecoin.master.blockchain_service import (
     get_head,
     block_tbl,
@@ -47,6 +53,46 @@ def hello():
 @app.get("/webclient")
 def get_client_html():
     return app.send_static_file("index.html")
+
+
+@app.get("/webclient/wallet/new")
+def create_new_wallet():
+    """
+    returns {
+        "private_key": <hexadecimal>,
+        "public_key": <hexadecimal>,
+        "address": <hexadecimal>,
+    }
+    """
+    new_wallet = Wallet(load_from_file=False, save_to_file=False)
+    return {
+        "private_key": PrivateKeySchema.dumps(new_wallet.private_key),
+        "public_key": PubKeySchema.dumps(new_wallet.public_key),
+        "address": new_wallet.public_key.hash(),
+    }
+
+
+@app.post("/webclient/wallet/import")
+def import_wallet():
+    private_key = PrivateKeySchema.load(request.json["private_key"])
+    public_key = private_key.derive_public_key()
+    address = public_key.hash()
+    return {"public_key": PubKeySchema.dumps(public_key), "address": address}
+
+
+@app.get("/webclient/wallet/balance")
+def get_wallet_balance():
+    return {"balance": 0}
+
+
+@app.post("/webclient/faucet/request")
+def request_faucet():
+    return {"amount_requested": 100, "receiver": "oqpsodiqmlk"}
+
+
+@app.post("/webclient/tx")
+def tx():
+    return {"amount_sent": 22, "fee": 1, "receiver": "slmdqlmsdk", "sender": "sss"}
 
 
 @app.get("/blocks/working_block")

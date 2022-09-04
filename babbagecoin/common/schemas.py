@@ -2,7 +2,7 @@ from typing import Dict, Any
 
 from marshmallow import Schema, fields, post_load
 
-from babbagecoin.common.models import PubKey, Transaction, SignedTransaction, Block
+from babbagecoin.common.models import PubKey, PrivateKey, Transaction, SignedTransaction, Block
 
 
 class PubKeyField(fields.Field):
@@ -11,6 +11,41 @@ class PubKeyField(fields.Field):
 
     def _deserialize(self, value: str, attr, data, **kwargs) -> PubKey:
         return PubKey.load_from_bytes(bytes.fromhex(value))
+
+
+class _PubKeySchema:
+    @staticmethod
+    def load(value: str) -> PubKey:
+        PubKey.load_from_bytes(bytes.fromhex(value))
+
+    @staticmethod
+    def dumps(obj: PubKey) -> str:
+        return bytes.hex(obj.dump())
+
+
+PubKeySchema = _PubKeySchema()
+
+
+# TO REMOVE eventually
+class PrivateKeyField(fields.Field):
+    def _serialize(self, value: PrivateKey, attr: str, obj: Any, **kwargs):
+        return bytes.hex(value.dump())
+
+    def _deserialize(self, value: str, attr, data, **kwargs):
+        return PrivateKey.load_from_bytes(bytes.fromhex(value))
+
+
+class _PrivateKeySchema:
+    @staticmethod
+    def load(value: str) -> PrivateKey:
+        return PrivateKey.load_from_bytes(bytes.fromhex(value))
+
+    @staticmethod
+    def dumps(obj: PrivateKey) -> str:
+        return bytes.hex(obj.dump())
+
+
+PrivateKeySchema = _PrivateKeySchema()
 
 
 class _TransactionSchema(Schema):
