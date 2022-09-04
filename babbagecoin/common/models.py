@@ -34,7 +34,7 @@ class PubKey:
         encoded_key = self.dump()
         hasher = hashlib.sha256()
         hasher.update(encoded_key)
-        return hasher.hexdigest()[:8]
+        return hasher.hexdigest()[:16]
 
     def __str__(self):
         return self.hash()
