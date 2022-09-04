@@ -42,15 +42,12 @@ Sometimes, two (or more) branches of the chain are live, and different miners ar
 
 ## Client
 
-interaction with the chain
+The client allows you to easily interact with the chain. Through it, you can perform the following actions.
+- You can **create a new account**. The client generates a new wallet with a new public/private key pair.
+- You can **transfer BBC from your account to another**. The client sends a new transaction to the master, who broadcasts it to every know nodes.
+- You can **query any balance**. The clients sends a request to the master.
 
-TODO:
-
-- create new account
-- transfer
-- faucet
-- balance
-- block explorer / recent activity
+The front end also allows you to look at the whole blockchain (block explorer), and to request some free BBC (faucet).
 
 ## Verification
 
