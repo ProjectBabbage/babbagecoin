@@ -42,15 +42,19 @@ Sometimes, two (or more) branches of the chain are live, and different miners ar
 
 ## Client
 
-The client allows you to easily interact with the chain. Through it, you can perform the following actions.
-- You can **create a new account**. The client generates a new wallet with a new public/private key pair.
-- You can **transfer BBC from your account to another**. The client sends a new transaction to the master, who broadcasts it to every know nodes.
-- You can **query any balance**. The clients sends a request to the master.
+The client allows you to easily interact with the chain. It is available as a command line tool. Through it, you can **create a new account**. The client generates a new wallet with a new public/private key pair. It is also possible to **transfer BBC from your account to another**. Under the hood, the client sends a new transaction to the master, who broadcasts it to every know nodes. Additionally, the client allows you to **query any balance** by sending the request to the master.
 
-The front end also allows you to look at the whole blockchain (block explorer), and to request some free BBC (faucet).
+The front end also has a **block explorer** functionality allowing you to look at the whole blockchain, and a **faucet** functionality to request free BBC.
 
 ## Verification
 
-protocol enforced
+The master verifies new blocks it adds to the blockchain. The protocol protects itself against various attacks and counterfeiting.
 
-TODO: describe all the verification that is done
+Here are the different verification done on the incoming blocks.
+- A new block is checked to respect the set difficulty. Without this check, an attacker could send a new block without providing a proof of work, easily earning the mining rewards.
+- A new block is checked to have exactly one reward transaction, and that this reward transaction's amount to be equal to the fixed amount per block. This is done to prevent miners from gaining more than what is set by the protocol.
+- A new block is checked to not have transactions already validated. This is done to prevent a transaction to be replayed (potentially over and over).
+- A new block should contain a hash to a previous block. This is done to ensure that blocks cannot be added in between other blocks after the fact.
+- A new block should have an height one higher than its previous block. Height is used as an easy way to discrimate blocks that should be discarded. Without this check, an attacker could mine a block with high height, and no other fair miner could add to the blockchain.
+- Transactions from a new block should have a correct signature. The signature of the transaction is checked against the public key of the sender of the transaction. This is done to prevent an attacker from forging a transaction from an account other than is own.
+
