@@ -1,6 +1,8 @@
 <template>
     <div class="box">
         {{title}}
+        <br>
+        <i class="subtitle">{{subtitle}}</i>
     </div>
 </template>
 
@@ -9,6 +11,7 @@ export default {
     name: 'Box',
     props: {
         title: String,
+        subtitle: String,
     }    
 }
 </script>
@@ -23,6 +26,10 @@ export default {
 
     &:hover {
         cursor: pointer;
+    }
+
+    .subtitle {
+        font-size: 0.7em;
     }
 }
 </style>

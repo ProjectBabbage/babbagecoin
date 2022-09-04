@@ -1,4 +1,3 @@
-import json
 import requests
 import sentry_sdk
 from sentry_sdk.integrations.flask import FlaskIntegration
@@ -6,7 +5,13 @@ from sentry_sdk.integrations.flask import FlaskIntegration
 
 from flask import Flask, request
 
-from babbagecoin.common.schemas import BlockSchema, SignedTransactionSchema
+from babbagecoin.common.schemas import (
+    PubKeySchema,
+    PrivateKeySchema,
+    BlockSchema,
+    SignedTransactionSchema,
+)
+from babbagecoin.common.wallet import Wallet
 from babbagecoin.master.blockchain_service import (
     get_head,
     block_tbl,
@@ -22,6 +27,7 @@ from babbagecoin.master.transaction_service import (
     update_reward_transaction,
     mem_pool,
 )
+from babbagecoin.client.client import Client
 
 
 sentry_sdk.init(dsn=NetworkContext().sentry_dsn, integrations=[FlaskIntegration()])
@@ -47,6 +53,54 @@ def hello():
 @app.get("/webclient")
 def get_client_html():
     return app.send_static_file("index.html")
+
+
+@app.get("/webclient/wallet/new")
+def create_new_wallet():
+    """
+    returns {
+        "private_key": <hexadecimal>,
+        "public_key": <hexadecimal>,
+        "address": <hexadecimal>,
+    }
+    """
+    new_wallet = Wallet(load_from_file=False, save_to_file=False)
+    return {
+        "private_key": PrivateKeySchema.dumps(new_wallet.private_key),
+        "public_key": PubKeySchema.dumps(new_wallet.public_key()),
+        "address": new_wallet.public_key().hash(),
+    }
+
+
+@app.post("/webclient/wallet/import")
+def import_wallet():
+    private_key = PrivateKeySchema.load(request.json["private_key"])
+    public_key = private_key.derive_public_key()
+    address = public_key.hash()
+    return {"public_key": PubKeySchema.dumps(public_key), "address": address}
+
+
+@app.post("/webclient/faucet/request")
+def request_faucet():
+    amount = request.json["amount"]
+    address = request.json["address"]
+    print(request.json)
+    client = Client()
+    if get_balance_of_address(address) < 1000:
+        client.send_transaction(receiver=address, amount=amount, fees=0)
+        return {"amount_requested": amount, "to_address": address}
+    else:
+        return {"message": "You have a sufficient amount of BBC on your account :)"}
+
+
+@app.post("/webclient/tx")
+def tx():
+    amount = request.json["amount"]
+    address = request.json["address"]
+    private_key = PrivateKeySchema.load(request.json["private_key"])
+    client = Client(private_key)
+    client.send_transaction(receiver=address, amount=amount, fees=0)
+    return {"message": f"You sent {amount} BBC to {address}"}
 
 
 @app.get("/blocks/working_block")
@@ -114,4 +168,4 @@ def add_transaction():
 @app.get("/addresses/<address>/balance")
 def get_balance(address: str):
     balance = get_balance_of_address(address)
-    return json.dumps({"balance": balance, "address": address})
+    return {"balance": balance, "address": address}

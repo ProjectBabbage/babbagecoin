@@ -10,7 +10,7 @@ def touch_balance(addr: str):
         balances[addr] = 0
 
 
-def get_balance_of_address(addr: str):
+def get_balance_of_address(addr: str) -> float:
     touch_balance(addr)
     return balances[addr]
 
