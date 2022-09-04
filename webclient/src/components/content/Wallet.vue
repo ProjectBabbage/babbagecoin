@@ -6,8 +6,9 @@
       <input type="file" accept=".txt" id="file-upload" name="importfile" @change="readPrivateKey">
     </div>
     <div id="wallet-content" v-if="private_key && address">
-      <p>Your address: {{address}} </p>
       <p>Your balance: {{balance}} </p>
+      <p>Your address: {{address}} </p>
+      <p>Your private key: {{private_key}} </p>
     </div>
   </div>
 </template>
@@ -48,7 +49,6 @@ export default {
         this.public_key = State.public_key = public_key;
         this.private_key = State.private_key =  private_key;
         this.address = State.address = address;
-        
       });
     },
     resetWallet(){
