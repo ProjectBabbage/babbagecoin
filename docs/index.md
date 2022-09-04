@@ -1,4 +1,5 @@
 Welcome to the Babbage Coin project ! This project is about describing the blockckain fundamentals in the simplest way possible.
+
 *Following the Projet Babbage philosophy, it started from scratch, and was initially built in a weekend.*
 
 ## Overview
@@ -8,7 +9,7 @@ The core of the package is written in python, allowing us to put an emphasis on 
 Design choices also skew towards the simplicity of the chain: it uses proof of work as its consensus algorithm and there is no virtual machine or scripting language associated.
 
 The following diagram describes the overall structure of the project:
-![Visual representation](bbc.excalidraw.svg)
+![Code structure](structure.excalidraw.svg)
 
 There are three main modules: **miner**, **master**, and **client**. We now describe those in more detail, and conclude by the **verification** of blocks validity.
 
@@ -29,12 +30,15 @@ The miner is thus constantly trying to mine a block containing a list of transac
 
 ## Master
 
-network architecture
+The master uses a [Flask server]( https://flask.palletsprojects.com/) to receive block from the network, to broadcast new blocks from the miner, and to generally communicate with the client and the miner. 
 
-TODO:
+The master keeps in memory a tree representing the whole blockchain. The head is the last block in a branch, and the protocol enforces that this block should have the maximum height among all the known blocks. The master also keeps in memory all the validated transactions, that is all the transactions from the genesis (initial) block, up to the head. Accounts also have a corresponding balance that is kept in memory. Finally, the mem pool is the set of all received, not yet validated transactions.
 
-- broadcast
-- update_blockchain
+When the miner asks for a list of transactions, the master looks for them in the mem pool. When a new block is added after the head, this block becomes the head and its transactions are added to the validated transactions and removed from the mem pool. A similar behavior happens when new blocks are received from the network, except that the process can be repeated multiple times if the chain has some catching up to do.
+
+Sometimes, two (or more) branches of the chain are live, and different miners are working on each one of them. If these nodes happen to communicate, the node with the lowest height head should switch to the competing branch. It requires to find a known block on which to add the new branch. This known block is called the anchor, and the node should switch to anchor as its new head before adding the new blocks. Considering the common ancestor of the previous head and the anchor, switching to anchor requires to removing the blocks between the previous head and the ancestor, and adding blocks between the ancestor and the anchor.
+
+![Switching branches](fork.excalidraw.svg)
 
 ## Client
 
