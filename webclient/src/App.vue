@@ -28,7 +28,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
 h1 {
   font-size: 2.8em;
   line-height: 1.1;

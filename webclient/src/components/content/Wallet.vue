@@ -8,7 +8,7 @@
     <div id="wallet-content" v-if="private_key && address">
       <p>Your balance: {{balance}} </p>
       <p>Your address: {{address}} </p>
-      <p>Your private key: {{private_key}} </p>
+      <p id="private">Your private key: {{private_key}} </p>
     </div>
   </div>
 </template>
@@ -117,6 +117,11 @@ export default {
 
     }
     cursor: pointer;
+  }
+}
+#wallet-content{
+  #private {
+    word-wrap: break-word;
   }
 }
 </style>

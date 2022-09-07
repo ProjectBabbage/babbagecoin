@@ -29,6 +29,13 @@ body {
   text-align: center;
 }
 
+@media (max-width: 500px) {
+  #app{
+    width: 340px;
+  }
+  
+}
+
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;

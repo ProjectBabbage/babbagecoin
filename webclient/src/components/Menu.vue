@@ -25,6 +25,13 @@ export default {
     gap: 10px;
     margin-bottom: 10px;
 }
+
+@media (max-width: 500px) {
+  #menu{
+    flex-flow: column;
+  }
+  
+}
 .shadowed {
     box-shadow:5px 5px 5px rgb(51, 51, 51);
 }

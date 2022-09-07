@@ -16,13 +16,21 @@ export default {
   components: {Button, Input},
   data() {
     return {
-      amount: 0,
+      amount: null,
       message: ""
     }    
   },
   methods: {
     request(){
-      if(!this.amount || !State.address) return;
+      this.message = "";
+      if(!State.address) {
+        this.message = "Set up a Wallet first.";
+        return;
+      }
+      if(!this.amount) {
+        this.message = "Set a non-zero amount."
+        return;
+      }
       this.axios
           .post(
             `${State.master_url}webclient/faucet/request`,
@@ -33,7 +41,7 @@ export default {
           )
           .then(response => {
             console.log(response.data);
-            this.message = response.data.message;
+            this.message = `You requested ${response.data.amount_requested}BBC`;
           });
     }
   }

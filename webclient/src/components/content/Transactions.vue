@@ -21,14 +21,18 @@ export default {
   data() {
     return {
       receiver: "",
-      amount: 0,
+      amount: null,
       balance: State.balance,
       message: ""
     }
   },
   methods: {
     makeTransaction() {
-      if (!this.amount || !this.receiver) return;
+      this.message = "";
+      if (!this.amount || !this.receiver) {
+        this.message = "Fill the fields above."
+        return;
+      }
       const url = `${State.master_url}webclient/tx`;
       this.axios
           .post(url, {
