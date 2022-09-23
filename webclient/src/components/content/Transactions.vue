@@ -29,7 +29,10 @@ export default {
   },
   methods: {
     makeTransaction() {
-      this.message = "";
+      if(!this.wallet.address) {
+        this.message = "Set up a Wallet first.";
+        return;
+      }
       if (!this.amount || !this.receiver) {
         this.message = "Fill the fields above."
         return;

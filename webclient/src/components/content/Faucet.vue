@@ -25,8 +25,7 @@ export default {
   },
   methods: {
     request(){
-      this.message = "";
-      if(this.address) {
+      if(!this.wallet.address) {
         this.message = "Set up a Wallet first.";
         return;
       }
@@ -43,7 +42,6 @@ export default {
             }
           )
           .then(response => {
-            console.log(response.data);
             this.message = response.data?.message ? response.data.message : `You successfully requested ${response.data.amount_requested}BBC.`;
             this.amount = null;
           });

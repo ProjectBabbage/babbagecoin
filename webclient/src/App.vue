@@ -1,8 +1,8 @@
 <template>
-<div>
-  <h1>Babbagecoin</h1>
-  <Menu id="menu" :currentBox="currentBox" @menuBoxClicked="changeCurrentBox"/>
-  <Content :currentBox="currentBox" />
+<div id="main">
+    <h1>Babbagecoin</h1>
+    <Menu id="menu" :currentBox="currentBox" @menuBoxClicked="changeCurrentBox"/>
+    <Content :currentBox="currentBox" />
 </div>
 </template>
 
@@ -26,9 +26,11 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+
 h1 {
   font-size: 2.8em;
   line-height: 1.1;
+  margin: 10px;
 }
 
 menu {
