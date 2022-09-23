@@ -27,9 +27,17 @@ export default {
     &:hover {
         cursor: pointer;
     }
+    
 
     .subtitle {
         font-size: 0.7em;
     }
 }
+
+@media (max-width: 500px) {
+  .box{
+    padding: 5px;
+  }
+}
+
 </style>
