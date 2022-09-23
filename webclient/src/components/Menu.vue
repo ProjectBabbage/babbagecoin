@@ -28,7 +28,8 @@ export default {
 
 @media (max-width: 500px) {
   #menu{
-    flex-flow: column;
+    overflow: auto;
+    padding: 10px 0 20px 0;
   }
 }
 

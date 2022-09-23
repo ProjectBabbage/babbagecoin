@@ -7,7 +7,7 @@
     </div>
     <component
       :is="currentBox"
-      :master-url="master_url"
+      :master-url="masterUrl"
       :wallet="wallet"
       @update-wallet="updateWallet"
     >
@@ -19,14 +19,21 @@
 import Wallet from "./content/Wallet.vue";
 import Faucet from "./content/Faucet.vue";
 import Transactions from "./content/Transactions.vue";
+import Explorer from "./Explorer.vue"
 export default {
   name: "Content",
+  components: {
+    Wallet,
+    Faucet,
+    Transactions,
+    Explorer,
+  },
   props: {
     currentBox: String,
+    masterUrl: String,
   },
   data() {
     return {
-      master_url: import.meta.env.VITE_MASTER_BASE_URL,
       wallet: {
         privateKey: null,
         address: null,
@@ -40,11 +47,7 @@ export default {
         this.retrieveBalance(newWallet);
     },
   },
-  components: {
-    Wallet,
-    Faucet,
-    Transactions,
-  },
+
   methods: {
     updateWallet(wallet){
       this.wallet = wallet;
@@ -53,7 +56,7 @@ export default {
     },
     retrieveBalance() {
       this.axios
-        .get(`${this.master_url}addresses/${this.wallet.address}/balance`)
+        .get(`${this.masterUrl}addresses/${this.wallet.address}/balance`)
         .then(
           (response) => (this.wallet.balance = response.data.balance)
         );

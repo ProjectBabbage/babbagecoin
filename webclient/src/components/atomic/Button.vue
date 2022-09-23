@@ -21,7 +21,6 @@ export default {
     color: white;
     border-radius: 5px;    
     font-weight: 600;
-    box-shadow: 10px 5px 5px green($color: #000000);
 
     &:hover {
         cursor: pointer;
