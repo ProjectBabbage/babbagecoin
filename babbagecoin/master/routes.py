@@ -35,13 +35,16 @@ sentry_sdk.init(dsn=NetworkContext().sentry_dsn, integrations=[FlaskIntegration(
 app = Flask(__name__, static_folder="../webclient/")
 
 
-@app.get("/")
-def print_chain():
+@app.route("/", defaults={"limit": "1000"})
+@app.route("/<int:limit>")
+def print_chain(limit: int):
     s = ""
     b = get_head()
-    while b.height != 0:
+    i = 0
+    while b.height != 0 and i < int(limit):
         s += b.html()
         b = block_tbl[b.prev_hash]
+        i += 1
     return s
 
 
