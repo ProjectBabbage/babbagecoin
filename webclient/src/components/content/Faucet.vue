@@ -10,10 +10,13 @@
 <script>
 import Button from '../atomic/Button.vue';
 import Input from '../atomic/Input.vue';
-import State from '../state';
 export default {
   name: 'Faucet',
   components: {Button, Input},
+  props: {
+    masterUrl: String,
+    wallet: Object,
+  },
   data() {
     return {
       amount: null,
@@ -23,7 +26,7 @@ export default {
   methods: {
     request(){
       this.message = "";
-      if(!State.address) {
+      if(this.address) {
         this.message = "Set up a Wallet first.";
         return;
       }
@@ -33,18 +36,19 @@ export default {
       }
       this.axios
           .post(
-            `${State.master_url}webclient/faucet/request`,
+            `${this.masterUrl}webclient/faucet/request`,
             {
               "amount": this.amount,
-              "address": State.address
+              "address": this.wallet.address
             }
           )
           .then(response => {
             console.log(response.data);
-            this.message = `You requested ${response.data.amount_requested}BBC`;
+            this.message = response.data?.message ? response.data.message : `You successfully requested ${response.data.amount_requested}BBC.`;
+            this.amount = null;
           });
     }
-  }
+  } 
 }
 </script>
 

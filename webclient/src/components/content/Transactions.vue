@@ -1,6 +1,5 @@
 <template>
   <div>
-    <h3>Your balance: {{balance}}</h3>
     <label>Receiver: </label>
     <input v-model="receiver" placeholder="Specify its address" />
     <br>
@@ -14,15 +13,17 @@
 <script>
 import Button from '../atomic/Button.vue'
 import Input from '../atomic/Input.vue'
-import State from '../state';
 export default {
   name: 'Transaction',
   components: {Button, Input},
+  props: {
+    masterUrl: String,
+    wallet: Object,
+  },
   data() {
     return {
       receiver: "",
       amount: null,
-      balance: State.balance,
       message: ""
     }
   },
@@ -33,16 +34,16 @@ export default {
         this.message = "Fill the fields above."
         return;
       }
-      const url = `${State.master_url}webclient/tx`;
+      const url = `${this.masterUrl}webclient/tx`;
       this.axios
           .post(url, {
             amount: this.amount,
             address: this.receiver,
-            private_key: State.private_key
+            private_key: this.wallet.private_key
           })
           .then(response => {
             this.message = response.data.message;
-            console.log(response.data);
+            this.amount = null;            
           })
     }
   }

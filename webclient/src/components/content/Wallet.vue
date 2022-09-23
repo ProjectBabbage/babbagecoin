@@ -3,90 +3,92 @@
     <div id="wallet-menu">
       <Button @click="newWallet" title="New One" />
       <label for="file-upload" class="custom-file-upload">Import</label>
-      <input type="file" accept=".txt" id="file-upload" name="importfile" @change="readPrivateKey">
-    </div>
-    <div id="wallet-content" v-if="private_key && address">
-      <p>Your balance: {{balance}} </p>
-      <p>Your address: {{address}} </p>
-      <p id="private">Your private key: {{private_key}} </p>
+      <input
+        type="file"
+        accept=".txt"
+        id="file-upload"
+        name="importfile"
+        @change="importWallet"
+      />
     </div>
   </div>
 </template>
 
 <script>
-import Input from '../atomic/Input.vue'
-import Button from '../atomic/Button.vue'
-import State from '../state';
+import Input from "../atomic/Input.vue";
+import Button from "../atomic/Button.vue";
 export default {
   name: "Wallet",
-  components: {Button, Input},
+  components: { Button, Input },
+  props: {
+    masterUrl: String,
+  },
   data() {
     return {
-      private_key: State.private_key,
-      public_key: State.public_key,
-      address: State.address,
-      balance: State.balance,
-    }
-  },
-  watch: {
-    address(newAddress, oldAddress) {
-      if(newAddress && !oldAddress){
-        this.retrieveBalance(newAddress);
+      wallet: {
+        private_key: null,
+        address: null,
+        balance: null,
       }
-    }
+    };
   },
+
   methods: {
-    retrieveBalance(address){
-        this.axios
-            .get(`${State.master_url}addresses/${address}/balance`)
-            .then(response => this.balance = State.balance = response.data.balance);
+    resetWallet() {
+      this.wallet = {
+        private_key: null,
+        address: null,
+        balance: null,
+      }
     },
-    newWallet(){
+    newWallet() {
       this.resetWallet();
-      const url = `${State.master_url}webclient/wallet/new`
+
+      const url = `${this.masterUrl}webclient/wallet/new`;
       this.axios.get(url).then((response) => {
-        const { public_key, private_key, address } = response.data;
-        this.public_key = State.public_key = public_key;
-        this.private_key = State.private_key =  private_key;
-        this.address = State.address = address;
+        const { _, private_key, address } = response.data;
+        this.wallet.private_key = private_key;
+        this.wallet.address = address;
+        this.$emit("update-wallet", this.wallet);
+
+        // download the private key as a file
+        const link = document.createElement("a");
+        link.download = "private.key.txt";
+        link.href =
+          "data:text/plain;charset=utf-8," +
+          encodeURIComponent(this.wallet.private_key);
+        link.click();
       });
     },
-    resetWallet(){
-      this.public_key = State.private_key = 0;
-      this.private_key = State.private_key = 0;
-      this.address = State.address = 0;
-      this.balance = 0;
-    },
-    readPrivateKey(event){
+    importWallet(event) {
+      this.resetWallet();
       // load private.key file from device
-      // and send to server to convert to retrieve public key (and address):
-      if(event.target.files){
+      // and send to server to retrieve the address:
+      if (event.target.files) {
         const file = event.target.files[0];
         const reader = new FileReader();
-        reader.onload = event => {
-          this.private_key = State.private_key = reader.result;
-          console.log(`Imported : ${State.private_key}`);
-          this.importWallet();
+        reader.onload = (event) => {
+
+          // private key:
+          this.wallet.private_key = reader.result;
+          // address:
+          const url = `${this.masterUrl}webclient/wallet/import`;
+          this.axios
+            .post(url, {
+              private_key: this.wallet.private_key,
+            })
+            .then((response) => {
+              const { _, address } = response.data;
+              this.wallet.address = address;
+              this.$emit("update-wallet", this.wallet);
+            });
+
         };
         reader.readAsText(file);
       }
     },
-    importWallet(){
-      const url = `${State.master_url}webclient/wallet/import`
-      this.axios.post(
-          url,
-          {
-            private_key: this.private_key
-          }
-        ).then(response => {
-          console.log(response.data);
-          const {public_key, address } = response.data;
-          this.public_key = State.public_key = public_key;
-          this.address = State.address = address;
-      });
-    }
-  }
-}
+  },
+};
 </script>
 
 <style lang="scss" scoped>
@@ -104,22 +106,21 @@ export default {
     border: 2px solid black;
     background-color: black;
     color: white;
-    border-radius: 5px;    
+    border-radius: 5px;
     font-weight: 600;
     box-shadow: 10px 5px 5px green($color: #000000);
 
     &:hover {
-        cursor: pointer;
-        background-color: grey;
+      cursor: pointer;
+      background-color: grey;
     }
     &:active {
-        background-color: orange;
-
+      background-color: orange;
     }
     cursor: pointer;
   }
 }
-#wallet-content{
+#wallet-content {
   #private {
     word-wrap: break-word;
   }

@@ -30,8 +30,8 @@ export default {
   #menu{
     flex-flow: column;
   }
-  
 }
+
 .shadowed {
     box-shadow:5px 5px 5px rgb(51, 51, 51);
 }
