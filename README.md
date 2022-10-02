@@ -2,9 +2,11 @@
 
 ### An understandable proof of work blockchain.
 
-**Visit our [web page](https://projectbabbage.github.io/babbagecoin/) for a nice general overview of the project !**
+[Try it !](http://51.15.249.177:5000/webclient)
 
-## Quickly run a node !
+**Visit our [doc](https://projectbabbage.github.io/babbagecoin/) for a nice general overview of the project !**
+
+## Quickly run your own node !
 
 
 ```bash
