@@ -1,39 +1,46 @@
 <template>
-<div id="main">
-    <a :href="masterUrl" ><h2>See Babbagecoin full blocks explorer</h2></a>
-    <Menu id="menu" :currentBox="currentBox" @menuBoxClicked="changeCurrentBox"/>
+  <div id="main">
+    <Menu
+      id="menu"
+      :currentBox="currentBox"
+      :masterUrl="masterUrl"
+      @menuBoxClicked="changeCurrentBox"
+    />
     <Content :currentBox="currentBox" :master-url="masterUrl" />
-    <br>
+    <br />
     <span>Last blocks:</span>
     <Explorer :master-url="masterUrl" />
-</div>
+  </div>
 </template>
 
 <script>
-import Menu from './components/Menu.vue';
-import Content from './components/Content.vue';
-import Explorer from './components/Explorer.vue'
+import Menu from "./components/Menu.vue";
+import Content from "./components/Content.vue";
+import Explorer from "./components/Explorer.vue";
 
 export default {
   components: { Menu, Content, Explorer },
-  data(){
+  data() {
     return {
-      currentBox: 'wallet',
+      currentBox: "wallet",
       masterUrl: import.meta.env.VITE_MASTER_BASE_URL,
-    }
+    };
   },
   methods: {
-    changeCurrentBox(menuBox){
+    changeCurrentBox(menuBox) {
       this.currentBox = menuBox;
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
 <style lang="scss" scoped>
-
 a {
   color: inherit;
+}
+
+#main {
+  margin-top: 10px;
 }
 
 h1 {
@@ -44,7 +51,8 @@ h1 {
 
 menu {
   margin-bottom: 50px;
+  overflow: hidden;
+  padding: 5px;
 }
-
 </style>
 

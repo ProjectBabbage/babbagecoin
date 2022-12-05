@@ -31,7 +31,6 @@ tx:
 balance:
 	bash bbc.sh balance
 
-
 # DEV JOBS
 install:
 	poetry install && poetry shell
@@ -49,7 +48,6 @@ unittest:
 test:
 	export TESTING=true
 	pytest -n 4 --forked --cov=babbagecoin tests --cov-report term:skip-covered --cov-fail-under 50
-
 
 package:
 	cd webclient && npm run build
